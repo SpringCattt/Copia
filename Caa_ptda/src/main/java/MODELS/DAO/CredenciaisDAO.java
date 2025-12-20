@@ -48,6 +48,20 @@ public class CredenciaisDAO {
         }
         return false;
     }
+    
+    public boolean existeEmailIgnorandoId(String email, int idIgnorar) {
+        String sql = "SELECT IdTrabalhador FROM Credenciais WHERE Email = ? AND IdTrabalhador != ?";
+        try (java.sql.Connection conn = BaseDados.getConnection();
+             java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            stmt.setInt(2, idIgnorar);
+            java.sql.ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     public Integer validarLogin(String email, String password) {
         String SQL = "SELECT IdTrabalhador FROM Credenciais WHERE Email = ? AND Password = ?";
@@ -88,21 +102,47 @@ public class CredenciaisDAO {
         return false;
     }
 
-    public boolean updateCredenciais(Credenciais credenciais) {
-        String SQL = "UPDATE Credenciais SET Email = ?, Password = ? WHERE IdTrabalhador = ?";
-
-        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(SQL)) {
-
-            stmt.setString(1, credenciais.getEmail());
-            stmt.setString(2, credenciais.getPassword());
-            stmt.setInt(3, credenciais.getIdTrabalhador());
-
-            return stmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+   public boolean updateCredenciais(int idTrabalhador, String novoEmail, String novaPassword, boolean atualizarSenha) {
+        String sql;
+        if (atualizarSenha) {
+            sql = "UPDATE Credenciais SET Email = ?, Password = ? WHERE IdTrabalhador = ?";
+        } else {
+            sql = "UPDATE Credenciais SET Email = ? WHERE IdTrabalhador = ?";
         }
 
-        return false;
+        try (java.sql.Connection conn = BaseDados.getConnection();
+             java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, novoEmail);
+            if (atualizarSenha) {
+                stmt.setString(2, novaPassword);
+                stmt.setInt(3, idTrabalhador);
+            } else {
+                stmt.setInt(2, idTrabalhador);
+            }
+            return stmt.executeUpdate() > 0;
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+   
+   public MODELS.CLASS.Credenciais getCredenciaisPorIdTrabalhador(int idTrabalhador) {
+        String sql = "SELECT * FROM Credenciais WHERE IdTrabalhador = ?";
+        try (java.sql.Connection conn = BaseDados.getConnection();
+             java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idTrabalhador);
+            java.sql.ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                MODELS.CLASS.Credenciais c = new MODELS.CLASS.Credenciais();
+                c.setIdTrabalhador(rs.getInt("IdTrabalhador"));
+                c.setEmail(rs.getString("Email"));
+                c.setPassword(rs.getString("Password"));
+                return c;
+            }
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

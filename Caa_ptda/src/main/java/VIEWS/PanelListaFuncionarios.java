@@ -2,57 +2,91 @@ package VIEWS;
 
 import CONTROLLERS.HomeController;
 import MODELS.CLASS.Trabalhador;
+import MODELS.CLASS.CategoriaTrabalho;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
-/**
- *
- * @author gonca
- */
+import javax.swing.JOptionPane;
+
 public class PanelListaFuncionarios extends javax.swing.JPanel {
 
-    //variável para guardar a referência da janela principal
     private PaginaInicial janelaPrincipal;
     private HomeController controller;
-    /**
-     * Creates new form ListaFuncionarios
-     */
+
     public PanelListaFuncionarios(PaginaInicial paginaInicial) {
-       
         this.janelaPrincipal = paginaInicial;
         this.controller = new HomeController();
         initComponents();
         
-        carregarDadosTabela();
+        jTextField1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (jTextField1.getText().equals("Pesquisar")) {
+                    jTextField1.setText("");
+                }
+            }
+        });
+        
+        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                String termo = jTextField1.getText().trim();
+                
+                if (termo.isEmpty() || termo.equals("Pesquisar")) {
+                    carregarTabela(null);
+                } else {
+                    
+                    new javax.swing.SwingWorker<java.util.List<Trabalhador>, Void>() {
+                        @Override
+                        protected java.util.List<Trabalhador> doInBackground() throws Exception {
+                            return controller.pesquisarFuncionarios(termo);
+                        }
+                        @Override
+                        protected void done() {
+                            try {
+                                
+                                carregarTabela(get());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }.execute();
+                }
+            }
+        });
+        
+        carregarTabela(null);
     }
     
-    private void carregarDadosTabela() {
+    private void carregarTabela(List<Trabalhador> listaParaMostrar) {
         DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();
         modelo.setRowCount(0); 
         
-        List<Trabalhador> lista = controller.obterTodosFuncionarios();
+        List<Trabalhador> lista;
+        if (listaParaMostrar != null) {
+            lista = listaParaMostrar;
+        } else {
+            lista = controller.obterTodosFuncionarios();
+        }
+        
+        List<CategoriaTrabalho> categorias = controller.getCategoriasTrabalho();
         
         for (Trabalhador t : lista) {
-            modelo.addRow(new Object[]{
-                t.getIdTrabalhador(),
-                t.getNome(),
-                t.getEmailPessoal(),
-                obterNomeCategoria(t.getCategoria())
-            });
+            if (t.isAtivo()) {
+                String nomeCategoria = "Desconhecida";
+                for (CategoriaTrabalho cat : categorias) {
+                    if (cat.getIdCategoria() == t.getCategoria()) {
+                        nomeCategoria = cat.getNome();
+                        break;
+                    }
+                }
+                
+                modelo.addRow(new Object[]{
+                    t.getIdTrabalhador(),
+                    t.getNome(),
+                    t.getEmailPessoal(),
+                    nomeCategoria
+                });
+            }
         }
     }
-    
-    
-    private String obterNomeCategoria(int idCategoria) {
-        switch(idCategoria) {
-            case 1: return "Gestor Financeiro"; 
-            case 2: return "Gestor Eventos";
-            case 3: return "Gestor Recursos";
-            case 4: return "Staff";
-            case 5: return "Admin";
-            default: return String.valueOf(idCategoria);
-        }
-    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -170,52 +204,74 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
+        String termo = jTextField1.getText().trim();
+        if (termo.isEmpty() || termo.equals("Pesquisar")) {
+            carregarTabela(null);
+        } else {
+            List<Trabalhador> resultados = controller.pesquisarFuncionarios(termo);
+            carregarTabela(resultados);
+        }
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void btnCriarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCriarActionPerformed
-        // TODO add your handling code here:String nome = txtNome.getText();
-        /*String nome = txtNome1.getText();
-        String emailP = txtEmailP1.getText();
-        String emailT = txtEmailT1.getText();
-        String categoria = cbCategoria.getSelectedItem().toString();
-        String password = txtPassword.getText();
-        boolean atividade = chkAtividade.isSelected();
-
-        CONTROLLERS.HomeController.criarTrabalhador(
-            nome, emailP, emailT, categoria, password, atividade
-        );*/
-
-        //dispose();
-        if (janelaPrincipal != null) {
+       if (janelaPrincipal != null) {
             janelaPrincipal.irParaFormularioFuncionarios();
         }
-
-
     }//GEN-LAST:event_btnCriarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         int linhaSelecionada = jTable1.getSelectedRow();
-
         if (linhaSelecionada == -1) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, selecione um funcionário na tabela pra editar.");
+            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, selecione um funcionário.");
             return;
         }
 
-        //Obtem os dados da tabela
-        String id = jTable1.getValueAt(linhaSelecionada, 0).toString();
+        String idStr = jTable1.getValueAt(linhaSelecionada, 0).toString();
         String nome = jTable1.getValueAt(linhaSelecionada, 1).toString();
-        String email = jTable1.getValueAt(linhaSelecionada, 2).toString();
+        String emailPessoal = jTable1.getValueAt(linhaSelecionada, 2).toString();
         String categoria = jTable1.getValueAt(linhaSelecionada, 3).toString();
+        
+        int idInt = Integer.parseInt(idStr);
+        MODELS.CLASS.Credenciais cred = controller.buscarCredenciaisPorId(idInt);
+        
+        String emailEmpresa = "";
+        String password = "";
+
+        if (cred != null) {
+            emailEmpresa = cred.getEmail();
+            password = cred.getPassword();
+        }
 
         if (janelaPrincipal != null) {
-            janelaPrincipal.irParaEditarFuncionario(id, nome, email, categoria);
+            janelaPrincipal.irParaEditarFuncionario(idStr, nome, emailPessoal, emailEmpresa, password, categoria);
         }
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnEditar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditar1ActionPerformed
-        // TODO add your handling code here:
+        int linhaSelecionada = jTable1.getSelectedRow();
+        if (linhaSelecionada == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecione um funcionário para eliminar.");
+            return;
+        }
+
+        int id = (int) jTable1.getValueAt(linhaSelecionada, 0);
+        String nome = (String) jTable1.getValueAt(linhaSelecionada, 1);
+
+        int resposta = JOptionPane.showConfirmDialog(this, 
+                "Tem a certeza que deseja eliminar o funcionário " + nome + "?", 
+                "Confirmar", JOptionPane.YES_NO_OPTION);
+
+        if (resposta == JOptionPane.YES_OPTION) {
+            if (controller.eliminarFuncionario(id)) {
+                JOptionPane.showMessageDialog(this, "Funcionário eliminado com sucesso.");
+                
+                carregarTabela(null); 
+            } else {
+                JOptionPane.showMessageDialog(this, "Erro ao eliminar.");
+            }
+        }
     }//GEN-LAST:event_btnEditar1ActionPerformed
 
 

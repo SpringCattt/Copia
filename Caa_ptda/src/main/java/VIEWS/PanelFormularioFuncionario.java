@@ -2,48 +2,76 @@ package VIEWS;
 
 import CONTROLLERS.HomeController;
 import MODELS.CLASS.CategoriaTrabalho;
+import MODELS.CLASS.Trabalhador;
+import MODELS.CLASS.Credenciais;
 import java.util.List;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 
-/**
- *
- * @author gonca
- */
 public class PanelFormularioFuncionario extends javax.swing.JPanel {
 
     private HomeController controller;
     private PaginaInicial janelaPrincipal;
+    
+    private int idFuncionarioEditando = -1;
+    
+    private boolean atividadeAtual = true; 
 
-    /**
-     * Creates new form PanelAdicionarFuncionario
-     */
     public PanelFormularioFuncionario(PaginaInicial paginaInicial) {
         this.janelaPrincipal = paginaInicial;
         this.controller = new HomeController();
         initComponents();
-        txtID.setVisible(false);
+        
+        txtID.setVisible(false); 
+        
+        carregarCategorias();
+    }
+    
+    private void carregarCategorias() {
+        comboCategoria.removeAllItems();
         List<CategoriaTrabalho> categorias = controller.getCategoriasTrabalho();
-
         for (CategoriaTrabalho c : categorias) {
-            System.out.println("A carregar: " + c.getNome() + " " + c.getIdCategoria());
-            comboCategoria.addItem(c);
+            comboCategoria.addItem(c); 
         }
     }
 
-    public void preencherDadosParaEdicao(String id, String nome, String email, String categoria) {
-        //Muda o título da página
-        lblTitulo.setText("Editar Funcionário");
+    public void preencherDadosParaEdicao(String idStr, String nome, String emailPessoal, String emailEmpresa, String password, String categoria) {
+        try {
+            int id = Integer.parseInt(idStr);
+            this.idFuncionarioEditando = id;
+            
+            txtID.setText(idStr);
+            txtNome.setText(nome);
+            txtEmailPessoal.setText(emailPessoal);
+            txtEmailEmpresa.setText(emailEmpresa);
+            txtPassword.setText(password); 
+            
+            for (int i = 0; i < comboCategoria.getItemCount(); i++) {
+                CategoriaTrabalho cat = comboCategoria.getItemAt(i);
+                if (cat.getNome().equals(categoria)) {
+                    comboCategoria.setSelectedIndex(i);
+                    break;
+                }
+            }
+            
+            btnGuardar.setText("Atualizar");
+            lblTitulo.setText("Editar Funcionário (ID: " + id + ")");
+            
+        } catch (NumberFormatException e) {
+            System.err.println("Erro ID inválido: " + e.getMessage());
+        }
+    }
 
-        //Preenche os campos com os dados recebidos
-        txtID.setText(id);
-        txtNome.setText(nome);
-        txtEmailPessoal.setText(email);
-
-        comboCategoria.setSelectedItem(categoria);
-
+    private void limparFormulario() {
+        idFuncionarioEditando = -1;
+        txtID.setText("");
+        txtNome.setText("");
+        txtEmailPessoal.setText("");
+        txtEmailEmpresa.setText("");
         txtPassword.setText("");
-
-        txtPassword.setToolTipText("Deixa vazio para manter a password atual");
-
+        btnGuardar.setText("Guardar");
+        lblTitulo.setText("Adicionar Funcionário");
+        if (comboCategoria.getItemCount() > 0) comboCategoria.setSelectedIndex(0);
     }
 
     @SuppressWarnings("unchecked")
@@ -55,9 +83,7 @@ public class PanelFormularioFuncionario extends javax.swing.JPanel {
         txtID = new javax.swing.JTextField();
         txtNome = new javax.swing.JTextField();
         txtEmailPessoal = new javax.swing.JTextField();
-        checkAtividade = new javax.swing.JCheckBox();
         comboCategoria = new javax.swing.JComboBox<>();
-        jLabel1 = new javax.swing.JLabel();
         txtPassword = new javax.swing.JPasswordField();
         lblTitulo = new javax.swing.JLabel();
         txtEmailEmpresa = new javax.swing.JTextField();
@@ -107,8 +133,6 @@ public class PanelFormularioFuncionario extends javax.swing.JPanel {
             }
         });
 
-        jLabel1.setText("Atividade");
-
         txtPassword.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 txtPasswordMouseClicked(evt);
@@ -142,10 +166,6 @@ public class PanelFormularioFuncionario extends javax.swing.JPanel {
                         .addComponent(comboCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(txtEmailPessoal)
                         .addComponent(txtNome, javax.swing.GroupLayout.DEFAULT_SIZE, 638, Short.MAX_VALUE)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel1)
-                            .addGap(18, 18, 18)
-                            .addComponent(checkAtividade))
                         .addComponent(txtPassword)
                         .addComponent(txtEmailEmpresa)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -178,11 +198,7 @@ public class PanelFormularioFuncionario extends javax.swing.JPanel {
                 .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(comboCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(checkAtividade))
-                .addGap(72, 72, 72)
+                .addGap(109, 109, 109)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -192,90 +208,51 @@ public class PanelFormularioFuncionario extends javax.swing.JPanel {
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         String nome = txtNome.getText().trim();
-        String emailpessoal = txtEmailPessoal.getText().trim();
-        String emailempresa = txtEmailEmpresa.getText().trim();
-        String password = new String(txtPassword.getPassword());
-        boolean atividade = checkAtividade.isSelected();
-
-        CategoriaTrabalho selecionada = (CategoriaTrabalho) comboCategoria.getSelectedItem();
-        int idCategoria = 0;
-
-        if (selecionada != null) {
-            idCategoria = selecionada.getIdCategoria();
-            System.out.println("ID selecionado: " + idCategoria);
+        String emailPessoal = txtEmailPessoal.getText().trim();
+        String emailEmpresa = txtEmailEmpresa.getText().trim();
+        String password = String.valueOf(txtPassword.getPassword()).trim();
+        
+        CategoriaTrabalho catSelecionada = (CategoriaTrabalho) comboCategoria.getSelectedItem();
+        int idCategoria = 1; 
+        if (catSelecionada != null) {
+            idCategoria = catSelecionada.getIdCategoria();
         }
 
-        if (nome.isEmpty() || emailempresa.isEmpty() || password.isEmpty() || nome.equals("Nome Completo") || emailempresa.equals("Email Empresa")) {
-            javax.swing.JOptionPane.showMessageDialog(
-                    this,
-                    "Preencha todos os campos obrigatórios",
-                    "Erro",
-                    javax.swing.JOptionPane.ERROR_MESSAGE
-            );
-            return;
-    }//GEN-LAST:event_btnGuardarActionPerformed
-
-        if (controller.verificarDuplicidadeEmail(emailempresa)) {
-            javax.swing.JOptionPane.showMessageDialog(
-                    this,
-                    "Email ja existente em outro trabalhador!",
-                    "Erro",
-                    javax.swing.JOptionPane.ERROR_MESSAGE
-            );
+        if (nome.isEmpty() || emailPessoal.isEmpty() || emailEmpresa.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, 
+                "Todos os campos são obrigatórios.\nPor favor, preencha tudo.", 
+                "Erro de Validação", 
+                JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        System.out.println("Nome: " + nome);
-        System.out.println("Email: " + emailempresa);
-        System.out.println("Categoria: " + idCategoria);
-        System.out.println("Atividade: " + atividade);
+        boolean sucesso = false;
 
-        boolean sucesso = controller.criarFuncionario(
-                nome,
-                emailpessoal,
-                emailempresa,
-                password,
-                idCategoria,
-                atividade
-        );
+        if (idFuncionarioEditando == -1) {
+            sucesso = controller.criarFuncionario(nome, emailPessoal, emailEmpresa, password, idCategoria, true);
+        } else {
+            sucesso = controller.editarFuncionario(idFuncionarioEditando, nome, emailPessoal, emailEmpresa, password, idCategoria, true);
+        }
 
         if (sucesso) {
-            javax.swing.JOptionPane.showMessageDialog(
-                    this,
-                    "Funcionário criado com sucesso!",
-                    "Sucesso",
-                    javax.swing.JOptionPane.INFORMATION_MESSAGE
-            );
-
+            JOptionPane.showMessageDialog(this, "Funcionário guardado com sucesso!");
+            limparFormulario();
             if (janelaPrincipal != null) {
-                txtNome.setText("Nome Completo");
-                txtEmailPessoal.setText("Email Pessoal");
-                txtEmailEmpresa.setText("Email Empresa");
                 janelaPrincipal.mostrarListaFuncionarios();
             }
-
         } else {
-            javax.swing.JOptionPane.showMessageDialog(
-                    this,
-                    "Erro ao criar funcionário",
-                    "Erro",
-                    javax.swing.JOptionPane.ERROR_MESSAGE
-            );
+            JOptionPane.showMessageDialog(this, "Erro ao guardar funcionário.\nVerifique se o email já existe.");
         }
-
-    }
+    }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void txtNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNomeActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNomeActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        // Apenas pedimos à janela principal para mostrar a lista novamente
-        if (janelaPrincipal != null) {
-            txtNome.setText("Nome Completo");
-            txtEmailPessoal.setText("Email Pessoal");
-            txtEmailEmpresa.setText("Email Empresa");
-            janelaPrincipal.mostrarListaFuncionarios();
+       if (janelaPrincipal != null) {
+           limparFormulario();
+           janelaPrincipal.mostrarListaFuncionarios();
         }
     }//GEN-LAST:event_btnCancelarActionPerformed
 
@@ -314,9 +291,7 @@ public class PanelFormularioFuncionario extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnGuardar;
-    private javax.swing.JCheckBox checkAtividade;
     private javax.swing.JComboBox<CategoriaTrabalho> comboCategoria;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lblTitulo;
     private javax.swing.JTextField txtEmailEmpresa;
     private javax.swing.JTextField txtEmailPessoal;

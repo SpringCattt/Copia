@@ -175,7 +175,7 @@ public class PanelFinanceiro extends javax.swing.JPanel {
         String categoria = jTable1.getValueAt(linhaSelecionada, 3).toString();
 
         if (janelaPrincipal != null) {
-            janelaPrincipal.irParaEditarFuncionario(id, nome, email, categoria);
+            janelaPrincipal.irParaEditarFuncionario(id, nome, email, "", "", categoria); //Nao sei como vms usar isto ainda ent vou deixar assim por enquanto
         }
     }//GEN-LAST:event_btnEditarActionPerformed
 

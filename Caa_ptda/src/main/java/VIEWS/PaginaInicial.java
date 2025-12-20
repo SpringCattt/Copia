@@ -151,7 +151,7 @@ public class PaginaInicial extends javax.swing.JFrame {
         });
         panelBotaoFuncionarios.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        labelBotaoFuncionarios.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        labelBotaoFuncionarios.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         labelBotaoFuncionarios.setForeground(new java.awt.Color(255, 255, 255));
         labelBotaoFuncionarios.setText("Funcionários");
         labelBotaoFuncionarios.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -200,7 +200,7 @@ public class PaginaInicial extends javax.swing.JFrame {
         });
         panelBotaoSalas.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        labelBotaoSalas.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        labelBotaoSalas.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         labelBotaoSalas.setForeground(new java.awt.Color(255, 255, 255));
         labelBotaoSalas.setText("Salas");
         labelBotaoSalas.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -255,7 +255,7 @@ public class PaginaInicial extends javax.swing.JFrame {
         });
         panelBotaoEventos.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        labelBotaoEventos.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        labelBotaoEventos.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         labelBotaoEventos.setForeground(new java.awt.Color(255, 255, 255));
         labelBotaoEventos.setText("Eventos");
         labelBotaoEventos.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -307,7 +307,7 @@ public class PaginaInicial extends javax.swing.JFrame {
         });
         panelBotaoFinanceiro.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        labelBotaoFinanceiro.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        labelBotaoFinanceiro.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         labelBotaoFinanceiro.setForeground(new java.awt.Color(255, 255, 255));
         labelBotaoFinanceiro.setText("Financeiro");
         labelBotaoFinanceiro.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -359,7 +359,7 @@ public class PaginaInicial extends javax.swing.JFrame {
         });
         panelBotaoRecursos.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        labelBotaoRecursos.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        labelBotaoRecursos.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         labelBotaoRecursos.setForeground(new java.awt.Color(255, 255, 255));
         labelBotaoRecursos.setText("Recursos");
         labelBotaoRecursos.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -411,7 +411,7 @@ public class PaginaInicial extends javax.swing.JFrame {
         });
         panelBotaoDefinicoes.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        labelBotaoDefinicoes.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        labelBotaoDefinicoes.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         labelBotaoDefinicoes.setForeground(new java.awt.Color(255, 255, 255));
         labelBotaoDefinicoes.setText("Definições");
         labelBotaoDefinicoes.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -463,7 +463,7 @@ public class PaginaInicial extends javax.swing.JFrame {
         });
         panelBotaoDashboard.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        labelBotaoDashbord.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        labelBotaoDashbord.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         labelBotaoDashbord.setForeground(new java.awt.Color(255, 255, 255));
         labelBotaoDashbord.setText("Dashboard");
         labelBotaoDashbord.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -1029,14 +1029,12 @@ public class PaginaInicial extends javax.swing.JFrame {
         trocarParaPainel(form);
     }
 
-    public void irParaEditarFuncionario(String id, String nome, String email, String categoria) {
-        //Cria o painel do formulário
+    public void irParaEditarFuncionario(String id, String nome, String emailPessoal, String emailEmpresa, String password, String categoria) {
+        
         PanelFormularioFuncionario form = new PanelFormularioFuncionario(this);
 
-        //Chama o método que criámos acima para preencher os dados e mudar o título
-        form.preencherDadosParaEdicao(id, nome, email, categoria);
-
-        //Troca o painel
+        form.preencherDadosParaEdicao(id, nome, emailPessoal, emailEmpresa, password, categoria);
+        
         trocarParaPainel(form);
     }
 

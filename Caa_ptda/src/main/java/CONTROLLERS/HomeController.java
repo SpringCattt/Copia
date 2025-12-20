@@ -26,15 +26,9 @@ public class HomeController {
         this.eventoDAO = new EventoDAO();
     }
 
-
-    public boolean criarFuncionario(
-            String nome,
-            String emailpessoal,
-            String emailempresa,
-            String password,
-            int categoria,
-            boolean atividade
-    ) {
+    // --- CRIAR FUNCIONARIO ---
+    public boolean criarFuncionario(String nome, String emailpessoal, String emailempresa, 
+                                    String password, int categoria, boolean atividade) {
         Trabalhador t = new Trabalhador();
         t.setNome(nome);
         t.setEmailPessoal(emailpessoal);
@@ -43,40 +37,80 @@ public class HomeController {
 
         long idGerado = trabalhadorDAO.insertTrabalhador(t);
 
-        if (idGerado <= 0) {
-            System.err.println("Erro ao inserir trabalhador");
-            return false;
-        }
+        if (idGerado <= 0) return false;
 
-        // Criar Credenciais
         Credenciais c = new Credenciais();
         c.setIdTrabalhador((int) idGerado);
         c.setEmail(emailempresa);
         c.setPassword(password);
 
-        boolean credOk = credenciaisDAO.insertCredenciais(c);
+        return credenciaisDAO.insertCredenciais(c);
+    }
 
-        if (!credOk) {
-            System.err.println("Erro ao inserir credenciais");
-            return false;
+    // --- EDITAR FUNCIONARIO ---
+    public boolean editarFuncionario(int id, String nome, String emailPessoal, String emailEmpresa, 
+                                     String password, int categoria, boolean atividade) {
+        
+        //Se algum campo obrigatório estiver vazio, cancela.
+        if (nome == null || nome.trim().isEmpty() || 
+            emailPessoal == null || emailPessoal.trim().isEmpty() || 
+            emailEmpresa == null || emailEmpresa.trim().isEmpty()) {
+            return false; 
         }
 
-        System.out.println("Funcionário criado com sucesso (ID " + idGerado + ")");
-        return true;
+        Trabalhador t = new Trabalhador();
+        t.setIdTrabalhador(id);
+        t.setNome(nome);
+        t.setEmailPessoal(emailPessoal);
+        t.setCategoria(categoria);
+        t.setAtivo(atividade);
+
+        if (!trabalhadorDAO.updateTrabalhador(t)) return false;
+
+        // 4. Atualizar Credenciais (Email Trabalho e Password)
+        // Nota: A password permitimos que seja vazia (significa "não alterar")
+        boolean atualizarPass = (password != null && !password.trim().isEmpty());
+        
+        return credenciaisDAO.updateCredenciais(id, emailEmpresa, password, atualizarPass);
+    }
+
+    // --- APAGAR FUNCIONARIO (SOFT DELETE) ---
+    public boolean eliminarFuncionario(int id) {
+        return trabalhadorDAO.desativarTrabalhador(id);
+    }
+
+    // --- BUSCAR FUNCIONARIO ---
+    public java.util.List<Trabalhador> pesquisarFuncionarios(String termo) {
+        return trabalhadorDAO.buscarTrabalhadores(termo);
     }
 
     public List<Trabalhador> obterTodosFuncionarios() {
         return trabalhadorDAO.getAllTrabalhadores();
     }
 
+    // --- UTILS TRABALHADOR ---
     public List<CategoriaTrabalho> getCategoriasTrabalho() {
         return categoriaTrabalhoDAO.getCategoriasTrabalho();
     }
+    
+    public Trabalhador buscarTrabalhadorPorId(int id) {
+        return trabalhadorDAO.getTrabalhadorById(id);
+    }
 
-    // LOGIN E ACESSO
-
-    public boolean verificarDuplicidadeEmail(String email) {
-        return credenciaisDAO.existeEmail(email);
+    public Credenciais buscarCredenciaisPorId(int id) {
+        return credenciaisDAO.getCredenciaisPorIdTrabalhador(id);
+    }
+    
+    // --- VERIFICAÇOES ---
+    public boolean verificarDuplicidadeEmail(String email, int idIgnorar) {
+        //Modo CRIAR
+        if (idIgnorar == -1) {
+            return credenciaisDAO.existeEmail(email);
+        } 
+        //Modo EDITAR
+        else {
+            return credenciaisDAO.existeEmailIgnorandoId(email, idIgnorar);
+        }
     }
 
     public Integer efetuarLogin(String email, String password) {
@@ -91,39 +125,28 @@ public class HomeController {
         return trabalhadorDAO.getTrabalhadorById(id);
     }
 
-    // EVENTOS (nao fiz ainda)
-
+    // --- EVENTOS ---
     public List<Evento> obterTodosEventos() {
         return eventoDAO.getAllEventos();
     }
 
-    public boolean criarEvento(
-            String nome, 
-            String dataStr, 
-            String descricao,                   
-            int responsavelId, 
-            int salaId, 
-            String horaStr
-    ) {
+    public boolean criarEvento(String nome, String dataStr, String descricao, 
+                               int responsavelId, int salaId, String horaStr) {
         Evento e = new Evento();
         e.setNome(nome);
         e.setDescricao(descricao);
         e.setResponsavel(responsavelId);
         e.setSala(salaId);
-        
         e.setEstado(true);
-        e.setCancelado(false);
+        e.setCancelado(false); 
 
         try {
-            
             SimpleDateFormat formatoUsuario = new SimpleDateFormat("dd-mm-aaaa"); 
             formatoUsuario.setLenient(false);
 
             if (dataStr != null && !dataStr.isEmpty()) {
-                
                 String dataCorrigida = dataStr.replace("/", "-");
                 java.util.Date dataUtil = formatoUsuario.parse(dataCorrigida);
-                
                 e.setData(new java.sql.Date(dataUtil.getTime()));
             }
 
@@ -132,21 +155,9 @@ public class HomeController {
             }
             
         } catch (ParseException ex) {
-            System.err.println("Erro: A data deve ser no formato dd-mm-aaaa");
-            return false;
-        } catch (Exception ex) {
-            ex.printStackTrace();
             return false;
         }
 
-        long id = eventoDAO.insertEvento(e);
-        
-        if (id > 0) {
-            System.out.println("Evento criado com sucesso! ID: " + id);
-            return true;
-        } else {
-            System.err.println("Erro ao criar evento na BD.");
-            return false;
-        }
+        return eventoDAO.insertEvento(e) > 0;
     }
 }

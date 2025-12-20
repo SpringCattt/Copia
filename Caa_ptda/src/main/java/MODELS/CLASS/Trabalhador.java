@@ -1,30 +1,16 @@
 package MODELS.CLASS;
 
-import java.util.ArrayList;
-import java.util.List;
-/* 
- * Trabalhador Controller - CAA PTDA 
- * Desenvolvido por: Daniel Morais, Filipe Candeias, Gonçalo Fonseca, 
- * Bernardo Oliveira, Juan Gonsalves 
- */
 public class Trabalhador {
 
-    /* 
-     * Atributos Trabalhador 
-     */
     private int IdTrabalhador;
     private String Nome;
     private String EmailPessoal;
-    private String EmailTrabalho;
     private int Categoria;
-    private String Password;
     private boolean Ativo;
 
-    private static List<Trabalhador> trabalhadores = new ArrayList<>();
-    private static int nextId = 1;
-    
-    public Trabalhador(){}
-    
+    public Trabalhador() {
+    }
+
     public Trabalhador(int id, String nome, String emailPessoal, int categoria, boolean ativo) {
         this.IdTrabalhador = id;
         this.Nome = nome;
@@ -32,10 +18,8 @@ public class Trabalhador {
         this.Categoria = categoria;
         this.Ativo = ativo;
     }
-      
-    /* 
-     * Getters e Setters
-     */
+
+   
     public int getIdTrabalhador() {
         return IdTrabalhador;
     }
@@ -76,27 +60,7 @@ public class Trabalhador {
         this.Ativo = Ativo;
     }
     
-    /* 
-     * Funções do Trabalhador
-     */
-
-    public static Trabalhador criarTrabalhador(String nome, String emailP, String emailT, int categoria, String password, boolean atividade) {
-        Trabalhador t = new Trabalhador(nextId++, nome, emailP, categoria, atividade);
-        trabalhadores.add(t);
-
-        System.out.println("✔ Trabalhador criado com sucesso:");
-        System.out.println("ID: " + t.getIdTrabalhador());
-        System.out.println("Nome: " + t.getNome());
-        System.out.println("Email pessoal: " + t.getEmailPessoal());
-        System.out.println("Categoria: " + t.getCategoria());
-        System.out.println("Ativo: " + t.isAtivo());
-
-        return t;
+    public String toString() {
+        return Nome; 
     }
-
-    /** Obtener la lista de trabajadores */
-    public static List<Trabalhador> getTrabalhadores() {
-        return trabalhadores;
-    }
-    
 }

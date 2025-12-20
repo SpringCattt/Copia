@@ -14,7 +14,6 @@ public class SalaDAO {
         s.setLugares(rs.getInt("Lugares"));
         s.setOcupada(rs.getBoolean("Ocupada")); // Mapeado para boolean
         s.setTemLugares(rs.getBoolean("TemLugares")); // Mapeado para boolean
-        s.setEstado(rs.getBoolean("Estado")); // Mapeado para boolean (soft delete/ativo)
         s.setAtivo(rs.getBoolean("Ativo"));
         return s;
     }
@@ -77,7 +76,7 @@ public class SalaDAO {
 
     // ---- INSERT ----
     public long insertSala(Sala sala) {
-        String SQL = "INSERT INTO Sala (Nome, TipoEspaco, Lugares, Ocupada, TemLugares, Estado, Ativo) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String SQL = "INSERT INTO Sala (Nome, TipoEspaco, Lugares, Ocupada, TemLugares, Ativo) VALUES (?, ?, ?, ?, ?, ?)";
         long generatedId = -1;
 
         try (Connection conn = BaseDados.getConnection();
@@ -88,7 +87,6 @@ public class SalaDAO {
             stmt.setInt(3, sala.getLugares());
             stmt.setBoolean(4, sala.isOcupada());
             stmt.setBoolean(5, sala.isTemLugares()); // isTemLugares() para boolean
-            stmt.setBoolean(6, sala.isEstado()); // isEstado() para boolean
             stmt.setBoolean(7, sala.isAtivo());
 
             int affectedRows = stmt.executeUpdate();
@@ -110,7 +108,7 @@ public class SalaDAO {
 
     // ---- UPDATE ----
     public boolean updateSala(Sala sala) {
-        String SQL = "UPDATE Sala SET Nome = ?, TipoEspaco = ?, Lugares = ?, Ocupada = ?, TemLugares = ?, Estado = ?, Ativo = ? WHERE IdSala = ?";
+        String SQL = "UPDATE Sala SET Nome = ?, TipoEspaco = ?, Lugares = ?, Ocupada = ?, TemLugares = ?, Ativo = ? WHERE IdSala = ?";
 
         try (Connection conn = BaseDados.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
@@ -120,7 +118,6 @@ public class SalaDAO {
             stmt.setInt(3, sala.getLugares());
             stmt.setBoolean(4, sala.isOcupada());
             stmt.setBoolean(5, sala.isTemLugares());
-            stmt.setBoolean(6, sala.isEstado());
             stmt.setBoolean(7, sala.isAtivo());
             stmt.setInt(8, sala.getIdSala());
 
