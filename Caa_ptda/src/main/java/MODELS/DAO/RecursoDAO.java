@@ -102,8 +102,8 @@ public class RecursoDAO {
         return generatedId;
     }
 
-    // ---- UPDATE ----
     public boolean updateRecurso(Recurso recurso) {
+        // Ordem: Nome(1), Preco(2), Quantidade(3), Ativo(4), WHERE IdRecurso(5)
         String SQL = "UPDATE Recurso SET Nome = ?, Preco = ?, Quantidade = ?, Ativo = ? WHERE IdRecurso = ?";
 
         try (Connection conn = BaseDados.getConnection();
@@ -111,12 +111,11 @@ public class RecursoDAO {
 
             stmt.setString(1, recurso.getNome());
             stmt.setDouble(2, recurso.getPreco());
-            stmt.setInt(2, recurso.getQuantidade());
-            stmt.setBoolean(3, recurso.isAtivo());
-            stmt.setInt(4, recurso.getIdRecurso());
+            stmt.setInt(3, recurso.getQuantidade());
+            stmt.setBoolean(4, recurso.isAtivo()); // Aqui deve ir a variável 'ativoAtual'
+            stmt.setInt(5, recurso.getIdRecurso());
 
             return stmt.executeUpdate() > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

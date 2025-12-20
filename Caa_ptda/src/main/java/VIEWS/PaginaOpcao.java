@@ -26,14 +26,8 @@ public class PaginaOpcao extends javax.swing.JDialog {
     public PaginaOpcao(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        estiloJanela();
-    }
-
-    public void estiloJanela() {
-        JPanel contentPane = new JPanel();
-        contentPane.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        contentPane.setLayout(new BorderLayout());
-        setContentPane(contentPane);
+        panelPagina.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        setLocationRelativeTo(parent);
     }
     
     public void setMensagem(String texto, String top) {
@@ -216,7 +210,8 @@ public class PaginaOpcao extends javax.swing.JDialog {
 
         panelPagina.add(panelNAO, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 180, -1, -1));
 
-        getContentPane().add(panelPagina, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 1, 398, 228));
+        getContentPane().add(panelPagina, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 400, 230));
+        panelPagina.getAccessibleContext().setAccessibleName("");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

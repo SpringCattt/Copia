@@ -1042,37 +1042,23 @@ public class PaginaInicial extends javax.swing.JFrame {
         PanelFormularioFuncionario form = new PanelFormularioFuncionario(this);
         trocarParaPainel(form);
     }
-    
+
     public void irParaFormularioEspacos() {
         //Cria o painel do formulário
         PanelFormularioEspacos form = new PanelFormularioEspacos(this);
         trocarParaPainel(form);
     }
-    
+
     public void irParaFormularioEspacos(int idEspaco) {
         //Cria o painel do formulário
         PanelFormularioEspacos form = new PanelFormularioEspacos(this, idEspaco);
         trocarParaPainel(form);
     }
-    
+
     public void irParaFormularioSalas() {
         //Cria o painel do formulário
         PanelFormularioSalas form = new PanelFormularioSalas(this);
         trocarParaPainel(form);
-    }
-    
-    public void irParaFormularioRecurso(int tipoAba, Object recurso) {
-        // 1. Instancia ou recupera o painel do formulário
-        PanelFormularioRecursos form = new PanelFormularioRecursos(this);
-
-        // 2. Configura o formulário ANTES de mostrar
-        form.prepararFormulario(tipoAba, recurso);
-
-        // 3. Troca o painel no contentor principal (ex: panelContent)
-        jPanel2.removeAll();
-        jPanel2.add(form);
-        jPanel2.revalidate();
-        jPanel2.repaint();
     }
     
     public void irParaFormularioSalas(int idSala) {
@@ -1091,12 +1077,6 @@ public class PaginaInicial extends javax.swing.JFrame {
         //Troca o painel
         trocarParaPainel(form);
     }
-    
-    public void irParaEditarEvento(MODELS.CLASS.Evento evento) {
-        PanelFormularioEventos form = new PanelFormularioEventos(this);
-        form.preencherDados(evento);
-        trocarParaPainel(form);
-    }
 
     public void irParaFormularioEventos() {
         //Cria o painel do evento
@@ -1104,9 +1084,9 @@ public class PaginaInicial extends javax.swing.JFrame {
         trocarParaPainel(form);
     }
 
-    public void irParaFormularioRecursos() {
-        //Cria o painel do formulario do recurso
+    public void irParaFormularioRecursos(int tipoAba, Object recurso) {
         PanelFormularioRecursos form = new PanelFormularioRecursos(this);
+        form.prepararFormulario(tipoAba, recurso); // ESTA LINHA É ESSENCIAL
         trocarParaPainel(form);
     }
 
@@ -1147,7 +1127,7 @@ public class PaginaInicial extends javax.swing.JFrame {
         //troca o painel
         trocarParaPainel(lista);
     }
-    
+
     public void mostrarListaSalas() {
         //Instancia o painel da lista
         PanelSalas lista = new PanelSalas(this);
@@ -1157,7 +1137,12 @@ public class PaginaInicial extends javax.swing.JFrame {
     }
 
     public static void main(String args[]) {
-
+        try {
+            com.formdev.flatlaf.FlatLightLaf.setup();
+        } catch (Exception ex) {
+            System.err.println("Falha ao iniciar o FlatLaf");
+        }
+        
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new PaginaInicial().setVisible(true);

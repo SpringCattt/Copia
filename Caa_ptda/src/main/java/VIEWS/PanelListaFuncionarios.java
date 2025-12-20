@@ -6,6 +6,8 @@ import MODELS.CLASS.CategoriaTrabalho;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
+import javax.swing.table.TableRowSorter;
 
 public class PanelListaFuncionarios extends javax.swing.JPanel {
 
@@ -19,47 +21,66 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
         this.janelaPrincipal = paginaInicial;
         this.controller = new HomeController();
         initComponents();
-        
-        jTextField1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                if (jTextField1.getText().equals("Pesquisar")) {
-                    jTextField1.setText("");
-                }
-            }
-        });
-        
-        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                String termo = jTextField1.getText().trim();
-                
-                if (termo.isEmpty() || termo.equals("Pesquisar")) {
-                    carregarTabela(null);
-                } else {
-                    
-                    new javax.swing.SwingWorker<java.util.List<Trabalhador>, Void>() {
-                        @Override
-                        protected java.util.List<Trabalhador> doInBackground() throws Exception {
-                            return controller.pesquisarFuncionarios(termo);
-                        }
-                        @Override
-                        protected void done() {
-                            try {
-                                
-                                carregarTabela(get());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }.execute();
-                }
-            }
-        });
-        
         carregarTabela(null);
+        
+        txtPesquisar.setText("Pesquisar");
+        txtPesquisar.setForeground(java.awt.Color.GRAY);
+
+        txtPesquisar.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                // Apenas apaga se o texto for o padrão e a cor for cinza (indica placeholder)
+                if (txtPesquisar.getText().equals("Pesquisar") && txtPesquisar.getForeground().equals(java.awt.Color.GRAY)) {
+                    txtPesquisar.setText("");
+                    txtPesquisar.setForeground(java.awt.Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (txtPesquisar.getText().isEmpty()) {
+                    txtPesquisar.setForeground(java.awt.Color.GRAY);
+                    txtPesquisar.setText("Pesquisar");
+                }
+            }
+        });
+        
+        txtPesquisar.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
+        });
+    }
+    
+    private void verificarEFiltrar() {
+        String termo = txtPesquisar.getText();
+
+        // Se o texto for o placeholder cinzento, não filtramos nada
+        if (txtPesquisar.getForeground().equals(java.awt.Color.GRAY) && termo.equals("Pesquisar")) {
+            aplicarFiltro("");
+        } else {
+            aplicarFiltro(termo);
+        }
+    }
+
+    private void aplicarFiltro(String termo) {
+        // 1. Configurar Sorters para as duas tabelas
+        DefaultTableModel modF = (DefaultTableModel) tabelaFuncionarios.getModel();
+        TableRowSorter<DefaultTableModel> sorterF = new TableRowSorter<>(modF);
+        tabelaFuncionarios.setRowSorter(sorterF);
+
+        if (termo.trim().isEmpty()) {
+            sorterF.setRowFilter(null);
+        } else {
+            sorterF.setRowFilter(RowFilter.regexFilter("(?i)" + termo));
+        }
     }
     
     private void carregarTabela(List<Trabalhador> listaParaMostrar) {
-        DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();
+        DefaultTableModel modelo = (DefaultTableModel) tabelaFuncionarios.getModel();
         modelo.setRowCount(0); // Limpiar tabla
         
         List<Trabalhador> lista;
@@ -100,15 +121,15 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jTextField1 = new javax.swing.JTextField();
+        tabelaFuncionarios = new javax.swing.JTable();
+        txtPesquisar = new javax.swing.JTextField();
         btnCriar = new javax.swing.JButton();
         btnEditar = new javax.swing.JButton();
         btnEliminar = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(232, 235, 238));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tabelaFuncionarios.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -134,13 +155,13 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        jTable1.setShowGrid(false);
-        jScrollPane1.setViewportView(jTable1);
+        tabelaFuncionarios.setShowGrid(false);
+        jScrollPane1.setViewportView(tabelaFuncionarios);
 
-        jTextField1.setText("Pesquisar");
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtPesquisar.setText("Pesquisar");
+        txtPesquisar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txtPesquisarActionPerformed(evt);
             }
         });
 
@@ -188,7 +209,7 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
                         .addGap(18, 18, 18)
                         .addComponent(btnCriar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 690, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(45, Short.MAX_VALUE))
         );
@@ -196,7 +217,7 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(50, Short.MAX_VALUE)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
@@ -209,15 +230,15 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        String termo = jTextField1.getText().trim();
+    private void txtPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPesquisarActionPerformed
+        String termo = txtPesquisar.getText().trim();
         if (termo.isEmpty() || termo.equals("Pesquisar")) {
             carregarTabela(null);
         } else {
             List<Trabalhador> resultados = controller.pesquisarFuncionarios(termo);
             carregarTabela(resultados);
         }
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_txtPesquisarActionPerformed
 
     private void btnCriarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCriarActionPerformed
        if (janelaPrincipal != null) {
@@ -226,7 +247,7 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
     }//GEN-LAST:event_btnCriarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        int linhaSelecionada = jTable1.getSelectedRow();
+        int linhaSelecionada = tabelaFuncionarios.getSelectedRow();
         if (linhaSelecionada == -1) {
             PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
 
@@ -240,10 +261,10 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
             return;
         }
         
-        String id = jTable1.getValueAt(linhaSelecionada, 0).toString();
-        String nome = jTable1.getValueAt(linhaSelecionada, 1).toString();
-        String email = jTable1.getValueAt(linhaSelecionada, 2).toString();
-        String categoria = jTable1.getValueAt(linhaSelecionada, 3).toString();
+        String id = tabelaFuncionarios.getValueAt(linhaSelecionada, 0).toString();
+        String nome = tabelaFuncionarios.getValueAt(linhaSelecionada, 1).toString();
+        String email = tabelaFuncionarios.getValueAt(linhaSelecionada, 2).toString();
+        String categoria = tabelaFuncionarios.getValueAt(linhaSelecionada, 3).toString();
 
         if (janelaPrincipal != null) {
             janelaPrincipal.irParaEditarFuncionario(id, nome, email, categoria);
@@ -251,7 +272,7 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        int linhaSelecionada = jTable1.getSelectedRow();
+        int linhaSelecionada = tabelaFuncionarios.getSelectedRow();
         if (linhaSelecionada == -1) {
             PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
 
@@ -265,8 +286,8 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
             return;
         }
 
-        int id = (int) jTable1.getValueAt(linhaSelecionada, 0);
-        String nome = (String) jTable1.getValueAt(linhaSelecionada, 1);
+        int id = (int) tabelaFuncionarios.getValueAt(linhaSelecionada, 0);
+        String nome = (String) tabelaFuncionarios.getValueAt(linhaSelecionada, 1);
 
         PaginaOpcao dialog = new PaginaOpcao((java.awt.Frame) win, true);
         
@@ -315,7 +336,7 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
     private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTable tabelaFuncionarios;
+    private javax.swing.JTextField txtPesquisar;
     // End of variables declaration//GEN-END:variables
 }

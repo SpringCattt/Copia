@@ -15,6 +15,8 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
 
     private PaginaInicial janelaPrincipal;
     private String top, mensagem, imagem;
+    private int idRecursoEditando = -1;
+    private boolean ativoAtual = true;
     java.awt.Window win = javax.swing.SwingUtilities.getWindowAncestor(this);
 
     /**
@@ -51,16 +53,47 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
     }
     
     public void prepararFormulario(int tipoAba, Object recurso) {
-        // Define o combo (isto vai disparar o ActionListener que esconde/mostra as labels)
         comboTipo.setSelectedIndex(tipoAba);
 
-        /*if (recurso == null) {
-            labelTitulo.setText("ADICIONAR RECURSO");
+        if (recurso == null) {
+            idRecursoEditando = -1;
+            ativoAtual = true; // Novo recurso entra sempre como ativo
             limparCampos();
         } else {
-            labelTitulo.setText("EDITAR RECURSO");
-            preencherCampos(recurso);
-        }*/
+            if (recurso instanceof Consumivel) {
+                Consumivel c = (Consumivel) recurso;
+                idRecursoEditando = c.getIdRecurso();
+                ativoAtual = c.isAtivo(); // CARREGA O ESTADO REAL (1)
+
+                txtNome.setText(c.getNome());
+                spPreco.setValue(c.getPreco());
+                spQuantidade.setValue(c.getQuantidade());
+
+                // Formatar a data para o utilizador ver em PT
+                if (c.getDataValidade() != null) {
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+                    txtValidade.setText(sdf.format(c.getDataValidade()));
+                }
+            } 
+            else if (recurso instanceof NaoConsumivel) {
+                NaoConsumivel nc = (NaoConsumivel) recurso;
+                idRecursoEditando = nc.getIdRecurso();
+                ativoAtual = nc.isAtivo();
+
+                txtNome.setText(nc.getNome());
+                spPreco.setValue(nc.getPreco());
+                spQuantidade.setValue(nc.getQuantidade());
+                spPrecoAluguer.setValue(nc.getPrecoAluguer());
+            }
+        }
+    }
+
+    private void limparCampos() {
+        txtNome.setText("");
+        spPreco.setValue(0.0);
+        spQuantidade.setValue(0);
+        txtValidade.setText("");
+        spPrecoAluguer.setValue(0.0);
     }
     
     /**
@@ -151,87 +184,92 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
     }//GEN-LAST:event_txtNomeActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        /*// 1. RECOLHA DE DADOS COMUNS
+        // 1. RECOLHA DE DADOS COMUNS
         String nome = txtNome.getText().trim();
         double precoCompra = ((Number) spPreco.getValue()).doubleValue();
         int quantidade = (int) spQuantidade.getValue();
-        
-        // Detetar tipo pelo combo de Tipo (0 = Consumível, 1 = Não Consumível)
+
+        // Detetar tipo pelo combo (0 = Consumível, 1 = Não Consumível)
         int tipoRecurso = comboTipo.getSelectedIndex();
 
-        // Definir estado ativo (se for novo é true, se for edição mantém o que tinha)
+        // Se for edição, mantém o estado ativo atual; se for novo, define como true
         boolean ativo = (idRecursoEditando > 0) ? this.ativoAtual : true;
 
         // 2. VALIDAÇÃO DE CAMPOS COMUNS
-        if (nome.isEmpty() || nome.equals("Nome do Recurso")) {
+        if (nome.isEmpty() || nome.equals("Nome")) {
             mostrarMensagem("O nome do recurso é obrigatório.", "Erro", "src/main/java/Recursos/erro.png");
             return;
         }
 
-        // 3. LOGICA ESPECÍFICA E VALIDAÇÃO DE FILHAS
-        Consumivel consumivel = null;
-        NaoConsumivel naoConsumivel = null;
+        // 3. INSTANCIAR O CONTROLLER
+        CONTROLLERS.HomeController controller = new CONTROLLERS.HomeController();
+        boolean sucesso = false;
 
-        if (tipoRecurso == 0) { // CONSUMÍVEL
-            java.util.Date validade = (java.util.Date) spValidade.getValue(); // Ajustar para o seu componente de data
-            if (validade == null) {
-                mostrarMensagem("A data de validade é obrigatória para consumíveis.", "Erro", "src/main/java/Recursos/erro.png");
+        // 4. LOGICA ESPECÍFICA POR TIPO
+        if (tipoRecurso == 0) { // --- MODO CONSUMÍVEL ---
+            String dataStr = txtValidade.getText().trim();
+            java.util.Date validade = null;
+
+            try {
+                if (!dataStr.isEmpty()) {
+                    validade = new java.text.SimpleDateFormat("dd/MM/yyyy").parse(dataStr);
+                } else {
+                    mostrarMensagem("A data de validade é obrigatória.", "Erro", "src/main/java/Recursos/erro.png");
+                    return;
+                }
+            } catch (java.text.ParseException e) {
+                mostrarMensagem("Formato de data inválido (use dd/MM/yyyy).", "Erro", "src/main/java/Recursos/erro.png");
                 return;
             }
-            consumivel = new Consumivel();
+
+            Consumivel consumivel = new Consumivel();
             consumivel.setNome(nome);
             consumivel.setPreco(precoCompra);
             consumivel.setQuantidade(quantidade);
             consumivel.setAtivo(ativo);
             consumivel.setDataValidade(validade);
-            // consumivel.setCategoria(idCategoria);
 
-        } else { // NÃO CONSUMÍVEL
-            String precoAluguerStr = spPrecoAluguer.getText().trim();
-            if (precoAluguerStr.isEmpty()) {
-                mostrarMensagem("O preço de aluguer é obrigatório para recursos fixos.", "Erro", "src/main/java/Recursos/erro.png");
+            if (idRecursoEditando > 0) {
+                consumivel.setIdRecurso(idRecursoEditando);
+                // Chama o método que trata a edição e a possível troca de tabela
+                sucesso = controller.editarRecurso(consumivel, 0);
+            } else {
+                sucesso = controller.criarConsumivel(consumivel);
+            }
+
+        } else { // --- MODO NÃO CONSUMÍVEL ---
+            double precoAluguer = ((Number) spPrecoAluguer.getValue()).doubleValue();
+
+            if (precoAluguer <= 0) {
+                mostrarMensagem("O preço de aluguer deve ser superior a 0.", "Erro", "src/main/java/Recursos/erro.png");
                 return;
             }
-            double precoAluguer = Double.parseDouble(precoAluguerStr.replace(",", "."));
 
-            naoConsumivel = new NaoConsumivel();
+            NaoConsumivel naoConsumivel = new NaoConsumivel();
             naoConsumivel.setNome(nome);
             naoConsumivel.setPreco(precoCompra);
             naoConsumivel.setQuantidade(quantidade);
             naoConsumivel.setAtivo(ativo);
             naoConsumivel.setPrecoAluguer(precoAluguer);
-        }
 
-        // 4. GUARDAR NA BASE DE DADOS
-        boolean sucesso = false;
-
-        if (idRecursoEditando > 0) {
-            // --- LÓGICA DE EDIÇÃO ---
-            if (tipoRecurso == 0) {
-                consumivel.setIdRecurso(idRecursoEditando);
-                sucesso = controller.editarConsumivel(consumivel);
-            } else {
+            if (idRecursoEditando > 0) {
                 naoConsumivel.setIdRecurso(idRecursoEditando);
-                sucesso = controller.editarNaoConsumivel(naoConsumivel);
-            }
-        } else {
-            // --- LÓGICA DE CRIAÇÃO ---
-            if (tipoRecurso == 0) {
-                sucesso = controller.criarConsumivel(consumivel, idCategoria);
+                // Chama o método que trata a edição e a possível troca de tabela
+                sucesso = controller.editarRecurso(naoConsumivel, 1);
             } else {
-                sucesso = controller.criarNaoConsumivel(naoConsumivel, idCategoria);
+                sucesso = controller.criarNaoConsumivel(naoConsumivel);
             }
         }
 
-        // 5. FEEDBACK AO UTILIZADOR
+        // 5. FEEDBACK E NAVEGAÇÃO
         if (sucesso) {
-            mostrarMensagem("Recurso guardado com sucesso!", "Informação", "src/main/java/Recursos/info.png");
+            mostrarMensagem("Dados guardados com sucesso!", "Sucesso", "src/main/java/Recursos/info.png");
             if (janelaPrincipal != null) {
-                janelaPrincipal.irParaListaRecursos(); // Volta para a tabela
+                janelaPrincipal.mostrarListaRecursos(); 
             }
         } else {
-            mostrarMensagem("Erro ao guardar o recurso na base de dados.", "Erro", "src/main/java/Recursos/erro.png");
-        }*/
+            mostrarMensagem("Erro ao comunicar com a Base de Dados.", "Erro", "src/main/java/Recursos/erro.png");
+        }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed

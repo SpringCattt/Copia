@@ -4,60 +4,79 @@
  */
 package VIEWS;
 
-import CONTROLLERS.HomeController;
-import MODELS.CLASS.Evento;
-import MODELS.CLASS.Sala;
-import MODELS.CLASS.Trabalhador;
-import java.util.List;
+import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.JOptionPane;
-import java.text.SimpleDateFormat;
+import javax.swing.table.TableRowSorter;
 
-
+/**
+ *
+ * @author gonca
+ */
 public class PanelEventos extends javax.swing.JPanel {
 
     private PaginaInicial janelaPrincipal;
-    private HomeController controller;
-
-    public PanelEventos(PaginaInicial paginaInicial) {
-        this.janelaPrincipal = paginaInicial;
-        this.controller = new HomeController();
+    private String top, mensagem, imagem;
+    java.awt.Window win = javax.swing.SwingUtilities.getWindowAncestor(this);
+    /**
+     * Creates new form PanelEventos
+     */
+    public PanelEventos(PaginaInicial janelaPrincipal) {
+        this.janelaPrincipal = janelaPrincipal;
         initComponents();
         
-        carregarTabela(null);
+        txtPesquisar.setText("Pesquisar");
+        txtPesquisar.setForeground(java.awt.Color.GRAY);
+
+        txtPesquisar.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                // Apenas apaga se o texto for o padrão e a cor for cinza (indica placeholder)
+                if (txtPesquisar.getText().equals("Pesquisar") && txtPesquisar.getForeground().equals(java.awt.Color.GRAY)) {
+                    txtPesquisar.setText("");
+                    txtPesquisar.setForeground(java.awt.Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (txtPesquisar.getText().isEmpty()) {
+                    txtPesquisar.setForeground(java.awt.Color.GRAY);
+                    txtPesquisar.setText("Pesquisar");
+                }
+            }
+        });
+        
+        txtPesquisar.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
+        });
     }
     
-    private void carregarTabela(List<Evento> listaParaMostrar) {
-        DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();
-        modelo.setRowCount(0);
-        
-        List<Evento> lista;
-        if (listaParaMostrar != null) {
-            lista = listaParaMostrar;
-        } else {
-            lista = controller.obterTodosEventos();
-        }
-        
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/aaaa");
-        
-        for (Evento e : lista) {
-            String nomeResponsavel = "N/A";
-            Trabalhador t = controller.buscarTrabalhadorPorId(e.getResponsavel());
-            if (t != null) nomeResponsavel = t.getNome();
-            
-            String nomeSala = "N/A";
-            Sala s = controller.buscarSalaPorId(e.getSala());
-            if (s != null) nomeSala = s.getNome();
-            
-            String dataFormatada = (e.getData() != null) ? sdf.format(e.getData()) : "";
+    private void verificarEFiltrar() {
+        String termo = txtPesquisar.getText();
 
-            modelo.addRow(new Object[]{
-                e.getIdEvento(),
-                e.getNome(),
-                dataFormatada,
-                nomeSala,
-                nomeResponsavel
-            });
+        // Se o texto for o placeholder cinzento, não filtramos nada
+        if (txtPesquisar.getForeground().equals(java.awt.Color.GRAY) && termo.equals("Pesquisar")) {
+            aplicarFiltro("");
+        } else {
+            aplicarFiltro(termo);
+        }
+    }
+
+    private void aplicarFiltro(String termo) {
+        // 1. Configurar Sorters para as duas tabelas
+        DefaultTableModel modE = (DefaultTableModel) tabelaEventos.getModel();
+        TableRowSorter<DefaultTableModel> sorterE = new TableRowSorter<>(modE);
+        tabelaEventos.setRowSorter(sorterE);
+
+        if (termo.trim().isEmpty()) {
+            sorterE.setRowFilter(null);
+        } else {
+            sorterE.setRowFilter(RowFilter.regexFilter("(?i)" + termo));
         }
     }
 
@@ -70,23 +89,25 @@ public class PanelEventos extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jTextField1 = new javax.swing.JTextField();
+        txtPesquisar = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tabelaEventos = new javax.swing.JTable();
         btnCriar = new javax.swing.JButton();
         btnEditar = new javax.swing.JButton();
         btnEditar1 = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(232, 235, 238));
+        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jTextField1.setText("Pesquisar");
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtPesquisar.setText("Pesquisar");
+        txtPesquisar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txtPesquisarActionPerformed(evt);
             }
         });
+        add(txtPesquisar, new org.netbeans.lib.awtextra.AbsoluteConstraints(45, 50, 180, 40));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tabelaEventos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -109,7 +130,9 @@ public class PanelEventos extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tabelaEventos);
+
+        add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(45, 108, 690, 350));
 
         btnCriar.setBackground(new java.awt.Color(51, 121, 232));
         btnCriar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -120,6 +143,7 @@ public class PanelEventos extends javax.swing.JPanel {
                 btnCriarActionPerformed(evt);
             }
         });
+        add(btnCriar, new org.netbeans.lib.awtextra.AbsoluteConstraints(585, 488, 150, 40));
 
         btnEditar.setBackground(new java.awt.Color(51, 121, 232));
         btnEditar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -130,6 +154,7 @@ public class PanelEventos extends javax.swing.JPanel {
                 btnEditarActionPerformed(evt);
             }
         });
+        add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(417, 488, 150, 40));
 
         btnEditar1.setBackground(new java.awt.Color(51, 121, 232));
         btnEditar1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -140,99 +165,54 @@ public class PanelEventos extends javax.swing.JPanel {
                 btnEditar1ActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(45, 45, 45)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnEditar1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnCriar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 690, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(45, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(50, 50, 50)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnCriar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEditar1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(22, Short.MAX_VALUE))
-        );
+        add(btnEditar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(249, 488, 150, 40));
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        String termo = jTextField1.getText().trim();
-        if(termo.isEmpty() || termo.equals("Pesquisar")) carregarTabela(null);
-        else carregarTabela(controller.pesquisarEventos(termo));
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    private void txtPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPesquisarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtPesquisarActionPerformed
 
     private void btnCriarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCriarActionPerformed
+        // TODO add your handling code here:String nome = txtNome.getText();
+        /*String nome = txtNome1.getText();
+        String emailP = txtEmailP1.getText();
+        String emailT = txtEmailT1.getText();
+        String categoria = cbCategoria.getSelectedItem().toString();
+        String password = txtPassword.getText();
+        boolean atividade = chkAtividade.isSelected();
+
+        CONTROLLERS.HomeController.criarTrabalhador(
+            nome, emailP, emailT, categoria, password, atividade
+        );*/
+
+        //dispose();
+        
         if(janelaPrincipal != null){
             janelaPrincipal.irParaFormularioEventos();
         }
     }//GEN-LAST:event_btnCriarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        int linha = jTable1.getSelectedRow();
-        if (linha == -1) {
-            JOptionPane.showMessageDialog(this, "Selecione um evento para editar.");
+        int linhaSelecionada = tabelaEventos.getSelectedRow();
+
+        if (linhaSelecionada == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, selecione um funcionário na tabela pra editar.");
             return;
         }
-        
-        int id = (int) jTable1.getValueAt(linha, 0);
-        
-        Evento ev = controller.buscarEventoPorId(id);
-        
-        if (ev != null && janelaPrincipal != null) {
-            janelaPrincipal.irParaEditarEvento(ev);
+
+        //Obtem os dados da tabela
+        String id = tabelaEventos.getValueAt(linhaSelecionada, 0).toString();
+        String nome = tabelaEventos.getValueAt(linhaSelecionada, 1).toString();
+        String email = tabelaEventos.getValueAt(linhaSelecionada, 2).toString();
+        String categoria = tabelaEventos.getValueAt(linhaSelecionada, 3).toString();
+
+        if (janelaPrincipal != null) {
+            janelaPrincipal.irParaEditarFuncionario(id, nome, email, categoria);
         }
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnEditar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditar1ActionPerformed
-        int linha = jTable1.getSelectedRow();
-        if (linha == -1) {
-            JOptionPane.showMessageDialog(this, "Selecione um evento para eliminar.");
-            return;
-        }
-        
-        int id = (int) jTable1.getValueAt(linha, 0);
-        String nome = (String) jTable1.getValueAt(linha, 1);
-        
-        // --- USAR TU PAGINA OPCAO ---
-        java.awt.Frame parent = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
-        PaginaOpcao dialogo = new PaginaOpcao(parent, true);
-        dialogo.setMensagem("Tem a certeza que deseja eliminar o evento '" + nome + "'?", "Eliminar Evento");
-        dialogo.setVisible(true); // Se bloquea aquí hasta que el usuario responda
-        
-        if (dialogo.clicouSim()) {
-            if (controller.eliminarEvento(id)) {
-                // Mensaje de éxito con tu diseño
-                PaginaDialogo msg = new PaginaDialogo(parent, true);
-                msg.setMensagem("Evento cancelado com sucesso.", "Sucesso", "src/main/java/Recursos/info.png");
-                msg.setVisible(true);
-                
-                carregarTabela(null);
-            } else {
-                PaginaDialogo msg = new PaginaDialogo(parent, true);
-                msg.setMensagem("Erro ao cancelar evento.", "Erro", "src/main/java/Recursos/erro.png");
-                msg.setVisible(true);
-            }
-        }
+        // TODO add your handling code here:
     }//GEN-LAST:event_btnEditar1ActionPerformed
 
 
@@ -241,7 +221,7 @@ public class PanelEventos extends javax.swing.JPanel {
     private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnEditar1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTable tabelaEventos;
+    private javax.swing.JTextField txtPesquisar;
     // End of variables declaration//GEN-END:variables
 }

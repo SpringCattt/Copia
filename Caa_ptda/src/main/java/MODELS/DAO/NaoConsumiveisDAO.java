@@ -13,6 +13,7 @@ public class NaoConsumiveisDAO {
         nc.setNome(rs.getString("Nome"));
         nc.setPreco(rs.getDouble("Preco"));
         nc.setQuantidade(rs.getInt("Quantidade"));
+        nc.setAtivo(rs.getBoolean("Ativo")); 
         nc.setPrecoAluguer(rs.getDouble("PrecoAluguer"));
         return nc;
     }
@@ -39,14 +40,23 @@ public class NaoConsumiveisDAO {
 
     public List<NaoConsumivel> getAllNaoConsumiveis() {
         List<NaoConsumivel> lista = new ArrayList<>();
+        // Adicionado o filtro "WHERE r.Ativo = 1"
         String sql = "SELECT r.*, nc.PrecoAluguer FROM Recurso r " +
-                     "INNER JOIN NaoConsumiveis nc ON r.IdRecurso = nc.IdRecurso";
+                     "INNER JOIN NaoConsumiveis nc ON r.IdRecurso = nc.IdRecurso " +
+                     "WHERE r.Ativo = 1"; 
 
         try (Connection conn = BaseDados.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                lista.add(mapResultSetToNaoConsumivel(rs));
+                NaoConsumivel nc = new NaoConsumivel();
+                nc.setIdRecurso(rs.getInt("IdRecurso"));
+                nc.setNome(rs.getString("Nome"));
+                nc.setPreco(rs.getDouble("Preco"));
+                nc.setQuantidade(rs.getInt("Quantidade"));
+                nc.setAtivo(rs.getBoolean("Ativo"));
+                nc.setPrecoAluguer(rs.getDouble("PrecoAluguer"));
+                lista.add(nc);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -68,5 +78,24 @@ public class NaoConsumiveisDAO {
             e.printStackTrace();
             return false;
         }
+    }
+    
+    public boolean updateNaoConsumivel(NaoConsumivel nc) {
+        String sql = "UPDATE NaoConsumiveis SET PrecoAluguer = ? WHERE IdRecurso = ?";
+        try (Connection conn = BaseDados.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDouble(1, nc.getPrecoAluguer());
+            stmt.setInt(2, nc.getIdRecurso());
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) { e.printStackTrace(); return false; }
+    }
+
+    public void eliminarRegistoFilho(int id) {
+        String sql = "DELETE FROM NaoConsumiveis WHERE IdRecurso = ?";
+        try (Connection conn = BaseDados.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
     }
 }

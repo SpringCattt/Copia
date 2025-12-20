@@ -16,8 +16,10 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -34,23 +36,79 @@ public class PanelRecursos extends javax.swing.JPanel {
     public PanelRecursos(PaginaInicial janelaPrincipal) {
         this.janelaPrincipal = janelaPrincipal;
         initComponents();
-        
-        // 1. Carregar Dados
         atualizarTabelas();
-        
-        // 2. Aplicar Estética (Centrar, Moeda e Data PT)
         configurarEsteticaTabelas();
+        
+        txtPesquisar.setText("Pesquisar");
+        txtPesquisar.setForeground(java.awt.Color.GRAY);
+
+        txtPesquisar.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                // Apenas apaga se o texto for o padrão e a cor for cinza (indica placeholder)
+                if (txtPesquisar.getText().equals("Pesquisar") && txtPesquisar.getForeground().equals(java.awt.Color.GRAY)) {
+                    txtPesquisar.setText("");
+                    txtPesquisar.setForeground(java.awt.Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (txtPesquisar.getText().isEmpty()) {
+                    txtPesquisar.setForeground(java.awt.Color.GRAY);
+                    txtPesquisar.setText("Pesquisar");
+                }
+            }
+        });
+        
+        txtPesquisar.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
+        });
+    }
+    
+    private void verificarEFiltrar() {
+        String termo = txtPesquisar.getText();
+
+        // Se o texto for o placeholder cinzento, não filtramos nada
+        if (txtPesquisar.getForeground().equals(java.awt.Color.GRAY) && termo.equals("Pesquisar")) {
+            aplicarFiltro("");
+        } else {
+            aplicarFiltro(termo);
+        }
+    }
+
+    private void aplicarFiltro(String termo) {
+        // 1. Configurar Sorters para as duas tabelas
+        DefaultTableModel modC = (DefaultTableModel) tabelaConsumiveis.getModel();
+        TableRowSorter<DefaultTableModel> sorterC = new TableRowSorter<>(modC);
+        tabelaConsumiveis.setRowSorter(sorterC);
+
+        DefaultTableModel modNC = (DefaultTableModel) tabelaNaoConsumiveis.getModel();
+        TableRowSorter<DefaultTableModel> sorterNC = new TableRowSorter<>(modNC);
+        tabelaNaoConsumiveis.setRowSorter(sorterNC);
+
+        if (termo.trim().isEmpty()) {
+            sorterC.setRowFilter(null);
+            sorterNC.setRowFilter(null);
+        } else {
+            // O regex "(?i)" ignora maiúsculas/minúsculas
+            // Não passar índice de coluna faz com que pesquise em todas as rows/columns
+            sorterC.setRowFilter(RowFilter.regexFilter("(?i)" + termo));
+            sorterNC.setRowFilter(RowFilter.regexFilter("(?i)" + termo));
+        }
     }
 
     private void configurarEsteticaTabelas() {
-        // Aplicar às colunas de Preço (Índice 2 em ambas)
         tabelaConsumiveis.getColumnModel().getColumn(2).setCellRenderer(rendererPreco);
         tabelaNaoConsumiveis.getColumnModel().getColumn(2).setCellRenderer(rendererPreco);
         
-        // Aplicar à coluna de Data (Índice 4 nos Consumíveis)
         tabelaConsumiveis.getColumnModel().getColumn(4).setCellRenderer(rendererData);
         
-        // Aplicar ao Preço de Aluguer (Índice 4 nos Não Consumíveis)
         tabelaNaoConsumiveis.getColumnModel().getColumn(4).setCellRenderer(rendererPreco);
     }
 
@@ -123,9 +181,19 @@ public class PanelRecursos extends javax.swing.JPanel {
         setBackground(new java.awt.Color(232, 235, 238));
 
         txtPesquisar.setText("Pesquisar");
+        txtPesquisar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtPesquisarMouseClicked(evt);
+            }
+        });
         txtPesquisar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtPesquisarActionPerformed(evt);
+            }
+        });
+        txtPesquisar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtPesquisarKeyReleased(evt);
             }
         });
 
@@ -263,46 +331,58 @@ public class PanelRecursos extends javax.swing.JPanel {
         int abaAtual = tabPaneCNC.getSelectedIndex();
 
         // Chama o método na Janela Principal para trocar o painel
-        janelaPrincipal.irParaFormularioRecurso(abaAtual, null);
+        janelaPrincipal.irParaFormularioRecursos(abaAtual, null);
     }//GEN-LAST:event_btnCriarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        // Verifica qual a tabela ativa
+        // 1. Verifica qual a tabela ativa
         int abaAtual = tabPaneCNC.getSelectedIndex();
         JTable tabelaAtiva = (abaAtual == 0) ? tabelaConsumiveis : tabelaNaoConsumiveis;
 
-        int linha = tabelaAtiva.getSelectedRow();
-        if (linha == -1) {
+        int linhaVista = tabelaAtiva.getSelectedRow();
+        if (linhaVista == -1) {
             mostrarDialogo("Selecione um item para editar.", "Aviso", "src/main/java/Recursos/aviso.png");
             return;
         }
 
-        // Procura o objeto completo (ou passa os dados individuais)
-        // Se usar DAO, pode buscar pelo ID que está na coluna 0
-        int id = (int) tabelaAtiva.getValueAt(linha, 0);
+        // --- CORREÇÃO PARA PESQUISA ---
+        // Converte o índice da linha da tabela (que pode estar filtrada) para o índice real do modelo de dados
+        int linhaModelo = tabelaAtiva.convertRowIndexToModel(linhaVista);
+
+        // Obtém o ID da coluna 0 usando o índice do modelo
+        int id = (int) tabelaAtiva.getModel().getValueAt(linhaModelo, 0);
         Object recurso;
 
         if (abaAtual == 0) {
-            recurso = new ConsumiveisDAO().getConsumivelById(id); // Exemplo
+            recurso = new MODELS.DAO.ConsumiveisDAO().getConsumivelById(id);
         } else {
-            recurso = new NaoConsumiveisDAO().getNaoConsumivelById(id); // Exemplo
+            recurso = new MODELS.DAO.NaoConsumiveisDAO().getNaoConsumivelById(id);
         }
 
-        janelaPrincipal.irParaFormularioRecurso(abaAtual, recurso);
+        if (recurso != null) {
+            janelaPrincipal.irParaFormularioRecursos(abaAtual, recurso);
+        } else {
+            mostrarDialogo("Erro ao carregar os dados do recurso.", "Erro", "src/main/java/Recursos/erro.png");
+        }
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        javax.swing.JTable tabelaAtiva = (tabPaneCNC.getSelectedIndex() == 0) ? tabelaConsumiveis : tabelaNaoConsumiveis;
+        int abaAtual = tabPaneCNC.getSelectedIndex();
+        JTable tabelaAtiva = (abaAtual == 0) ? tabelaConsumiveis : tabelaNaoConsumiveis;
 
-        int linhaSelecionada = tabelaAtiva.getSelectedRow();
-        if (linhaSelecionada == -1) {
+        int linhaVista = tabelaAtiva.getSelectedRow();
+        if (linhaVista == -1) {
             mostrarDialogo("Por favor, selecione um recurso para eliminar.", "Aviso", "src/main/java/Recursos/aviso.png");
             return;
         }
 
-        // O ID está na coluna 0. Convertemos para Long pois o DAO usa Long
-        long id = Long.parseLong(tabelaAtiva.getValueAt(linhaSelecionada, 0).toString());
-        String nome = tabelaAtiva.getValueAt(linhaSelecionada, 1).toString();
+        // --- CORREÇÃO PARA PESQUISA ---
+        // Converte o índice da vista para o modelo para não apagar o item errado
+        int linhaModelo = tabelaAtiva.convertRowIndexToModel(linhaVista);
+
+        // O ID está na coluna 0, o Nome está na coluna 1
+        long id = Long.parseLong(tabelaAtiva.getModel().getValueAt(linhaModelo, 0).toString());
+        String nome = tabelaAtiva.getModel().getValueAt(linhaModelo, 1).toString();
 
         PaginaOpcao dialog = new PaginaOpcao((java.awt.Frame) win, true);
         dialog.setMensagem("Tem a certeza que deseja eliminar o recurso: " + nome + "?", "Atenção!");
@@ -310,17 +390,28 @@ public class PanelRecursos extends javax.swing.JPanel {
         dialog.setVisible(true); 
 
         if (dialog.clicouSim()) {
-            RecursoDAO dao = new RecursoDAO();
+            MODELS.DAO.RecursoDAO dao = new MODELS.DAO.RecursoDAO();
             if (dao.deleteRecurso(id)) {
                 mostrarDialogo("Recurso eliminado com sucesso.", "Informação", "src/main/java/Recursos/info.png");
 
-                // 5. Atualizar as tabelas para refletir o Soft Delete
+                // Limpa a pesquisa para evitar confusão visual após eliminar
+                txtPesquisar.setText("Pesquisar");
+                txtPesquisar.setForeground(java.awt.Color.GRAY);
+
                 atualizarTabelas(); 
             } else {
                 mostrarDialogo("Erro ao eliminar recurso na Base de Dados.", "Erro", "src/main/java/Recursos/erro.png");
             }
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void txtPesquisarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtPesquisarMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtPesquisarMouseClicked
+
+    private void txtPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPesquisarKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtPesquisarKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
