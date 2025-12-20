@@ -1091,6 +1091,12 @@ public class PaginaInicial extends javax.swing.JFrame {
         //Troca o painel
         trocarParaPainel(form);
     }
+    
+    public void irParaEditarEvento(MODELS.CLASS.Evento evento) {
+        PanelFormularioEventos form = new PanelFormularioEventos(this);
+        form.preencherDados(evento);
+        trocarParaPainel(form);
+    }
 
     public void irParaFormularioEventos() {
         //Cria o painel do evento

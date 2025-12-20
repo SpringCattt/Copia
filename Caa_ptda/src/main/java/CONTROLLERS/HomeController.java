@@ -175,7 +175,17 @@ public class HomeController {
     public List<Evento> obterTodosEventos() {
         return eventoDAO.getAllEventos();
     }
-
+    
+    // Método necessário para o botão editar
+    public Evento buscarEventoPorId(int id) {
+        return eventoDAO.getEventoById(id);
+    }
+    
+    // Método para a barra de pesquisa
+    public List<Evento> pesquisarEventos(String termo) {
+        return eventoDAO.buscarEventos(termo);
+    }
+    //CRIAR EVENTO
     public boolean criarEvento(String nome, String dataStr, String descricao,
             int responsavelId, int salaId, String horaStr) {
         Evento e = new Evento();
@@ -187,24 +197,70 @@ public class HomeController {
         e.setCancelado(false);
 
         try {
-            SimpleDateFormat formatoUsuario = new SimpleDateFormat("dd-MM-yyyy");
-            formatoUsuario.setLenient(false);
+            //dd/MM/yyyy
+            SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
+            formatoData.setLenient(false); 
 
             if (dataStr != null && !dataStr.isEmpty()) {
-                String dataCorrigida = dataStr.replace("/", "-");
-                java.util.Date dataUtil = formatoUsuario.parse(dataCorrigida);
+                java.util.Date dataUtil = formatoData.parse(dataStr);
                 e.setData(new java.sql.Date(dataUtil.getTime()));
             }
 
-            if (horaStr != null) {
-                e.setHora(new java.sql.Date(System.currentTimeMillis()));
+            //HH:mm
+            if (horaStr != null && !horaStr.isEmpty()) {
+                SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
+                java.util.Date horaUtil = formatoHora.parse(horaStr);
+                e.setHora(new java.sql.Time(horaUtil.getTime()));
+            } else {
+                e.setHora(new java.sql.Time(System.currentTimeMillis()));
             }
 
         } catch (ParseException ex) {
+            System.err.println("Erro parsing data/hora: " + ex.getMessage());
             return false;
         }
 
         return eventoDAO.insertEvento(e) > 0;
+    }
+    
+    // --- EDITAR EVENTO ---
+    public boolean editarEvento(int id, String nome, String dataStr, String descricao, 
+                               int responsavelId, int salaId, String horaStr) {
+        Evento e = new Evento();
+        e.setIdEvento(id);
+        e.setNome(nome);
+        e.setDescricao(descricao);
+        e.setResponsavel(responsavelId);
+        e.setSala(salaId);
+        e.setEstado(true);
+        e.setCancelado(false);
+
+        try {
+            SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
+            formatoData.setLenient(false);
+
+            if (dataStr != null && !dataStr.isEmpty()) {
+                java.util.Date dataUtil = formatoData.parse(dataStr);
+                e.setData(new java.sql.Date(dataUtil.getTime()));
+            }
+            
+            if (horaStr != null && !horaStr.isEmpty()) {
+                SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
+                java.util.Date horaUtil = formatoHora.parse(horaStr);
+                e.setHora(new java.sql.Time(horaUtil.getTime()));
+            } else {
+                e.setHora(new java.sql.Time(System.currentTimeMillis()));
+            }
+            
+        } catch (ParseException ex) {
+            return false;
+        }
+        return eventoDAO.updateEvento(e);
+    }
+    
+    // ELIMINAR EVENTO
+    public boolean eliminarEvento(int id) {
+        return eventoDAO.cancelarEvento(id);
     }
 
     // --- MÉTODOS ESPAÇOS E SALAS ---
@@ -252,6 +308,10 @@ public class HomeController {
         if (id <= 0) {
             return null;
         }
+        return salaDAO.getSalaById(id);
+    }
+    
+    public Sala buscarSalaPorId(int id) {
         return salaDAO.getSalaById(id);
     }
 

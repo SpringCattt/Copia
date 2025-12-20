@@ -4,21 +4,61 @@
  */
 package VIEWS;
 
-/**
- *
- * @author gonca
- */
+import CONTROLLERS.HomeController;
+import MODELS.CLASS.Evento;
+import MODELS.CLASS.Sala;
+import MODELS.CLASS.Trabalhador;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JOptionPane;
+import java.text.SimpleDateFormat;
+
+
 public class PanelEventos extends javax.swing.JPanel {
 
     private PaginaInicial janelaPrincipal;
-    private String top, mensagem, imagem;
-    java.awt.Window win = javax.swing.SwingUtilities.getWindowAncestor(this);
-    /**
-     * Creates new form PanelEventos
-     */
-    public PanelEventos(PaginaInicial janelaPrincipal) {
-        this.janelaPrincipal = janelaPrincipal;
+    private HomeController controller;
+
+    public PanelEventos(PaginaInicial paginaInicial) {
+        this.janelaPrincipal = paginaInicial;
+        this.controller = new HomeController();
         initComponents();
+        
+        carregarTabela(null);
+    }
+    
+    private void carregarTabela(List<Evento> listaParaMostrar) {
+        DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();
+        modelo.setRowCount(0);
+        
+        List<Evento> lista;
+        if (listaParaMostrar != null) {
+            lista = listaParaMostrar;
+        } else {
+            lista = controller.obterTodosEventos();
+        }
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/aaaa");
+        
+        for (Evento e : lista) {
+            String nomeResponsavel = "N/A";
+            Trabalhador t = controller.buscarTrabalhadorPorId(e.getResponsavel());
+            if (t != null) nomeResponsavel = t.getNome();
+            
+            String nomeSala = "N/A";
+            Sala s = controller.buscarSalaPorId(e.getSala());
+            if (s != null) nomeSala = s.getNome();
+            
+            String dataFormatada = (e.getData() != null) ? sdf.format(e.getData()) : "";
+
+            modelo.addRow(new Object[]{
+                e.getIdEvento(),
+                e.getNome(),
+                dataFormatada,
+                nomeSala,
+                nomeResponsavel
+            });
+        }
     }
 
     /**
@@ -136,50 +176,63 @@ public class PanelEventos extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
+        String termo = jTextField1.getText().trim();
+        if(termo.isEmpty() || termo.equals("Pesquisar")) carregarTabela(null);
+        else carregarTabela(controller.pesquisarEventos(termo));
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void btnCriarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCriarActionPerformed
-        // TODO add your handling code here:String nome = txtNome.getText();
-        /*String nome = txtNome1.getText();
-        String emailP = txtEmailP1.getText();
-        String emailT = txtEmailT1.getText();
-        String categoria = cbCategoria.getSelectedItem().toString();
-        String password = txtPassword.getText();
-        boolean atividade = chkAtividade.isSelected();
-
-        CONTROLLERS.HomeController.criarTrabalhador(
-            nome, emailP, emailT, categoria, password, atividade
-        );*/
-
-        //dispose();
-        
         if(janelaPrincipal != null){
             janelaPrincipal.irParaFormularioEventos();
         }
     }//GEN-LAST:event_btnCriarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        int linhaSelecionada = jTable1.getSelectedRow();
-
-        if (linhaSelecionada == -1) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, selecione um funcionário na tabela pra editar.");
+        int linha = jTable1.getSelectedRow();
+        if (linha == -1) {
+            JOptionPane.showMessageDialog(this, "Selecione um evento para editar.");
             return;
         }
-
-        //Obtem os dados da tabela
-        String id = jTable1.getValueAt(linhaSelecionada, 0).toString();
-        String nome = jTable1.getValueAt(linhaSelecionada, 1).toString();
-        String email = jTable1.getValueAt(linhaSelecionada, 2).toString();
-        String categoria = jTable1.getValueAt(linhaSelecionada, 3).toString();
-
-        if (janelaPrincipal != null) {
-            janelaPrincipal.irParaEditarFuncionario(id, nome, email, categoria);
+        
+        int id = (int) jTable1.getValueAt(linha, 0);
+        
+        Evento ev = controller.buscarEventoPorId(id);
+        
+        if (ev != null && janelaPrincipal != null) {
+            janelaPrincipal.irParaEditarEvento(ev);
         }
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnEditar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditar1ActionPerformed
-        // TODO add your handling code here:
+        int linha = jTable1.getSelectedRow();
+        if (linha == -1) {
+            JOptionPane.showMessageDialog(this, "Selecione um evento para eliminar.");
+            return;
+        }
+        
+        int id = (int) jTable1.getValueAt(linha, 0);
+        String nome = (String) jTable1.getValueAt(linha, 1);
+        
+        // --- USAR TU PAGINA OPCAO ---
+        java.awt.Frame parent = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
+        PaginaOpcao dialogo = new PaginaOpcao(parent, true);
+        dialogo.setMensagem("Tem a certeza que deseja eliminar o evento '" + nome + "'?", "Eliminar Evento");
+        dialogo.setVisible(true); // Se bloquea aquí hasta que el usuario responda
+        
+        if (dialogo.clicouSim()) {
+            if (controller.eliminarEvento(id)) {
+                // Mensaje de éxito con tu diseño
+                PaginaDialogo msg = new PaginaDialogo(parent, true);
+                msg.setMensagem("Evento cancelado com sucesso.", "Sucesso", "src/main/java/Recursos/info.png");
+                msg.setVisible(true);
+                
+                carregarTabela(null);
+            } else {
+                PaginaDialogo msg = new PaginaDialogo(parent, true);
+                msg.setMensagem("Erro ao cancelar evento.", "Erro", "src/main/java/Recursos/erro.png");
+                msg.setVisible(true);
+            }
+        }
     }//GEN-LAST:event_btnEditar1ActionPerformed
 
 
