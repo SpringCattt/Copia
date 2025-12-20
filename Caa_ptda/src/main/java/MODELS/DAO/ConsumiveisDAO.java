@@ -12,11 +12,30 @@ public class ConsumiveisDAO {
         c.setIdRecurso(rs.getInt("IdRecurso"));
         c.setNome(rs.getString("Nome"));
         c.setPreco(rs.getDouble("Preco"));
-        c.setCategoria(rs.getInt("Categoria"));
         c.setQuantidade(rs.getInt("Quantidade"));
-        // Dados da tabela Consumiveis (Filha)
         c.setDataValidade(rs.getDate("Data_Validade")); 
         return c;
+    }
+
+    public Consumivel getConsumivelById(int id) {
+        // JOIN obrigatório para trazer o Nome, Preco, etc. da tabela Recurso
+        String sql = "SELECT r.*, c.Data_Validade FROM Recurso r " +
+                     "INNER JOIN Consumiveis c ON r.IdRecurso = c.IdRecurso " +
+                     "WHERE r.IdRecurso = ?";
+
+        try (Connection conn = BaseDados.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToConsumivel(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public List<Consumivel> getAllConsumiveis() {

@@ -93,6 +93,7 @@ public class PaginaInicial extends javax.swing.JFrame {
         panelBotaoDashboard = new javax.swing.JPanel();
         labelBotaoDashbord = new javax.swing.JLabel();
         imagemBotaoDashboard = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         labelPagina = new javax.swing.JLabel();
@@ -498,6 +499,9 @@ public class PaginaInicial extends javax.swing.JFrame {
 
         jPanel1.add(panelBotaoDashboard, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 200, 50));
 
+        jLabel2.setIcon(new javax.swing.ImageIcon("src/main/java/Recursos/exit_branco.png"));
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 560, 30, 30));
+
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 1, 220, 600));
 
         jPanel2.setBackground(new java.awt.Color(232, 235, 238));
@@ -736,20 +740,22 @@ public class PaginaInicial extends javax.swing.JFrame {
             trocarParaPainel(new PanelListaFuncionarios(this));
         }
         if (flag == 2) {
-            javax.swing.JOptionPane.showMessageDialog(
-                    this,
-                    "O utilizador não tem permissão para aceder a esta aba",
-                    "Erro",
-                    javax.swing.JOptionPane.ERROR_MESSAGE
-            );
+            PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+            String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
+            String top = "Erro";
+            String imagem = "src/main/java/Recursos/erro.png";
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setVisible(true);
         }
         if (flag == 3) {
-            javax.swing.JOptionPane.showMessageDialog(
-                    this,
-                    "Trabalhador não encontrado!",
-                    "Erro",
-                    javax.swing.JOptionPane.ERROR_MESSAGE
-            );
+            PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+            String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
+            String top = "Erro";
+            String imagem = "src/main/java/Recursos/erro.png";
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setVisible(true);
         }
     }//GEN-LAST:event_labelBotaoFuncionariosMousePressed
 
@@ -788,20 +794,22 @@ public class PaginaInicial extends javax.swing.JFrame {
                     trocarParaPainel(new PanelSalas(this));
                 }
                 if (flag == 2) {
-                    javax.swing.JOptionPane.showMessageDialog(
-                            this,
-                            "O utilizador não tem permissão para aceder a esta aba",
-                            "Erro",
-                            javax.swing.JOptionPane.ERROR_MESSAGE
-                    );
+                    PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+                    String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
+                    String top = "Erro";
+                    String imagem = "src/main/java/Recursos/erro.png";
+                    dialogo.setMensagem(mensagem, top, imagem);
+                    dialogo.setVisible(true);
                 }
                 if (flag == 3) {
-                    javax.swing.JOptionPane.showMessageDialog(
-                            this,
-                            "Trabalhador não encontrado!",
-                            "Erro",
-                            javax.swing.JOptionPane.ERROR_MESSAGE
-                    );
+                    PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+                    String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
+                    String top = "Erro";
+                    String imagem = "src/main/java/Recursos/erro.png";
+                    dialogo.setMensagem(mensagem, top, imagem);
+                    dialogo.setVisible(true);
                 }
             }
 
@@ -832,20 +840,22 @@ public class PaginaInicial extends javax.swing.JFrame {
                 trocarParaPainel(new PanelEventos(this));
             }
             if (flag == 2) {
-                javax.swing.JOptionPane.showMessageDialog(
-                        this,
-                        "O utilizador não tem permissão para aceder a esta aba",
-                        "Erro",
-                        javax.swing.JOptionPane.ERROR_MESSAGE
-                );
+                PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+                String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
+                String top = "Erro";
+                String imagem = "src/main/java/Recursos/erro.png";
+                dialogo.setMensagem(mensagem, top, imagem);
+                dialogo.setVisible(true);
             }
             if (flag == 3) {
-                javax.swing.JOptionPane.showMessageDialog(
-                        this,
-                        "Trabalhador não encontrado!",
-                        "Erro",
-                        javax.swing.JOptionPane.ERROR_MESSAGE
-                );
+                PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+                String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
+                String top = "Erro";
+                String imagem = "src/main/java/Recursos/erro.png";
+                dialogo.setMensagem(mensagem, top, imagem);
+                dialogo.setVisible(true);
             }
         }
 
@@ -876,20 +886,22 @@ public class PaginaInicial extends javax.swing.JFrame {
                 trocarParaPainel(new PanelFinanceiro(this));
             }
             if (flag == 2) {
-                javax.swing.JOptionPane.showMessageDialog(
-                        this,
-                        "O utilizador não tem permissão para aceder a esta aba",
-                        "Erro",
-                        javax.swing.JOptionPane.ERROR_MESSAGE
-                );
+                PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+                String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
+                String top = "Erro";
+                String imagem = "src/main/java/Recursos/erro.png";
+                dialogo.setMensagem(mensagem, top, imagem);
+                dialogo.setVisible(true);
             }
             if (flag == 3) {
-                javax.swing.JOptionPane.showMessageDialog(
-                        this,
-                        "Trabalhador não encontrado!",
-                        "Erro",
-                        javax.swing.JOptionPane.ERROR_MESSAGE
-                );
+                PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+                String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
+                String top = "Erro";
+                String imagem = "src/main/java/Recursos/erro.png";
+                dialogo.setMensagem(mensagem, top, imagem);
+                dialogo.setVisible(true);
             }
         }
     }//GEN-LAST:event_imagemBotaoFinanceiroMousePressed
@@ -918,20 +930,22 @@ public class PaginaInicial extends javax.swing.JFrame {
                 trocarParaPainel(new PanelRecursos(this));
             }
             if (flag == 2) {
-                javax.swing.JOptionPane.showMessageDialog(
-                        this,
-                        "O utilizador não tem permissão para aceder a esta aba",
-                        "Erro",
-                        javax.swing.JOptionPane.ERROR_MESSAGE
-                );
+                PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+                String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
+                String top = "Erro";
+                String imagem = "src/main/java/Recursos/erro.png";
+                dialogo.setMensagem(mensagem, top, imagem);
+                dialogo.setVisible(true);
             }
             if (flag == 3) {
-                javax.swing.JOptionPane.showMessageDialog(
-                        this,
-                        "Trabalhador não encontrado!",
-                        "Erro",
-                        javax.swing.JOptionPane.ERROR_MESSAGE
-                );
+                PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+                String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
+                String top = "Erro";
+                String imagem = "src/main/java/Recursos/erro.png";
+                dialogo.setMensagem(mensagem, top, imagem);
+                dialogo.setVisible(true);
             }
         }
     }//GEN-LAST:event_imagemBotaoRecursosMousePressed
@@ -1028,13 +1042,53 @@ public class PaginaInicial extends javax.swing.JFrame {
         PanelFormularioFuncionario form = new PanelFormularioFuncionario(this);
         trocarParaPainel(form);
     }
+    
+    public void irParaFormularioEspacos() {
+        //Cria o painel do formulário
+        PanelFormularioEspacos form = new PanelFormularioEspacos(this);
+        trocarParaPainel(form);
+    }
+    
+    public void irParaFormularioEspacos(int idEspaco) {
+        //Cria o painel do formulário
+        PanelFormularioEspacos form = new PanelFormularioEspacos(this, idEspaco);
+        trocarParaPainel(form);
+    }
+    
+    public void irParaFormularioSalas() {
+        //Cria o painel do formulário
+        PanelFormularioSalas form = new PanelFormularioSalas(this);
+        trocarParaPainel(form);
+    }
+    
+    public void irParaFormularioRecurso(int tipoAba, Object recurso) {
+        // 1. Instancia ou recupera o painel do formulário
+        PanelFormularioRecursos form = new PanelFormularioRecursos(this);
 
-    public void irParaEditarFuncionario(String id, String nome, String emailPessoal, String emailEmpresa, String password, String categoria) {
-        
+        // 2. Configura o formulário ANTES de mostrar
+        form.prepararFormulario(tipoAba, recurso);
+
+        // 3. Troca o painel no contentor principal (ex: panelContent)
+        jPanel2.removeAll();
+        jPanel2.add(form);
+        jPanel2.revalidate();
+        jPanel2.repaint();
+    }
+    
+    public void irParaFormularioSalas(int idSala) {
+        //Cria o painel do formulário
+        PanelFormularioSalas form = new PanelFormularioSalas(this, idSala);
+        trocarParaPainel(form);
+    }
+
+    public void irParaEditarFuncionario(String id, String nome, String email, String categoria) {
+        //Cria o painel do formulário
         PanelFormularioFuncionario form = new PanelFormularioFuncionario(this);
 
-        form.preencherDadosParaEdicao(id, nome, emailPessoal, emailEmpresa, password, categoria);
-        
+        //Chama o método que criámos acima para preencher os dados e mudar o título
+        form.preencherDadosParaEdicao(id, nome, email, categoria);
+
+        //Troca o painel
         trocarParaPainel(form);
     }
 
@@ -1087,6 +1141,14 @@ public class PaginaInicial extends javax.swing.JFrame {
         //troca o painel
         trocarParaPainel(lista);
     }
+    
+    public void mostrarListaSalas() {
+        //Instancia o painel da lista
+        PanelSalas lista = new PanelSalas(this);
+
+        //troca o painel
+        trocarParaPainel(lista);
+    }
 
     public static void main(String args[]) {
 
@@ -1106,6 +1168,7 @@ public class PaginaInicial extends javax.swing.JFrame {
     private javax.swing.JLabel imagemBotaoRecursos;
     private javax.swing.JLabel imagemBotaoSalas;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

@@ -1,4 +1,5 @@
 package MODELS.DAO;
+import MODELS.CLASS.Lugar;
 import MODELS.CLASS.NaoConsumivel;
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,8 +12,29 @@ public class NaoConsumiveisDAO {
         nc.setIdRecurso(rs.getInt("IdRecurso"));
         nc.setNome(rs.getString("Nome"));
         nc.setPreco(rs.getDouble("Preco"));
+        nc.setQuantidade(rs.getInt("Quantidade"));
         nc.setPrecoAluguer(rs.getDouble("PrecoAluguer"));
         return nc;
+    }
+    
+    public NaoConsumivel getNaoConsumivelById(int id) {
+        String sql = "SELECT r.*, nc.PrecoAluguer FROM Recurso r " +
+                     "INNER JOIN NaoConsumiveis nc ON r.IdRecurso = nc.IdRecurso " +
+                     "WHERE r.IdRecurso = ?";
+
+        try (Connection conn = BaseDados.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToNaoConsumivel(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public List<NaoConsumivel> getAllNaoConsumiveis() {

@@ -1,4 +1,5 @@
 package MODELS.DAO;
+
 import MODELS.CLASS.Sala; // Assumindo esta classe existe
 import java.sql.*;
 import java.util.ArrayList;
@@ -21,8 +22,7 @@ public class SalaDAO {
     // ---- SELECT (uma sala) ----
     public Sala getSalaById(int id) {
         String sql = "SELECT * FROM Sala WHERE IdSala = ?";
-        try (Connection conn = BaseDados.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
@@ -59,9 +59,7 @@ public class SalaDAO {
         List<Sala> salas = new ArrayList<>();
         String sql = "SELECT * FROM Sala WHERE Ativo = 1";
 
-        try (Connection conn = BaseDados.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 salas.add(mapResultSetToSala(rs));
@@ -79,15 +77,14 @@ public class SalaDAO {
         String SQL = "INSERT INTO Sala (Nome, TipoEspaco, Lugares, Ocupada, TemLugares, Ativo) VALUES (?, ?, ?, ?, ?, ?)";
         long generatedId = -1;
 
-        try (Connection conn = BaseDados.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(SQL, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(SQL, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, sala.getNome());
             stmt.setInt(2, sala.getTipoEspaco());
             stmt.setInt(3, sala.getLugares());
             stmt.setBoolean(4, sala.isOcupada());
-            stmt.setBoolean(5, sala.isTemLugares()); // isTemLugares() para boolean
-            stmt.setBoolean(7, sala.isAtivo());
+            stmt.setBoolean(5, sala.isTemLugares());
+            stmt.setBoolean(6, sala.isAtivo());
 
             int affectedRows = stmt.executeUpdate();
 
@@ -95,7 +92,7 @@ public class SalaDAO {
                 try (ResultSet rs = stmt.getGeneratedKeys()) {
                     if (rs.next()) {
                         generatedId = rs.getLong(1);
-                        sala.setIdSala((int) generatedId); // Define o ID no objeto Java
+                        sala.setIdSala((int) generatedId);
                     }
                 }
             }
@@ -108,18 +105,15 @@ public class SalaDAO {
 
     // ---- UPDATE ----
     public boolean updateSala(Sala sala) {
-        String SQL = "UPDATE Sala SET Nome = ?, TipoEspaco = ?, Lugares = ?, Ocupada = ?, TemLugares = ?, Ativo = ? WHERE IdSala = ?";
+        String SQL = "UPDATE Sala SET Nome = ?, TipoEspaco = ?, Lugares = ?, TemLugares = ? WHERE IdSala = ?";
 
-        try (Connection conn = BaseDados.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
             stmt.setString(1, sala.getNome());
             stmt.setInt(2, sala.getTipoEspaco());
             stmt.setInt(3, sala.getLugares());
-            stmt.setBoolean(4, sala.isOcupada());
-            stmt.setBoolean(5, sala.isTemLugares());
-            stmt.setBoolean(7, sala.isAtivo());
-            stmt.setInt(8, sala.getIdSala());
+            stmt.setBoolean(4, sala.isTemLugares());
+            stmt.setInt(5, sala.getIdSala());
 
             return stmt.executeUpdate() > 0;
 
@@ -132,10 +126,29 @@ public class SalaDAO {
     // ---- SOFT DELETE (Desativa a categoria sem apagar os dados) ----
     public boolean deleteSala(long id) {
         String SQL = "UPDATE Sala SET Ativo = 0 WHERE IdSala = ?";
-        try (Connection conn = BaseDados.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(SQL)) {
             stmt.setLong(1, id);
             return stmt.executeUpdate() > 0;
-        } catch (SQLException e) { e.printStackTrace(); return false; }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean temEventosAssociados(int idSala) {
+        String SQL = "SELECT COUNT(*) FROM Evento WHERE Sala = ?";
+
+        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setInt(1, idSala);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

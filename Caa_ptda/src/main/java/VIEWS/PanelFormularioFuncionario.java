@@ -12,6 +12,8 @@ public class PanelFormularioFuncionario extends javax.swing.JPanel {
 
     private HomeController controller;
     private PaginaInicial janelaPrincipal;
+    private String top, mensagem, imagem;
+    java.awt.Window win = javax.swing.SwingUtilities.getWindowAncestor(this);
     
     private int idFuncionarioEditando = -1;
     
@@ -35,43 +37,52 @@ public class PanelFormularioFuncionario extends javax.swing.JPanel {
         }
     }
 
-    public void preencherDadosParaEdicao(String idStr, String nome, String emailPessoal, String emailEmpresa, String password, String categoria) {
+    public void preencherDadosParaEdicao(String idStr, String nomeIgnorado, String emailIgnorado, String catIgnorada) {
         try {
             int id = Integer.parseInt(idStr);
             this.idFuncionarioEditando = id;
             
-            txtID.setText(idStr);
-            txtNome.setText(nome);
-            txtEmailPessoal.setText(emailPessoal);
-            txtEmailEmpresa.setText(emailEmpresa);
-            txtPassword.setText(password); 
+            Trabalhador t = controller.buscarTrabalhadorPorId(id);
+            Credenciais c = controller.buscarCredenciaisPorId(id);
             
-            for (int i = 0; i < comboCategoria.getItemCount(); i++) {
-                CategoriaTrabalho cat = comboCategoria.getItemAt(i);
-                if (cat.getNome().equals(categoria)) {
-                    comboCategoria.setSelectedIndex(i);
-                    break;
+            if (t != null && c != null) {
+                txtID.setText(String.valueOf(t.getIdTrabalhador()));
+                txtNome.setText(t.getNome());
+                txtEmailPessoal.setText(t.getEmailPessoal());
+                
+                txtEmailEmpresa.setText(c.getEmail());
+                txtPassword.setText(c.getPassword()); 
+                               
+                this.atividadeAtual = t.isAtivo(); 
+                
+                int idCat = t.getCategoria();
+                for (int i = 0; i < comboCategoria.getItemCount(); i++) {
+                    CategoriaTrabalho cat = comboCategoria.getItemAt(i);
+                    if (cat.getIdCategoria() == idCat) {
+                        comboCategoria.setSelectedIndex(i);
+                        break;
+                    }
                 }
+                
+                btnGuardar.setText("Atualizar");
+                lblTitulo.setText("Editar Funcionário (ID: " + id + ")");
+                txtPassword.setToolTipText("Deixa vazio para manter a password atual");
+                
+            } else {
+                PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+
+                mensagem = "Erro ao buscar dados do funcionário na BD.";
+                top = "Erro";
+                imagem = "src/main/java/Recursos/erro.png";
+
+                dialogo.setMensagem(mensagem, top, imagem);
+                dialogo.setLocationRelativeTo(win);
+                dialogo.setVisible(true);
             }
-            
-            btnGuardar.setText("Atualizar");
-            lblTitulo.setText("Editar Funcionário (ID: " + id + ")");
             
         } catch (NumberFormatException e) {
             System.err.println("Erro ID inválido: " + e.getMessage());
         }
-    }
-
-    private void limparFormulario() {
-        idFuncionarioEditando = -1;
-        txtID.setText("");
-        txtNome.setText("");
-        txtEmailPessoal.setText("");
-        txtEmailEmpresa.setText("");
-        txtPassword.setText("");
-        btnGuardar.setText("Guardar");
-        lblTitulo.setText("Adicionar Funcionário");
-        if (comboCategoria.getItemCount() > 0) comboCategoria.setSelectedIndex(0);
     }
 
     @SuppressWarnings("unchecked")
@@ -208,42 +219,136 @@ public class PanelFormularioFuncionario extends javax.swing.JPanel {
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         String nome = txtNome.getText().trim();
-        String emailPessoal = txtEmailPessoal.getText().trim();
-        String emailEmpresa = txtEmailEmpresa.getText().trim();
-        String password = String.valueOf(txtPassword.getPassword()).trim();
+        String emailpessoal = txtEmailPessoal.getText().trim();
+        String emailempresa = txtEmailEmpresa.getText().trim();
+        String password = new String(txtPassword.getPassword()).trim();
         
-        CategoriaTrabalho catSelecionada = (CategoriaTrabalho) comboCategoria.getSelectedItem();
-        int idCategoria = 1; 
-        if (catSelecionada != null) {
-            idCategoria = catSelecionada.getIdCategoria();
+        boolean ativo = (idFuncionarioEditando > 0) ? this.atividadeAtual : true;
+
+        CategoriaTrabalho selecionada = (CategoriaTrabalho) comboCategoria.getSelectedItem();
+        int idCategoria = (selecionada != null) ? selecionada.getIdCategoria() : 1;
+
+        // 1. CAMPOS VAZIOS
+        if (nome.isEmpty() || emailpessoal.isEmpty() || emailempresa.isEmpty() || nome.equals("Nome Completo")) {
+            PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+
+            mensagem = "Todos os campos são obrigatórios.";
+            top = "Erro";
+            imagem = "src/main/java/Recursos/erro.png";
+
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setLocationRelativeTo(win);
+            dialogo.setVisible(true);
+            return;
+        }
+        
+        // 2. PASSWORD OBRIGATÓRIA (SÓ PARA NOVOS)
+        if (idFuncionarioEditando == -1 && password.isEmpty()) {
+            PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+
+            mensagem = "Password é obrigatória para o novo utilizador.";
+            top = "Erro";
+            imagem = "src/main/java/Recursos/erro.png";
+
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setLocationRelativeTo(win);
+            dialogo.setVisible(true);
+             return;
         }
 
-        if (nome.isEmpty() || emailPessoal.isEmpty() || emailEmpresa.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, 
-                "Todos os campos são obrigatórios.\nPor favor, preencha tudo.", 
-                "Erro de Validação", 
-                JOptionPane.ERROR_MESSAGE);
+        // 3. EMAILS IGUAIS
+        if (emailpessoal.equalsIgnoreCase(emailempresa)) {
+            PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+
+            mensagem = "O Email Pessoal não pode ser igual ao Email da Empresa.";
+            top = "Erro";
+            imagem = "src/main/java/Recursos/erro.png";
+
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setLocationRelativeTo(win);
+            dialogo.setVisible(true);
+            return;
+        }
+        
+        // 4. DUPLICIDADE EMAIL EMPRESA
+        if (controller.verificarDuplicidadeEmail(emailempresa, idFuncionarioEditando)) {
+            PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+
+            mensagem = "O email de empresa já está em uso por outro funcionário.";
+            top = "Erro";
+            imagem = "src/main/java/Recursos/erro.png";
+
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setLocationRelativeTo(win);
+            dialogo.setVisible(true);
             return;
         }
 
-        boolean sucesso = false;
+        // 5. DUPLICIDADE EMAIL PESSOAL (NOVO!)
+        if (controller.verificarDuplicidadeEmailPessoal(emailpessoal, idFuncionarioEditando)) {
+            PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
 
-        if (idFuncionarioEditando == -1) {
-            sucesso = controller.criarFuncionario(nome, emailPessoal, emailEmpresa, password, idCategoria, true);
+            mensagem = "O email pessoal já está registado noutro funcionário.";
+            top = "Erro";
+            imagem = "src/main/java/Recursos/erro.png";
+
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setLocationRelativeTo(win);
+            dialogo.setVisible(true);
+            return;
+        }
+
+        // --- GUARDAR ---
+        boolean sucesso;
+        
+        if (idFuncionarioEditando > 0) {
+            // EDITAR
+            System.out.println("A atualizar funcionário ID: " + idFuncionarioEditando);
+            sucesso = controller.editarFuncionario(
+                    idFuncionarioEditando, nome, emailpessoal, emailempresa, password, idCategoria, ativo
+            );
         } else {
-            sucesso = controller.editarFuncionario(idFuncionarioEditando, nome, emailPessoal, emailEmpresa, password, idCategoria, true);
+            // CRIAR
+            System.out.println("A criar novo funcionário");
+            sucesso = controller.criarFuncionario(
+                    nome, emailpessoal, emailempresa, password, idCategoria, ativo
+            );
         }
 
         if (sucesso) {
-            JOptionPane.showMessageDialog(this, "Funcionário guardado com sucesso!");
-            limparFormulario();
+            PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+
+            mensagem = "Operação realizada com sucesso!";
+            top = "Informação";
+            imagem = "src/main/java/Recursos/info.png";
+
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setLocationRelativeTo(win);
+            dialogo.setVisible(true);
+            // Limpar formulário se necessário, ou voltar
             if (janelaPrincipal != null) {
-                janelaPrincipal.mostrarListaFuncionarios();
+                janelaPrincipal.mostrarListaFuncionarios(); 
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Erro ao guardar funcionário.\nVerifique se o email já existe.");
+            PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+
+            mensagem = "Erro ao guardar dados na base de dados.";
+            top = "Erro";
+            imagem = "src/main/java/Recursos/erro.png";
+
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setLocationRelativeTo(win);
+            dialogo.setVisible(true);
         }
     }//GEN-LAST:event_btnGuardarActionPerformed
+
+        
+    
+
+            
+
+       
+
 
     private void txtNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNomeActionPerformed
         // TODO add your handling code here:
@@ -251,8 +356,7 @@ public class PanelFormularioFuncionario extends javax.swing.JPanel {
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
        if (janelaPrincipal != null) {
-           limparFormulario();
-           janelaPrincipal.mostrarListaFuncionarios();
+            janelaPrincipal.mostrarListaFuncionarios();
         }
     }//GEN-LAST:event_btnCancelarActionPerformed
 

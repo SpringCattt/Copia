@@ -199,11 +199,13 @@ public class Login extends javax.swing.JFrame {
         String password = new String(txtPassword.getPassword());
 
         if (email.isEmpty() || password.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                    "Por favor, preencha o email e a password.",
-                    "Aviso",
-                    javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
+            PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+            String mensagem = "Por favor, preencha o email e a password.";
+            String top = "Aviso";
+            String imagem = "src/main/java/Recursos/aviso.png";
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setVisible(true);
         }
 
         Integer idTrabalhador = controller.efetuarLogin(email, password);
@@ -216,16 +218,22 @@ public class Login extends javax.swing.JFrame {
                 janela.setVisible(true);
                 this.dispose();
             } else {
-                javax.swing.JOptionPane.showMessageDialog(this,
-                    "Esta conta encontra-se desativada!",
-                    "Acesso bloqueado",
-                    javax.swing.JOptionPane.WARNING_MESSAGE);
+                PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+                String mensagem = "Esta conta encontra-se desativada!";
+                String top = "Aviso";
+                String imagem = "src/main/java/Recursos/aviso.png";
+                dialogo.setMensagem(mensagem, top, imagem);
+                dialogo.setVisible(true);
             }
         } else {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                    "Email/Password incorretos",
-                    "Erro na autenticação",
-                    javax.swing.JOptionPane.WARNING_MESSAGE);
+            PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+            String mensagem = "Email/Password incorretos.";
+            String top = "Erro";
+            String imagem = "src/main/java/Recursos/erro.png";
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setVisible(true);
         }
 
     }//GEN-LAST:event_btnLoginActionPerformed

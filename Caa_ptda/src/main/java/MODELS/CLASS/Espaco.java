@@ -37,6 +37,11 @@ public class Espaco {
         this.Ativo = Ativo;
     }
     
+    @Override
+    public String toString() {
+        return this.getNome();
+    }
+    
     /* 
      * Funções do Espaço
      */

@@ -12,7 +12,6 @@ public class Tarefa {
     private int IdTrabalhador;
     private int Evento;
     private boolean Estado;
-    private int Categoria;
     private boolean Ativo;
 
     /* 
@@ -64,14 +63,6 @@ public class Tarefa {
 
     public void setEstado(boolean Estado) {
         this.Estado = Estado;
-    }
-
-    public int getCategoria() {
-        return Categoria;
-    }
-
-    public void setCategoria(int Categoria) {
-        this.Categoria = Categoria;
     }
 
     public boolean isAtivo() {

@@ -10,6 +10,8 @@ package VIEWS;
  */
 public class PanelFormularioFinanceiro extends javax.swing.JPanel {
     private PaginaInicial janelaPrincipal;
+    private String top, mensagem, imagem;
+    java.awt.Window win = javax.swing.SwingUtilities.getWindowAncestor(this);
     /**
      * Creates new form PanelFormularioFinanceiro
      */

@@ -11,12 +11,16 @@ public class Sala {
     private int Lugares;
     private boolean Ocupada;
     private boolean TemLugares;
-    private boolean Estado;
     private boolean Ativo;
 
     /* 
      * Getters e Setters
      */
+
+    /* 
+     * Funções da Sala
+     */
+
     public int getIdSala() {
         return IdSala;
     }
@@ -65,14 +69,6 @@ public class Sala {
         this.TemLugares = TemLugares;
     }
 
-    public boolean isEstado() {
-        return Estado;
-    }
-
-    public void setEstado(boolean Estado) {
-        this.Estado = Estado;
-    }
-
     public boolean isAtivo() {
         return Ativo;
     }
@@ -80,8 +76,4 @@ public class Sala {
     public void setAtivo(boolean Ativo) {
         this.Ativo = Ativo;
     }
-
-    /* 
-     * Funções da Sala
-     */
 }

@@ -154,4 +154,31 @@ public class TrabalhadorDAO {
         t.setAtivo(rs.getBoolean("Ativo"));
         return t;
     }
-}
+    
+    public boolean existeEmail(String email) {
+        String sql = "SELECT COUNT(*) FROM Trabalhador WHERE Email = ?";
+        try (Connection conn = BaseDados.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean existeEmailIgnorandoId(String email, int idIgnorar) {
+        String sql = "SELECT COUNT(*) FROM Trabalhador WHERE Email = ? AND IdTrabalhador != ?";
+        try (Connection conn = BaseDados.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            stmt.setInt(2, idIgnorar);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+} 

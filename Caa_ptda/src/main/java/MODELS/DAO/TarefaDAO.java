@@ -14,7 +14,6 @@ public class TarefaDAO {
         t.setIdTrabalhador(rs.getInt("TrabalhadorId")); // Chave estrangeira
         t.setEvento(rs.getInt("Evento")); // Chave estrangeira
         t.setEstado(rs.getBoolean("Estado")); // Mapeado para boolean
-        t.setCategoria(rs.getInt("CategoriaId")); // Chave estrangeira
         t.setAtivo(rs.getBoolean("Ativo"));
         return t;
     }
@@ -77,7 +76,7 @@ public class TarefaDAO {
 
     // ---- INSERT ----
     public long insertTarefa(Tarefa tarefa) {
-        String SQL = "INSERT INTO Tarefa (Titulo, Descricao, TrabalhadorId, Evento, Estado, CategoriaId, Ativo) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String SQL = "INSERT INTO Tarefa (Titulo, Descricao, TrabalhadorId, Evento, Estado, Ativo) VALUES (?, ?, ?, ?, ?, ?)";
         long generatedId = -1;
 
         try (Connection conn = BaseDados.getConnection();
@@ -88,7 +87,6 @@ public class TarefaDAO {
             stmt.setInt(3, tarefa.getIdTrabalhador());
             stmt.setInt(4, tarefa.getEvento());
             stmt.setBoolean(5, tarefa.isEstado()); // isEstado() para boolean
-            stmt.setInt(6, tarefa.getCategoria());
             stmt.setBoolean(7, tarefa.isAtivo());
 
             int affectedRows = stmt.executeUpdate();
@@ -110,7 +108,7 @@ public class TarefaDAO {
 
     // ---- UPDATE ----
     public boolean updateTarefa(Tarefa tarefa) {
-        String SQL = "UPDATE Tarefa SET Titulo = ?, Descricao = ?, TrabalhadorId = ?, Evento = ?, Estado = ?, CategoriaId = ?, Ativo = ? WHERE IdTarefa = ?";
+        String SQL = "UPDATE Tarefa SET Titulo = ?, Descricao = ?, TrabalhadorId = ?, Evento = ?, Estado = ?, Ativo = ? WHERE IdTarefa = ?";
 
         try (Connection conn = BaseDados.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
@@ -120,7 +118,6 @@ public class TarefaDAO {
             stmt.setInt(3, tarefa.getIdTrabalhador());
             stmt.setInt(4, tarefa.getEvento());
             stmt.setBoolean(5, tarefa.isEstado());
-            stmt.setInt(6, tarefa.getCategoria());
             stmt.setBoolean(7, tarefa.isAtivo());
             stmt.setInt(8, tarefa.getIdTarefa());
 

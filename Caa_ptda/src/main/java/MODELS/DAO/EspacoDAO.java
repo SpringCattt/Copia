@@ -1,4 +1,5 @@
 package MODELS.DAO;
+
 import MODELS.CLASS.Espaco;
 import java.sql.*;
 import java.util.ArrayList;
@@ -9,8 +10,7 @@ public class EspacoDAO {
     // ---- SELECT (one bilhete) ----
     public Espaco getEspacoById(int id) {
         String sql = "SELECT * FROM Espaco WHERE idEspaco = ?";
-        try (Connection conn = BaseDados.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
@@ -51,9 +51,7 @@ public class EspacoDAO {
         List<Espaco> espacos = new ArrayList<>();
         String sql = "SELECT * FROM Espaco WHERE Ativo = 1";
 
-        try (Connection conn = BaseDados.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 Espaco e = new Espaco();
@@ -74,8 +72,7 @@ public class EspacoDAO {
         String SQL = "INSERT INTO Espaco (Nome, Ativo) VALUES (?, ?)";
         int generatedId = -1;
 
-        try (Connection conn = BaseDados.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(SQL, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(SQL, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, espaco.getNome());
             stmt.setBoolean(2, espaco.isAtivo());
@@ -99,14 +96,12 @@ public class EspacoDAO {
 
     // ---- UPDATE ---- 
     public boolean updateEspaco(Espaco espaco) {
-        String SQL = "UPDATE Espaco SET Nome = ?, Ativo = ? WHERE IdEspaco = ?";
+        String SQL = "UPDATE Espaco SET Nome = ? WHERE IdEspaco = ?";
 
-        try (Connection conn = BaseDados.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
             stmt.setString(1, espaco.getNome());
-            stmt.setBoolean(2, espaco.isAtivo());
-            stmt.setInt(3, espaco.getIdEspaco());
+            stmt.setInt(2, espaco.getIdEspaco());
 
             return stmt.executeUpdate() > 0;
 
@@ -114,5 +109,22 @@ public class EspacoDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public boolean isEspacoEmUso(int idEspaco) {
+        String SQL = "SELECT COUNT(*) FROM Sala WHERE TipoEspaco = ?";
+
+        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setInt(1, idEspaco);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

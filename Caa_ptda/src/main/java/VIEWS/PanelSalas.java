@@ -1,20 +1,33 @@
 package VIEWS;
 
+import CONTROLLERS.HomeController;
+import MODELS.CLASS.Espaco;
+import MODELS.CLASS.Sala;
 import java.awt.Color;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 public class PanelSalas extends javax.swing.JPanel {
 
     private PaginaInicial janelaPrincipal;
+    private HomeController controller;
+    private String top, mensagem, imagem;
+    java.awt.Window win = javax.swing.SwingUtilities.getWindowAncestor(this);
 
     /**
      * Creates new form PanelSalas
      */
     public PanelSalas(PaginaInicial janelaPrincipal) {
         this.janelaPrincipal = janelaPrincipal;
+        this.controller = new HomeController();
         initComponents();
-
+        carregarDadosTabelaEspacos();
+        carregarDadosTabelaSalas();
         btnCriarSala.setVisible(true);
         btnCriarEspaco.setVisible(false);
+        btnEditarSala.setVisible(true);
+        btnEditarEspaco.setVisible(false);
         btnSalas.setBackground(new Color(51, 121, 232));
         btnSalas.setForeground(new Color(255, 255, 255));
         btnEspacos.setBackground(new Color(255, 255, 255));
@@ -41,6 +54,9 @@ public class PanelSalas extends javax.swing.JPanel {
         jTextField1 = new javax.swing.JTextField();
         btnCriarSala = new javax.swing.JButton();
         btnCriarEspaco = new javax.swing.JButton();
+        btnDesativarSala = new javax.swing.JButton();
+        btnEditarSala = new javax.swing.JButton();
+        btnEditarEspaco = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(232, 235, 238));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -50,11 +66,11 @@ public class PanelSalas extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID", "Nome", "Tipo", "Capacidade", "Ocupada", "TemLugares", "Estado"
+                "ID", "Nome", "Tipo", "Capacidade", "Ocupação", "TemLugares"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Boolean.class, java.lang.Boolean.class, java.lang.Integer.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -135,11 +151,46 @@ public class PanelSalas extends javax.swing.JPanel {
             }
         });
         add(btnCriarEspaco, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 480, 190, 40));
+
+        btnDesativarSala.setBackground(new java.awt.Color(51, 121, 232));
+        btnDesativarSala.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnDesativarSala.setForeground(new java.awt.Color(255, 255, 255));
+        btnDesativarSala.setText("Desativar Sala");
+        btnDesativarSala.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDesativarSalaActionPerformed(evt);
+            }
+        });
+        add(btnDesativarSala, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 480, 150, 40));
+
+        btnEditarSala.setBackground(new java.awt.Color(51, 121, 232));
+        btnEditarSala.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnEditarSala.setForeground(new java.awt.Color(255, 255, 255));
+        btnEditarSala.setText("Editar Sala");
+        btnEditarSala.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarSalaActionPerformed(evt);
+            }
+        });
+        add(btnEditarSala, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 480, 150, 40));
+
+        btnEditarEspaco.setBackground(new java.awt.Color(51, 121, 232));
+        btnEditarEspaco.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnEditarEspaco.setForeground(new java.awt.Color(255, 255, 255));
+        btnEditarEspaco.setText("Editar Espaco");
+        btnEditarEspaco.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarEspacoActionPerformed(evt);
+            }
+        });
+        add(btnEditarEspaco, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 480, 190, 40));
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSalasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalasActionPerformed
         btnCriarSala.setVisible(true);
         btnCriarEspaco.setVisible(false);
+        btnEditarSala.setVisible(true);
+        btnEditarEspaco.setVisible(false);
         btnSalas.setBackground(new Color(51, 121, 232));
         btnSalas.setForeground(new Color(255, 255, 255));
         btnEspacos.setBackground(new Color(255, 255, 255));
@@ -153,12 +204,16 @@ public class PanelSalas extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void btnCriarSalaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCriarSalaActionPerformed
-        // TODO add your handling code here:
+        if (janelaPrincipal != null) {
+            janelaPrincipal.irParaFormularioSalas();
+        }
     }//GEN-LAST:event_btnCriarSalaActionPerformed
 
     private void btnEspacosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEspacosActionPerformed
         btnCriarSala.setVisible(false);
         btnCriarEspaco.setVisible(true);
+        btnEditarSala.setVisible(false);
+        btnEditarEspaco.setVisible(true);
         btnSalas.setBackground(new Color(255, 255, 255));
         btnSalas.setForeground(new Color(51, 121, 232));
         btnEspacos.setBackground(new Color(51, 121, 232));
@@ -168,15 +223,156 @@ public class PanelSalas extends javax.swing.JPanel {
     }//GEN-LAST:event_btnEspacosActionPerformed
 
     private void btnCriarEspacoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCriarEspacoActionPerformed
-        // TODO add your handling code here:
+        if (janelaPrincipal != null) {
+            janelaPrincipal.irParaFormularioEspacos();
+        }
     }//GEN-LAST:event_btnCriarEspacoActionPerformed
 
+    private void btnEditarSalaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarSalaActionPerformed
+        PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+        int linhaSelecionada = TabelaSalas.getSelectedRow();
+
+        if (linhaSelecionada == -1) {
+            mensagem = "Nenhuma sala selecionada";
+            top = "Erro";
+            imagem = "src/main/java/Recursos/erro.png";
+
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setLocationRelativeTo(win);
+            dialogo.setVisible(true);
+            return;
+        }
+
+        int modelRow = TabelaSalas.convertRowIndexToModel(linhaSelecionada);
+
+        Object valorId = TabelaSalas.getModel().getValueAt(modelRow, 0);
+
+        int idSala = (int) valorId;
+
+        if (janelaPrincipal != null) {
+            janelaPrincipal.irParaFormularioSalas(idSala);
+        }
+
+    }//GEN-LAST:event_btnEditarSalaActionPerformed
+
+    private void btnEditarEspacoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarEspacoActionPerformed
+        PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+        int linhaSelecionada = TabelaEspacos.getSelectedRow();
+
+        if (linhaSelecionada == -1) {
+            mensagem = "Nenhuma sala selecionada";
+            top = "Erro";
+            imagem = "src/main/java/Recursos/erro.png";
+
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setLocationRelativeTo(win);
+            dialogo.setVisible(true);
+            return;
+        }
+
+        int modelRow = TabelaEspacos.convertRowIndexToModel(linhaSelecionada);
+
+        Object valorId = TabelaEspacos.getModel().getValueAt(modelRow, 0);
+
+        int idEspaco = (int) valorId;
+
+        if (janelaPrincipal != null) {
+            janelaPrincipal.irParaFormularioEspacos(idEspaco);
+        }
+    }//GEN-LAST:event_btnEditarEspacoActionPerformed
+
+    private void btnDesativarSalaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDesativarSalaActionPerformed
+        PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+        int linhaSelecionada = TabelaSalas.getSelectedRow();
+
+        if (linhaSelecionada == -1) {
+            mensagem = "Nenhuma sala selecionada";
+            top = "Erro";
+            imagem = "src/main/java/Recursos/erro.png";
+
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setLocationRelativeTo(win);
+            dialogo.setVisible(true);
+            return;
+        }
+
+        int modelRow = TabelaSalas.convertRowIndexToModel(linhaSelecionada);
+
+        Object valorId = TabelaSalas.getModel().getValueAt(modelRow, 0);
+
+        int idSala = (int) valorId;
+
+        if (controller.podeSerEliminada(idSala)) {
+
+            mensagem = "Impossível eliminar: Esta sala possui eventos associados!";
+            top = "Bloqueio de Segurança";
+            imagem = "src/main/java/Recursos/aviso.png";
+
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setLocationRelativeTo(win);
+            dialogo.setVisible(true);
+            return;
+        }
+
+        int confirmacao = JOptionPane.showConfirmDialog(this, "Deseja desativar esta sala?");
+        if (confirmacao == JOptionPane.YES_OPTION) {
+            if (controller.eliminarSala(idSala)) {
+                carregarDadosTabelaSalas();
+            } else {
+                mensagem = "Erro ao desativar sala.";
+                top = "Erro";
+                imagem = "src/main/java/Recursos/aviso.png";
+
+                dialogo.setMensagem(mensagem, top, imagem);
+                dialogo.setLocationRelativeTo(win);
+                dialogo.setVisible(true);
+                return;
+            }
+        }
+    }//GEN-LAST:event_btnDesativarSalaActionPerformed
+
+    private void carregarDadosTabelaEspacos() {
+        DefaultTableModel modelo = (DefaultTableModel) TabelaEspacos.getModel();
+        modelo.setRowCount(0);
+
+        List<Espaco> lista = controller.obterTodosEspacos();
+
+        for (Espaco e : lista) {
+            modelo.addRow(new Object[]{
+                e.getIdEspaco(),
+                e.getNome()
+            });
+        }
+    }
+
+    private void carregarDadosTabelaSalas() {
+        DefaultTableModel modelo = (DefaultTableModel) TabelaSalas.getModel();
+        modelo.setRowCount(0);
+
+        List<Sala> lista = controller.listarTodasSalasAtivas();
+
+        for (Sala s : lista) {
+            modelo.addRow(new Object[]{
+                s.getIdSala(),
+                s.getNome(),
+                s.getTipoEspaco(),
+                s.getLugares(),
+                // Se for true aparece "Ocupada", se for false aparece "Livre"
+                s.isOcupada() ? "Ocupada" : "Livre",
+                // Se for true aparece "Sim", se for false aparece "Não"
+                s.isTemLugares() ? "Sim" : "Não"
+            });
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable TabelaEspacos;
     private javax.swing.JTable TabelaSalas;
     private javax.swing.JButton btnCriarEspaco;
     private javax.swing.JButton btnCriarSala;
+    private javax.swing.JButton btnDesativarSala;
+    private javax.swing.JButton btnEditarEspaco;
+    private javax.swing.JButton btnEditarSala;
     private javax.swing.JButton btnEspacos;
     private javax.swing.JButton btnSalas;
     private javax.swing.JScrollPane jScrollPane1;

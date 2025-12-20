@@ -10,8 +10,7 @@ public class RecursoDAO {
         Recurso r = new Recurso();
         r.setIdRecurso(rs.getInt("IdRecurso"));
         r.setNome(rs.getString("Nome"));
-        r.setPreco(rs.getDouble("Preco")); // Assumindo Preco é double
-        r.setCategoria(rs.getInt("Categoria"));
+        r.setPreco(rs.getDouble("Preco"));
         r.setQuantidade(rs.getInt("Quantidade"));
         r.setAtivo(rs.getBoolean("Ativo"));
         return r;
@@ -75,7 +74,7 @@ public class RecursoDAO {
 
     // ---- INSERT ----
     public long insertRecurso(Recurso recurso) {
-        String SQL = "INSERT INTO Recurso (Nome, Preco, Categoria, Quantidade, Ativo) VALUES (?, ?, ?, ?, ?)";
+        String SQL = "INSERT INTO Recurso (Nome, Preco, Quantidade, Ativo) VALUES (?, ?, ?, ?)";
         long generatedId = -1;
 
         try (Connection conn = BaseDados.getConnection();
@@ -83,9 +82,8 @@ public class RecursoDAO {
 
             stmt.setString(1, recurso.getNome());
             stmt.setDouble(2, recurso.getPreco());
-            stmt.setInt(3, recurso.getCategoria());
-            stmt.setInt(4, recurso.getQuantidade());
-            stmt.setBoolean(5, recurso.isAtivo());
+            stmt.setInt(3, recurso.getQuantidade());
+            stmt.setBoolean(4, recurso.isAtivo());
 
             int affectedRows = stmt.executeUpdate();
 
@@ -106,17 +104,16 @@ public class RecursoDAO {
 
     // ---- UPDATE ----
     public boolean updateRecurso(Recurso recurso) {
-        String SQL = "UPDATE Recurso SET Nome = ?, Preco = ?, Categoria = ?, Quantidade = ?, Ativo = ? WHERE IdRecurso = ?";
+        String SQL = "UPDATE Recurso SET Nome = ?, Preco = ?, Quantidade = ?, Ativo = ? WHERE IdRecurso = ?";
 
         try (Connection conn = BaseDados.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
             stmt.setString(1, recurso.getNome());
             stmt.setDouble(2, recurso.getPreco());
-            stmt.setInt(3, recurso.getCategoria());
-            stmt.setInt(4, recurso.getQuantidade());
-            stmt.setBoolean(5, recurso.isAtivo());
-            stmt.setInt(6, recurso.getIdRecurso());
+            stmt.setInt(2, recurso.getQuantidade());
+            stmt.setBoolean(3, recurso.isAtivo());
+            stmt.setInt(4, recurso.getIdRecurso());
 
             return stmt.executeUpdate() > 0;
 

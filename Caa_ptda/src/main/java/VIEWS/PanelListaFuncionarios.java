@@ -11,6 +11,9 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
 
     private PaginaInicial janelaPrincipal;
     private HomeController controller;
+    private String top, mensagem, imagem;
+    private boolean clicouSim;
+    java.awt.Window win = javax.swing.SwingUtilities.getWindowAncestor(this);
 
     public PanelListaFuncionarios(PaginaInicial paginaInicial) {
         this.janelaPrincipal = paginaInicial;
@@ -57,7 +60,7 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
     
     private void carregarTabela(List<Trabalhador> listaParaMostrar) {
         DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();
-        modelo.setRowCount(0); 
+        modelo.setRowCount(0); // Limpiar tabla
         
         List<Trabalhador> lista;
         if (listaParaMostrar != null) {
@@ -101,7 +104,7 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
         jTextField1 = new javax.swing.JTextField();
         btnCriar = new javax.swing.JButton();
         btnEditar = new javax.swing.JButton();
-        btnEditar1 = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(232, 235, 238));
 
@@ -131,6 +134,7 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
+        jTable1.setShowGrid(false);
         jScrollPane1.setViewportView(jTable1);
 
         jTextField1.setText("Pesquisar");
@@ -160,13 +164,13 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
             }
         });
 
-        btnEditar1.setBackground(new java.awt.Color(51, 121, 232));
-        btnEditar1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnEditar1.setForeground(new java.awt.Color(255, 255, 255));
-        btnEditar1.setText("Eliminar");
-        btnEditar1.addActionListener(new java.awt.event.ActionListener() {
+        btnEliminar.setBackground(new java.awt.Color(51, 121, 232));
+        btnEliminar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnEliminar.setForeground(new java.awt.Color(255, 255, 255));
+        btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditar1ActionPerformed(evt);
+                btnEliminarActionPerformed(evt);
             }
         });
 
@@ -178,7 +182,7 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
                 .addGap(45, 45, 45)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnEditar1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -199,7 +203,7 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCriar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEditar1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(22, 22, 22))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -224,61 +228,92 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         int linhaSelecionada = jTable1.getSelectedRow();
         if (linhaSelecionada == -1) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, selecione um funcionário.");
+            PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+
+            mensagem = "Por favor, selecione um funcionário para editar.";
+            top = "Aviso";
+            imagem = "src/main/java/Recursos/aviso.png";
+
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setLocationRelativeTo(win);
+            dialogo.setVisible(true);
             return;
         }
-
-        String idStr = jTable1.getValueAt(linhaSelecionada, 0).toString();
+        
+        String id = jTable1.getValueAt(linhaSelecionada, 0).toString();
         String nome = jTable1.getValueAt(linhaSelecionada, 1).toString();
-        String emailPessoal = jTable1.getValueAt(linhaSelecionada, 2).toString();
+        String email = jTable1.getValueAt(linhaSelecionada, 2).toString();
         String categoria = jTable1.getValueAt(linhaSelecionada, 3).toString();
-        
-        int idInt = Integer.parseInt(idStr);
-        MODELS.CLASS.Credenciais cred = controller.buscarCredenciaisPorId(idInt);
-        
-        String emailEmpresa = "";
-        String password = "";
-
-        if (cred != null) {
-            emailEmpresa = cred.getEmail();
-            password = cred.getPassword();
-        }
 
         if (janelaPrincipal != null) {
-            janelaPrincipal.irParaEditarFuncionario(idStr, nome, emailPessoal, emailEmpresa, password, categoria);
+            janelaPrincipal.irParaEditarFuncionario(id, nome, email, categoria);
         }
     }//GEN-LAST:event_btnEditarActionPerformed
 
-    private void btnEditar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditar1ActionPerformed
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         int linhaSelecionada = jTable1.getSelectedRow();
         if (linhaSelecionada == -1) {
-            JOptionPane.showMessageDialog(this, "Por favor, selecione um funcionário para eliminar.");
+            PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+
+            mensagem = "Por favor, selecione um funcionário para eliminar.";
+            top = "Aviso";
+            imagem = "src/main/java/Recursos/aviso.png";
+
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setLocationRelativeTo(win);
+            dialogo.setVisible(true);
             return;
         }
 
         int id = (int) jTable1.getValueAt(linhaSelecionada, 0);
         String nome = (String) jTable1.getValueAt(linhaSelecionada, 1);
 
-        int resposta = JOptionPane.showConfirmDialog(this, 
-                "Tem a certeza que deseja eliminar o funcionário " + nome + "?", 
-                "Confirmar", JOptionPane.YES_NO_OPTION);
+        PaginaOpcao dialog = new PaginaOpcao((java.awt.Frame) win, true);
+        
+        top = "Atenção!";
+        mensagem = "Tem a certeza que deseja eliminar funcionário?";
+        dialog.setMensagem(mensagem, top);
+        dialog.setLocationRelativeTo(win);
+        dialog.setVisible(true); 
 
-        if (resposta == JOptionPane.YES_OPTION) {
+        if (dialog.clicouSim()) {
+            clicouSim = true;
+        } else {
+            clicouSim = false;
+        }
+        
+        if (clicouSim == true) {
             if (controller.eliminarFuncionario(id)) {
-                JOptionPane.showMessageDialog(this, "Funcionário eliminado com sucesso.");
+                PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+
+                mensagem = "Funcionário eliminado com sucesso.";
+                top = "Informação";
+                imagem = "src/main/java/Recursos/info.png";
+
+                dialogo.setMensagem(mensagem, top, imagem);
+                dialogo.setLocationRelativeTo(win);
+                dialogo.setVisible(true);
                 
                 carregarTabela(null); 
             } else {
-                JOptionPane.showMessageDialog(this, "Erro ao eliminar.");
+                PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+
+                mensagem = "Erro ao eliminar funcionário.";
+                top = "Erro";
+                imagem = "src/main/java/Recursos/erro.png";
+
+                dialogo.setMensagem(mensagem, top, imagem);
+                dialogo.setLocationRelativeTo(win);
+                dialogo.setVisible(true);
             }
         }
-    }//GEN-LAST:event_btnEditar1ActionPerformed
+    }//GEN-LAST:event_btnEliminarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCriar;
     private javax.swing.JButton btnEditar;
-    private javax.swing.JButton btnEditar1;
+    private javax.swing.JButton btnEliminar;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;

@@ -8,7 +8,6 @@ public class Recurso {
     private int IdRecurso;
     private String Nome;
     private double Preco;
-    private int Categoria;
     private int Quantidade;
     private boolean Ativo;
     
@@ -38,14 +37,6 @@ public class Recurso {
 
     public void setPreco(double Preco) {
         this.Preco = Preco;
-    }
-
-    public int getCategoria() {
-        return Categoria;
-    }
-
-    public void setCategoria(int Categoria) {
-        this.Categoria = Categoria;
     }
 
     public int getQuantidade() {

@@ -75,14 +75,18 @@ public class EntrarBD extends javax.swing.JFrame {
         panelPagina.setBackground(new java.awt.Color(255, 255, 255));
         panelPagina.setAlignmentX(1.0F);
         panelPagina.setAlignmentY(1.0F);
+        panelPagina.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         labelUser.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         labelUser.setText("USER");
+        panelPagina.add(labelUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(49, 80, 37, -1));
 
         labelPassword.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         labelPassword.setText("PASSWORD");
+        panelPagina.add(labelPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(49, 158, 88, -1));
 
         tfUser.setText("PTDA25_02");
+        panelPagina.add(tfUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(49, 106, 200, 34));
 
         panelTop.setBackground(new java.awt.Color(97, 99, 103));
         panelTop.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -95,6 +99,7 @@ public class EntrarBD extends javax.swing.JFrame {
                 panelTopMousePressed(evt);
             }
         });
+        panelTop.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         panelMinimizar.setBackground(new java.awt.Color(97, 99, 103));
         panelMinimizar.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -130,6 +135,8 @@ public class EntrarBD extends javax.swing.JFrame {
         });
         panelMinimizar.add(labelMinimizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(15, 15, 20, 20));
 
+        panelTop.add(panelMinimizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(198, 0, 50, 50));
+
         panelFechar.setBackground(new java.awt.Color(97, 99, 103));
         panelFechar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -164,6 +171,8 @@ public class EntrarBD extends javax.swing.JFrame {
         });
         panelFechar.add(labelFechar, new org.netbeans.lib.awtextra.AbsoluteConstraints(15, 15, 20, 20));
 
+        panelTop.add(panelFechar, new org.netbeans.lib.awtextra.AbsoluteConstraints(248, 0, 50, 50));
+
         labelTop.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         labelTop.setForeground(new java.awt.Color(255, 255, 255));
         labelTop.setText("BASE DE DADOS");
@@ -177,33 +186,12 @@ public class EntrarBD extends javax.swing.JFrame {
                 panelTopMousePressed(evt);
             }
         });
+        panelTop.add(labelTop, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 6, 135, 38));
 
-        javax.swing.GroupLayout panelTopLayout = new javax.swing.GroupLayout(panelTop);
-        panelTop.setLayout(panelTopLayout);
-        panelTopLayout.setHorizontalGroup(
-            panelTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelTopLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(labelTop, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
-                .addComponent(panelMinimizar, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(panelFechar, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-        panelTopLayout.setVerticalGroup(
-            panelTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelTopLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(panelTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelMinimizar, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(panelFechar, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelTopLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(labelTop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
+        panelPagina.add(panelTop, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         tfPassword.setText("Jkis$985x");
+        panelPagina.add(tfPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(49, 184, 200, 34));
 
         panelBotaoEntrar.setBackground(new java.awt.Color(51, 121, 232));
         panelBotaoEntrar.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -220,6 +208,7 @@ public class EntrarBD extends javax.swing.JFrame {
                 panelBotaoEntrarMouseReleased(evt);
             }
         });
+        panelBotaoEntrar.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         labelBotaoEntrar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         labelBotaoEntrar.setForeground(new java.awt.Color(255, 255, 255));
@@ -245,55 +234,9 @@ public class EntrarBD extends javax.swing.JFrame {
                 panelBotaoEntrarMouseReleased(evt);
             }
         });
+        panelBotaoEntrar.add(labelBotaoEntrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 4, 188, 40));
 
-        javax.swing.GroupLayout panelBotaoEntrarLayout = new javax.swing.GroupLayout(panelBotaoEntrar);
-        panelBotaoEntrar.setLayout(panelBotaoEntrarLayout);
-        panelBotaoEntrarLayout.setHorizontalGroup(
-            panelBotaoEntrarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelBotaoEntrarLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(labelBotaoEntrar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        panelBotaoEntrarLayout.setVerticalGroup(
-            panelBotaoEntrarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelBotaoEntrarLayout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(labelBotaoEntrar)
-                .addContainerGap(14, Short.MAX_VALUE))
-        );
-
-        javax.swing.GroupLayout panelPaginaLayout = new javax.swing.GroupLayout(panelPagina);
-        panelPagina.setLayout(panelPaginaLayout);
-        panelPaginaLayout.setHorizontalGroup(
-            panelPaginaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelTop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(panelPaginaLayout.createSequentialGroup()
-                .addGap(49, 49, 49)
-                .addGroup(panelPaginaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(tfUser, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                    .addComponent(labelUser, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tfPassword)
-                    .addComponent(panelBotaoEntrar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        panelPaginaLayout.setVerticalGroup(
-            panelPaginaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelPaginaLayout.createSequentialGroup()
-                .addComponent(panelTop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
-                .addComponent(labelUser)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tfUser, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(labelPassword)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tfPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(panelBotaoEntrar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(30, Short.MAX_VALUE))
-        );
+        panelPagina.add(panelBotaoEntrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(49, 236, 200, 50));
 
         getContentPane().add(panelPagina, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 1, 298, 314));
 
@@ -339,12 +282,10 @@ public class EntrarBD extends javax.swing.JFrame {
 
     private void labelFecharpanelFecharMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelFecharpanelFecharMouseEntered
         panelFechar.setBackground(COR_HOVER_FECHAR);
-        labelFechar.setIcon(new ImageIcon("src/main/java/Recursos/fechar_b.png"));
     }//GEN-LAST:event_labelFecharpanelFecharMouseEntered
 
     private void labelFecharpanelFecharMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelFecharpanelFecharMouseExited
         panelFechar.setBackground(COR_NORMAL_TOP);
-        labelFechar.setIcon(new ImageIcon("src/main/java/Recursos/fechar.png"));
     }//GEN-LAST:event_labelFecharpanelFecharMouseExited
 
     private void labelFecharpanelFecharMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelFecharpanelFecharMouseReleased
@@ -387,6 +328,47 @@ public class EntrarBD extends javax.swing.JFrame {
 
     private void labelBotaoEntrarpanelTopMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBotaoEntrarpanelTopMousePressed
         panelBotaoEntrar.setBackground(COR_ENTRAR_SELECIONADO);
+        String user = tfUser.getText();
+        String pass = new String(tfPassword.getPassword());
+
+        if (user.isEmpty() || pass.isEmpty()) {
+            PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+            String mensagem = "Preencha o utilizador e a password.";
+            String top = "Aviso";
+            String imagem = "src/main/java/Recursos/aviso.png";
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setVisible(true);
+            return;
+        }
+        
+        BaseDados.configurarCredenciais(user, pass);
+        
+        try {
+            Connection testeCon = BaseDados.getConnection();
+
+            if (testeCon != null) {
+                PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+                String mensagem = "Ligação ao servidor MySQL com sucesso!";
+                String top = "Informação";
+                String imagem = "src/main/java/Recursos/info.png";
+                dialogo.setMensagem(mensagem, top, imagem);
+                dialogo.setVisible(true);
+
+                Login janela = new Login();
+                janela.setVisible(true);
+                this.dispose();
+            }
+        } catch (SQLException e) {
+            PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+            String mensagem = "Erro de Acesso: Utilizador ou Password inválidos.\n" + e.getMessage();
+            String top = "Erro";
+            String imagem = "src/main/java/Recursos/erro.png";
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setVisible(true);
+        }
     }//GEN-LAST:event_labelBotaoEntrarpanelTopMousePressed
 
     private void panelBotaoEntrarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelBotaoEntrarMouseEntered
@@ -403,28 +385,42 @@ public class EntrarBD extends javax.swing.JFrame {
         String pass = new String(tfPassword.getPassword());
 
         if (user.isEmpty() || pass.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Preencha o utilizador e a password.");
+            PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+            String mensagem = "Preencha o utilizador e a password.";
+            String top = "Aviso";
+            String imagem = "src/main/java/Recursos/aviso.png";
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setVisible(true);
             return;
         }
-
-        // 1. Envia os dados para a classe BaseDados
+        
         BaseDados.configurarCredenciais(user, pass);
-
-        // 2. Tenta estabelecer a ligação para validar
+        
         try {
             Connection testeCon = BaseDados.getConnection();
 
             if (testeCon != null) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Ligação ao servidor MySQL com sucesso!");
+                PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+                String mensagem = "Ligação ao servidor MySQL com sucesso!";
+                String top = "Informação";
+                String imagem = "src/main/java/Recursos/info.png";
+                dialogo.setMensagem(mensagem, top, imagem);
+                dialogo.setVisible(true);
 
                 Login janela = new Login();
                 janela.setVisible(true);
                 this.dispose();
             }
         } catch (SQLException e) {
-            // Se chegar aqui, as credenciais de acesso ao servidor MySQL estão erradas
-            javax.swing.JOptionPane.showMessageDialog(this, "Erro de Acesso: Utilizador ou Password do Banco de Dados inválidos.\n" + e.getMessage());
-            e.printStackTrace();
+            PaginaDialogo dialogo = new PaginaDialogo(this, true);
+
+            String mensagem = "Erro de Acesso: Utilizador ou Password inválidos.\n" + e.getMessage();
+            String top = "Erro";
+            String imagem = "src/main/java/Recursos/erro.png";
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setVisible(true);
         }
     }//GEN-LAST:event_panelBotaoEntrarMousePressed
 
