@@ -76,4 +76,6 @@ public class Sala {
     public void setAtivo(boolean Ativo) {
         this.Ativo = Ativo;
     }
+    
+    
 }

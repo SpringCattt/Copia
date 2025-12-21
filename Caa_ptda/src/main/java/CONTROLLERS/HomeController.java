@@ -107,6 +107,10 @@ public class HomeController {
     public Trabalhador buscarTrabalhadorPorId(int id) {
         return trabalhadorDAO.getTrabalhadorById(id);
     }
+    
+    public List<Trabalhador> obterGestoresEventos() {
+        return trabalhadorDAO.getTrabalhadoresPorCategoria("Gestor Eventos");
+    }
 
     public Credenciais buscarCredenciaisPorId(int id) {
         return credenciaisDAO.getCredenciaisPorIdTrabalhador(id);

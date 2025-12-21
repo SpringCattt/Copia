@@ -1,83 +1,102 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package VIEWS;
 
-import javax.swing.RowFilter;
+import CONTROLLERS.HomeController;
+import MODELS.CLASS.Evento;
+import MODELS.CLASS.Sala;
+import MODELS.CLASS.Trabalhador;
+import java.awt.Color;
+import java.awt.event.*;
+import java.util.List;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
 
-/**
- *
- * @author gonca
- */
 public class PanelEventos extends javax.swing.JPanel {
 
     private PaginaInicial janelaPrincipal;
-    private String top, mensagem, imagem;
-    java.awt.Window win = javax.swing.SwingUtilities.getWindowAncestor(this);
-    /**
-     * Creates new form PanelEventos
-     */
-    public PanelEventos(PaginaInicial janelaPrincipal) {
-        this.janelaPrincipal = janelaPrincipal;
+    private HomeController controller;
+
+    public PanelEventos(PaginaInicial paginaInicial) {
+        this.janelaPrincipal = paginaInicial;
+        this.controller = new HomeController();
         initComponents();
         
-        txtPesquisar.setText("Pesquisar");
-        txtPesquisar.setForeground(java.awt.Color.GRAY);
-
-        txtPesquisar.addFocusListener(new java.awt.event.FocusAdapter() {
-            @Override
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                // Apenas apaga se o texto for o padrão e a cor for cinza (indica placeholder)
-                if (txtPesquisar.getText().equals("Pesquisar") && txtPesquisar.getForeground().equals(java.awt.Color.GRAY)) {
+        configurarPesquisa();
+        carregarTabela(null);
+    }
+    
+    // --- PESQUISA ---
+    private void configurarPesquisa() {
+        txtPesquisar.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent e) {
+                if (txtPesquisar.getText().equals("Pesquisar")) {
                     txtPesquisar.setText("");
-                    txtPesquisar.setForeground(java.awt.Color.BLACK);
+                    txtPesquisar.setForeground(Color.BLACK);
                 }
             }
-
-            @Override
-            public void focusLost(java.awt.event.FocusEvent evt) {
+            public void focusLost(FocusEvent e) {
                 if (txtPesquisar.getText().isEmpty()) {
-                    txtPesquisar.setForeground(java.awt.Color.GRAY);
                     txtPesquisar.setText("Pesquisar");
+                    txtPesquisar.setForeground(new Color(153, 153, 153));
                 }
             }
         });
         
-        txtPesquisar.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-            @Override
-            public void insertUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
-            @Override
-            public void removeUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
-            @Override
-            public void changedUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
+        txtPesquisar.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                String termo = txtPesquisar.getText().trim();
+                if(termo.equals("Pesquisar")) termo = "";
+                
+                if(termo.isEmpty()) {
+                    carregarTabela(null);
+                } else {
+                    carregarTabela(controller.pesquisarEventos(termo));
+                }
+            }
         });
     }
     
-    private void verificarEFiltrar() {
-        String termo = txtPesquisar.getText();
+    // --- CARREGAR TABELA OTIMIZADO (SEM LENTIDÃO) ---
+    private void carregarTabela(List<Evento> listaParaMostrar) {
+        DefaultTableModel modelo = (DefaultTableModel) tabelaEventos.getModel();
+        modelo.setRowCount(0);
+        
+        List<Evento> listaEventos = (listaParaMostrar != null) ? listaParaMostrar : controller.obterTodosEventos();
+        List<Trabalhador> todosTrabs = controller.obterTodosFuncionarios();
+        List<Sala> todasSalas = controller.listarTodasSalasAtivas();
+        
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+        
+        for (Evento e : listaEventos) {
+            String nomeResp = "N/A";
+            for(Trabalhador t : todosTrabs) {
+                if(t.getIdTrabalhador() == e.getResponsavel()) { nomeResp = t.getNome(); break; }
+            }
+            
+            String nomeSala = "N/A";
+            for(Sala s : todasSalas) {
+                if(s.getIdSala() == e.getSala()) { nomeSala = s.getNome(); break; }
+            }
+            
+            String dataStr = (e.getData() != null) ? sdf.format(e.getData()) : "";
 
-        // Se o texto for o placeholder cinzento, não filtramos nada
-        if (txtPesquisar.getForeground().equals(java.awt.Color.GRAY) && termo.equals("Pesquisar")) {
-            aplicarFiltro("");
-        } else {
-            aplicarFiltro(termo);
+            modelo.addRow(new Object[]{
+                e.getIdEvento(),
+                e.getNome(),
+                dataStr,
+                e.getDescricao(),
+                nomeResp,
+                nomeSala,
+                e.getHora(),
+                e.isEstado()
+            });
         }
     }
-
-    private void aplicarFiltro(String termo) {
-        // 1. Configurar Sorters para as duas tabelas
-        DefaultTableModel modE = (DefaultTableModel) tabelaEventos.getModel();
-        TableRowSorter<DefaultTableModel> sorterE = new TableRowSorter<>(modE);
-        tabelaEventos.setRowSorter(sorterE);
-
-        if (termo.trim().isEmpty()) {
-            sorterE.setRowFilter(null);
-        } else {
-            sorterE.setRowFilter(RowFilter.regexFilter("(?i)" + termo));
-        }
+    
+    // --- POP-UP ---
+    private void mostrarAviso(String msg, String titulo, String img) {
+        java.awt.Frame parent = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
+        PaginaDialogo d = new PaginaDialogo(parent, true);
+        d.setMensagem(msg, titulo, img);
+        d.setVisible(true);
     }
 
     /**
