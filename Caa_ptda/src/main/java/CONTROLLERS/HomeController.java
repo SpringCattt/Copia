@@ -309,8 +309,30 @@ public class HomeController {
     }
 
     // ==========================================
-    // --- RECURSOS (MANTIDOS) ---
+    // --- RECURSOS---
     // ==========================================
+    
+    public List<Consumivel> listarConsumiveis() {
+        return consumiveisDao.getAllConsumiveis();
+    }
+
+    public List<NaoConsumivel> listarNaoConsumiveis() {
+        return naoConsumiveisDao.getAllNaoConsumiveis();
+    }
+
+    public boolean eliminarRecurso(long id) {
+        // Aqui podes adicionar lógica: ex: verificar se está em uso
+        return recursoDao.deleteRecurso(id);
+    }
+
+    public Consumivel buscarConsumivelPorId(int id) {
+        return consumiveisDao.getConsumivelById(id);
+    }
+
+    public NaoConsumivel buscarNaoConsumivelPorId(int id) {
+        return naoConsumiveisDao.getNaoConsumivelById(id);
+    }
+    
     public boolean editarRecurso(Recurso r, int tipoNovo) {
         RecursoDAO rDao = new RecursoDAO();
         ConsumiveisDAO cDao = new ConsumiveisDAO();

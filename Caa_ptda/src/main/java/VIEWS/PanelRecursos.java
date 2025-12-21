@@ -4,13 +4,8 @@
  */
 package VIEWS;
 
-import MODELS.CLASS.CategoriaTrabalho;
 import MODELS.CLASS.Consumivel;
 import MODELS.CLASS.NaoConsumivel;
-import MODELS.CLASS.Trabalhador;
-import MODELS.DAO.ConsumiveisDAO;
-import MODELS.DAO.NaoConsumiveisDAO;
-import MODELS.DAO.RecursoDAO;
 import java.awt.Component;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -28,13 +23,13 @@ import javax.swing.table.TableRowSorter;
 public class PanelRecursos extends javax.swing.JPanel {
 
     private PaginaInicial janelaPrincipal;
+    CONTROLLERS.HomeController controller;
     private String top, mensagem, imagem;
     java.awt.Window win = javax.swing.SwingUtilities.getWindowAncestor(this);
-    /**
-     * Creates new form PanelRecursos
-     */
+    
     public PanelRecursos(PaginaInicial janelaPrincipal) {
         this.janelaPrincipal = janelaPrincipal;
+        this.controller = new CONTROLLERS.HomeController();
         initComponents();
         atualizarTabelas();
         configurarEsteticaTabelas();
@@ -120,7 +115,8 @@ public class PanelRecursos extends javax.swing.JPanel {
     private void carregarConsumiveis() {
         DefaultTableModel modelo = (DefaultTableModel) tabelaConsumiveis.getModel();
         modelo.setNumRows(0);
-        for (Consumivel c : new ConsumiveisDAO().getAllConsumiveis()) {
+        // Agora passa pelo Controller:
+        for (Consumivel c : controller.listarConsumiveis()) {
             modelo.addRow(new Object[]{c.getIdRecurso(), c.getNome(), c.getPreco(), c.getQuantidade(), c.getDataValidade()});
         }
     }
@@ -128,7 +124,8 @@ public class PanelRecursos extends javax.swing.JPanel {
     private void carregarNaoConsumiveis() {
         DefaultTableModel modelo = (DefaultTableModel) tabelaNaoConsumiveis.getModel();
         modelo.setNumRows(0);
-        for (NaoConsumivel nc : new NaoConsumiveisDAO().getAllNaoConsumiveis()) {
+        // Agora passa pelo Controller:
+        for (NaoConsumivel nc : controller.listarNaoConsumiveis()) {
             modelo.addRow(new Object[]{nc.getIdRecurso(), nc.getNome(), nc.getPreco(), nc.getQuantidade(), nc.getPrecoAluguer()});
         }
     }
@@ -335,7 +332,6 @@ public class PanelRecursos extends javax.swing.JPanel {
     }//GEN-LAST:event_btnCriarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        // 1. Verifica qual a tabela ativa
         int abaAtual = tabPaneCNC.getSelectedIndex();
         JTable tabelaAtiva = (abaAtual == 0) ? tabelaConsumiveis : tabelaNaoConsumiveis;
 
@@ -345,24 +341,21 @@ public class PanelRecursos extends javax.swing.JPanel {
             return;
         }
 
-        // --- CORREÇÃO PARA PESQUISA ---
-        // Converte o índice da linha da tabela (que pode estar filtrada) para o índice real do modelo de dados
         int linhaModelo = tabelaAtiva.convertRowIndexToModel(linhaVista);
-
-        // Obtém o ID da coluna 0 usando o índice do modelo
         int id = (int) tabelaAtiva.getModel().getValueAt(linhaModelo, 0);
         Object recurso;
 
+        // Chamada via Controller:
         if (abaAtual == 0) {
-            recurso = new MODELS.DAO.ConsumiveisDAO().getConsumivelById(id);
+            recurso = controller.buscarConsumivelPorId(id);
         } else {
-            recurso = new MODELS.DAO.NaoConsumiveisDAO().getNaoConsumivelById(id);
+            recurso = controller.buscarNaoConsumivelPorId(id);
         }
 
         if (recurso != null) {
             janelaPrincipal.irParaFormularioRecursos(abaAtual, recurso);
         } else {
-            mostrarDialogo("Erro ao carregar os dados do recurso.", "Erro", "src/main/java/Recursos/erro.png");
+            mostrarDialogo("Erro ao carregar os dados.", "Erro", "src/main/java/Recursos/erro.png");
         }
     }//GEN-LAST:event_btnEditarActionPerformed
 
@@ -372,35 +365,27 @@ public class PanelRecursos extends javax.swing.JPanel {
 
         int linhaVista = tabelaAtiva.getSelectedRow();
         if (linhaVista == -1) {
-            mostrarDialogo("Por favor, selecione um recurso para eliminar.", "Aviso", "src/main/java/Recursos/aviso.png");
+            mostrarDialogo("Por favor, selecione um recurso.", "Aviso", "src/main/java/Recursos/aviso.png");
             return;
         }
 
-        // --- CORREÇÃO PARA PESQUISA ---
-        // Converte o índice da vista para o modelo para não apagar o item errado
         int linhaModelo = tabelaAtiva.convertRowIndexToModel(linhaVista);
-
-        // O ID está na coluna 0, o Nome está na coluna 1
         long id = Long.parseLong(tabelaAtiva.getModel().getValueAt(linhaModelo, 0).toString());
         String nome = tabelaAtiva.getModel().getValueAt(linhaModelo, 1).toString();
 
-        PaginaOpcao dialog = new PaginaOpcao((java.awt.Frame) win, true);
-        dialog.setMensagem("Tem a certeza que deseja eliminar o recurso: " + nome + "?", "Atenção!");
-        dialog.setLocationRelativeTo(win);
+        PaginaOpcao dialog = new PaginaOpcao((java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this), true);
+        dialog.setMensagem("Deseja eliminar: " + nome + "?", "Atenção!");
         dialog.setVisible(true); 
 
         if (dialog.clicouSim()) {
-            MODELS.DAO.RecursoDAO dao = new MODELS.DAO.RecursoDAO();
-            if (dao.deleteRecurso(id)) {
-                mostrarDialogo("Recurso eliminado com sucesso.", "Informação", "src/main/java/Recursos/info.png");
-
-                // Limpa a pesquisa para evitar confusão visual após eliminar
+            // Chamada via Controller:
+            if (controller.eliminarRecurso(id)) {
+                mostrarDialogo("Eliminado com sucesso.", "Informação", "src/main/java/Recursos/info.png");
                 txtPesquisar.setText("Pesquisar");
                 txtPesquisar.setForeground(java.awt.Color.GRAY);
-
                 atualizarTabelas(); 
             } else {
-                mostrarDialogo("Erro ao eliminar recurso na Base de Dados.", "Erro", "src/main/java/Recursos/erro.png");
+                mostrarDialogo("Erro ao eliminar.", "Erro", "src/main/java/Recursos/erro.png");
             }
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
