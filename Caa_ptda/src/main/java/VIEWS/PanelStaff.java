@@ -7,6 +7,7 @@ package VIEWS;
 import CONTROLLERS.HomeController;
 import MODELS.CLASS.Evento;
 import MODELS.CLASS.Tarefa;
+import VIEWS.PaginaDialogo;
 import java.util.Date;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
@@ -57,17 +58,17 @@ public class PanelStaff extends javax.swing.JPanel {
 
         tabelaTarefas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Evento", "Titulo", "Descrição", "Estado"
+                "Id Tarefa", "Evento", "Titulo", "Descrição", "Estado"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -144,13 +145,52 @@ public class PanelStaff extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnConcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConcluirActionPerformed
-        // TODO add your handling code here:
+        int linha = tabelaTarefas.getSelectedRow();
+
+        if (linha == -1) {
+            PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+            mensagem = "Nenhuma tarefa selecionada";
+            top = "Erro";
+            imagem = "src/main/java/Recursos/erro.png";
+
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setLocationRelativeTo(win);
+            dialogo.setVisible(true);
+            return;
+        }
+
+        int modelRow = tabelaTarefas.convertRowIndexToModel(linha);
+        int idTarefa = Integer.parseInt(tabelaTarefas.getModel().getValueAt(modelRow, 0).toString());
+
+        if (controller.marcarComoConcluida(idTarefa)) {
+            Object itemSelecionado = comboFiltro.getSelectedItem();
+            if (itemSelecionado != null) {
+                String filtro = itemSelecionado.toString();
+
+                if (filtro.equals("Todas")) {
+                    carregarDadosTabelaTarefas(idTrabalhador);
+                } else if (filtro.equals("Concluído") || filtro.equals("Concluídas")) {
+                    carregarDadosTabelaTarefasConcluidas(idTrabalhador);
+                } else if (filtro.equals("Pendente") || filtro.equals("Por fazer")) {
+                    carregarDadosTabelaTarefasPendentes(idTrabalhador);
+                }
+            }
+        } else {
+            PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+            mensagem = "Erro ao atualizar tarefa.";
+            top = "Erro";
+            imagem = "src/main/java/Recursos/erro.png";
+
+            dialogo.setMensagem(mensagem, top, imagem);
+            dialogo.setLocationRelativeTo(win);
+            dialogo.setVisible(true);
+        }
+
     }//GEN-LAST:event_btnConcluirActionPerformed
 
     private void btnAtualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtualizarActionPerformed
-
         String filtro = comboFiltro.getSelectedItem().toString();
-        
+
         if (filtro.equals("Todas")) {
             carregarDadosTabelaTarefas(idTrabalhador);
         } else if (filtro.equals("Concluído")) {
@@ -180,6 +220,7 @@ public class PanelStaff extends javax.swing.JPanel {
             }
 
             modelo.addRow(new Object[]{
+                t.getIdTarefa(),
                 nomeEvento,
                 t.getTitulo(),
                 t.getDescricao(),
@@ -187,7 +228,7 @@ public class PanelStaff extends javax.swing.JPanel {
             });
         }
     }
-    
+
     private void carregarDadosTabelaTarefasConcluidas(int idStaff) {
         DefaultTableModel modelo = (DefaultTableModel) tabelaTarefas.getModel();
         modelo.setRowCount(0);
@@ -204,6 +245,7 @@ public class PanelStaff extends javax.swing.JPanel {
             }
 
             modelo.addRow(new Object[]{
+                t.getIdTarefa(),
                 nomeEvento,
                 t.getTitulo(),
                 t.getDescricao(),
@@ -211,7 +253,7 @@ public class PanelStaff extends javax.swing.JPanel {
             });
         }
     }
-    
+
     private void carregarDadosTabelaTarefasPendentes(int idStaff) {
         DefaultTableModel modelo = (DefaultTableModel) tabelaTarefas.getModel();
         modelo.setRowCount(0);
@@ -228,6 +270,7 @@ public class PanelStaff extends javax.swing.JPanel {
             }
 
             modelo.addRow(new Object[]{
+                t.getIdTarefa(),
                 nomeEvento,
                 t.getTitulo(),
                 t.getDescricao(),

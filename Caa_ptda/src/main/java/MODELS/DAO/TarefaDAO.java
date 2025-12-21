@@ -78,10 +78,10 @@ public class TarefaDAO {
         }
         return tarefas;
     }
-    
+
     public List<Tarefa> getTarefasPendentesByTrabalhador(int idTrabalhador) {
         List<Tarefa> tarefas = new ArrayList<>();
-        
+
         String sql = "SELECT * FROM Tarefa WHERE TrabalhadorId = ? AND Ativo = 1 AND Estado = 0";
 
         try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -193,6 +193,21 @@ public class TarefaDAO {
         try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(SQL)) {
             stmt.setLong(1, id);
             return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean concluirTarefa(int idTarefa) {
+        String SQL = "UPDATE Tarefa SET Estado = 1 WHERE IdTarefa = ?";
+
+        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setInt(1, idTarefa);
+
+            return stmt.executeUpdate() > 0;
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

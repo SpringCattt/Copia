@@ -16,7 +16,7 @@ public class Evento {
     private Date Hora;
     private Time Duracao;
     private boolean Estado;
-    private boolean Decorreu; 
+    private boolean Cancelado; 
     private boolean Ativo;
 
     /* * Getters e Setters
@@ -93,12 +93,12 @@ public class Evento {
         this.Estado = Estado;
     }
 
-    public boolean isDecorreu() {
-        return Decorreu;
+    public boolean isCancelado() {
+        return Cancelado;
     }
 
-    public void setDecorreu(boolean Decorreu) {
-        this.Decorreu = Decorreu;
+    public void setCancelado(boolean Cancelado) {
+        this.Cancelado = Cancelado;
     }
 
     public boolean isAtivo() {

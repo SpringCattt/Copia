@@ -122,11 +122,11 @@ public class HomeController {
     public List<Tarefa> listarTarefasPorTrabalhador(int idTrabalhador) {
         return tarefaDAO.getTarefasByTrabalhador(idTrabalhador);
     }
-    
+
     public List<Tarefa> listarTarefasConcluidas(int idTrabalhador) {
         return tarefaDAO.getTarefasConcluidasByTrabalhador(idTrabalhador);
     }
-    
+
     public List<Tarefa> listarTarefasPendentes(int idTrabalhador) {
         return tarefaDAO.getTarefasPendentesByTrabalhador(idTrabalhador);
     }
@@ -277,6 +277,65 @@ public class HomeController {
             return false;
         }
         return eventoDAO.updateEvento(e);
+    }
+    
+    public boolean verificarDisponibilidadeSala(int idSala, String dataStr, String horaStr, String duracaoStr, int idEventoIgnorar) {
+        try {
+            SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
+            
+            java.util.Date d = formatoData.parse(dataStr);
+            java.sql.Date dataSql = new java.sql.Date(d.getTime());
+            
+            java.util.Date h = formatoHora.parse(horaStr);
+            java.sql.Time horaSql = new java.sql.Time(h.getTime());            
+
+            java.util.Date dur = formatoHora.parse(duracaoStr);
+            java.sql.Time durSql = new java.sql.Time(dur.getTime());
+            
+            boolean tieneConflicto = eventoDAO.verificarSobreposicao(idSala, dataSql, horaSql, durSql, idEventoIgnorar);
+            
+            return !tieneConflicto;
+            
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false; 
+        }
+    }
+    
+    public void verificarEAtualizarEventosPassados() {
+        List<Evento> eventos = eventoDAO.getEventosAtivosNaoDecorridos();
+        java.util.Calendar agora = java.util.Calendar.getInstance();
+        
+        for (Evento e : eventos) {
+            if (e.isCancelado()) continue; 
+            
+            if (e.getData() != null && e.getHora() != null) {
+                java.util.Calendar fimEvento = java.util.Calendar.getInstance();
+                fimEvento.setTime(e.getData());
+                
+                java.util.Calendar horaInicio = java.util.Calendar.getInstance();
+                horaInicio.setTime(e.getHora());
+                
+                fimEvento.set(java.util.Calendar.HOUR_OF_DAY, horaInicio.get(java.util.Calendar.HOUR_OF_DAY));
+                fimEvento.set(java.util.Calendar.MINUTE, horaInicio.get(java.util.Calendar.MINUTE));
+                fimEvento.set(java.util.Calendar.SECOND, 0);
+                
+                // Sumar duración si existe
+                if (e.getDuracao() != null) {
+                    java.util.Calendar duracao = java.util.Calendar.getInstance();
+                    duracao.setTime(e.getDuracao());
+                    
+                    fimEvento.add(java.util.Calendar.HOUR_OF_DAY, duracao.get(java.util.Calendar.HOUR_OF_DAY));
+                    fimEvento.add(java.util.Calendar.MINUTE, duracao.get(java.util.Calendar.MINUTE));
+                }
+                
+                // Si la hora de fin es ANTES de AHORA, marcamos como decorrido
+                if (fimEvento.before(agora)) {
+                    eventoDAO.marcarComoDecorrido(e.getIdEvento());
+                }
+            }
+        }
     }
 
     public boolean eliminarEvento(int id) {
@@ -478,6 +537,10 @@ public class HomeController {
         novaTarefa.setAtivo(true);
 
         return tarefaDAO.insertTarefa(novaTarefa);
+    }
+
+    public boolean marcarComoConcluida(int idTarefa) {
+        return tarefaDAO.concluirTarefa(idTarefa);
     }
 
 }

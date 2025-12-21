@@ -78,6 +78,10 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
         if (e.getData() != null) dateEvento.setDate(e.getData());
         if (e.getHora() != null) spinHoraInicio.setValue(e.getHora());
         
+        if (e.getDuracao() != null) {
+            spinDuracao.setValue(e.getDuracao());
+        }
+        
         // Seleccionar Sala correcta
         if (listaSalas != null) {
             for (int i = 0; i < listaSalas.size(); i++) {
@@ -206,8 +210,7 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
     }//GEN-LAST:event_txtNomeActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        // Apenas pedimos à janela principal para mostrar a lista novamente
-        if (janelaPrincipal != null) {
+       if (janelaPrincipal != null) {
             janelaPrincipal.mostrarListaEventos();
         }
     }//GEN-LAST:event_btnCancelarActionPerformed
@@ -217,13 +220,12 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
         String descricao = txtDescricao.getText().trim();
         java.util.Date dataCal = dateEvento.getDate();
         java.util.Date horaVal = (java.util.Date) spinHoraInicio.getValue();
-
-        // 1. RECOLHER DURAÇÃO
-        java.util.Date duracaoVal = (java.util.Date) spinDuracao.getValue();
+        java.util.Date duracaoVal = (java.util.Date) spinDuracao.getValue(); // Obtenemos duración
 
         int indexSala = comboSala.getSelectedIndex();
         int indexResp = comboResponsavel.getSelectedIndex();
 
+        // 1. Validaciones básicas de selección
         if (indexSala == -1 || indexResp == -1) {
             mostrarAviso("Selecione uma sala e um responsável.", "Erro", "src/main/java/Recursos/erro.png");
             return;
@@ -232,38 +234,54 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
         Sala sala = listaSalas.get(indexSala);
         Trabalhador resp = listaResponsaveis.get(indexResp);
 
+        // 2. Validación de campos vacíos
         if (nome.isEmpty() || dataCal == null) {
             mostrarAviso("Preencha todos os campos obrigatórios.", "Erro", "src/main/java/Recursos/erro.png");
             return;
         }
 
-        // Validação Data Futura
+        // 3. Validación: Fecha Futura
         Calendar calAtual = Calendar.getInstance();
         Calendar calSel = Calendar.getInstance();
         calSel.setTime(dataCal);
-
+        
         Calendar calHora = Calendar.getInstance();
         calHora.setTime(horaVal);
-
+        
         calSel.set(Calendar.HOUR_OF_DAY, calHora.get(Calendar.HOUR_OF_DAY));
         calSel.set(Calendar.MINUTE, calHora.get(Calendar.MINUTE));
-
+        
         if (calSel.before(calAtual)) {
             mostrarAviso("A data e hora devem ser posteriores ao momento atual.", "Data Inválida", "src/main/java/Recursos/aviso.png");
             return;
         }
 
-        // 2. FORMATAR DURAÇÃO
+        // 4. Formateo de datos
         SimpleDateFormat sdfData = new SimpleDateFormat("dd/MM/yyyy");
         SimpleDateFormat sdfHora = new SimpleDateFormat("HH:mm");
-
+        
         String dataFormatada = sdfData.format(dataCal);
         String horaFormatada = sdfHora.format(horaVal);
-        String duracaoFormatada = sdfHora.format(duracaoVal); // Formata HH:mm
+        String duracaoFormatada = sdfHora.format(duracaoVal);
+
+        // --- 5. VALIDACIÓN DE DISPONIBILIDAD (NUEVO) ---
+        // Comprobamos si la sala está libre en ese horario específico (Hora Inicio + Duración)
+        boolean disponivel = controller.verificarDisponibilidadeSala(
+                sala.getIdSala(), 
+                dataFormatada, 
+                horaFormatada, 
+                duracaoFormatada, 
+                idEventoEditando // Pasamos el ID para que al editar no choque consigo mismo
+        );
+
+        if (!disponivel) {
+            mostrarAviso("A sala selecionada já está ocupada neste horário!\nVerifique a duração e a hora de início.", "Sala Ocupada", "src/main/java/Recursos/aviso.png");
+            return; // DETENEMOS EL GUARDADO
+        }
+        // ------------------------------------------------
 
         boolean sucesso;
-
-        // 3. PASSAR duracaoFormatada PARA O CONTROLLER
+        
         if (idEventoEditando == -1) {
             sucesso = controller.criarEvento(nome, dataFormatada, descricao, resp.getIdTrabalhador(), sala.getIdSala(), horaFormatada, duracaoFormatada);
         } else {

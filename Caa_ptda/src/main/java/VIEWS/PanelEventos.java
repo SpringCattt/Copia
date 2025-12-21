@@ -19,19 +19,52 @@ public class PanelEventos extends javax.swing.JPanel {
 
     private PaginaInicial janelaPrincipal;
     private HomeController controller;
-
+    
     public PanelEventos(PaginaInicial janelaPrincipal) {
         this.janelaPrincipal = janelaPrincipal;
         this.controller = new HomeController();
         initComponents();
         
-        // Configuração inicial da barra de pesquisa
+        controller.verificarEAtualizarEventosPassados();
+        
         txtPesquisar.setText("Pesquisar");
         txtPesquisar.setForeground(Color.GRAY);
         
         configurarPesquisa();
         carregarTabela(null);
+        
+        tabelaEventos.getColumnModel().getColumn(8).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
+            @Override
+            public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+
+                java.awt.Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                if (value != null) {
+                    String status = value.toString();
+                    switch (status) {
+                        case "Cancelado":
+                            c.setForeground(java.awt.Color.RED);
+                            break;
+                        case "Por Decorrer":
+                            c.setForeground(new java.awt.Color(0, 153, 0)); // Verde escuro para leitura
+                            break;
+                        case "Decorrido":
+                            c.setForeground(new java.awt.Color(204, 153, 0)); // Amarelo/Dourado
+                            break;
+                        default:
+                            c.setForeground(table.getForeground());
+                    }
+                }
+
+                // Mantém o alinhamento centralizado para ficar mais bonito
+                setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+                return c;
+            }
+        });
     }
+    
     
     // --- PESQUISA ---
     private void configurarPesquisa() {
@@ -100,7 +133,7 @@ public class PanelEventos extends javax.swing.JPanel {
         java.text.SimpleDateFormat sdfHora = new java.text.SimpleDateFormat("HH:mm"); // Para formatar Hora e Duração
 
         for (Evento e : listaEventos) {
-            // ... (lógica do Responsável e Sala mantém-se igual)
+            String estado = "";
             String nomeResp = "N/A";
             for(Trabalhador t : todosTrabs) {
                 if(t.getIdTrabalhador() == e.getResponsavel()) { nomeResp = t.getNome(); break; }
@@ -116,6 +149,16 @@ public class PanelEventos extends javax.swing.JPanel {
             String horaStr = (e.getHora() != null) ? sdfHora.format(e.getHora()) : "";
             String duracaoStr = (e.getDuracao() != null) ? sdfHora.format(e.getDuracao()) : "00:00";
 
+            boolean isCancelado = !e.isAtivo(); 
+
+            if (isCancelado) {
+                estado = "Cancelado";
+            } else if (!e.isEstado()) { // Estado = 1 (true)
+                estado = "Decorrido";
+            } else { // Estado = 0 (false)
+                estado = "Por Decorrer";
+            }
+
             modelo.addRow(new Object[]{
                 e.getIdEvento(),
                 e.getNome(),
@@ -123,9 +166,9 @@ public class PanelEventos extends javax.swing.JPanel {
                 e.getDescricao(),
                 nomeResp,
                 nomeSala,
-                horaStr,    // Coluna Hora
-                duracaoStr, // Coluna Duração (Adicionada agora)
-                e.isEstado()
+                horaStr,
+                duracaoStr,
+                estado // Agora passamos a String com o estado
             });
         }
     }
