@@ -67,7 +67,6 @@ public class PanelSalas extends javax.swing.JPanel {
     private void verificarEFiltrar() {
         String termo = txtPesquisar.getText();
 
-        // Se o texto for o placeholder cinzento, não filtramos nada
         if (txtPesquisar.getForeground().equals(java.awt.Color.GRAY) && termo.equals("Pesquisar")) {
             aplicarFiltro("");
         } else {

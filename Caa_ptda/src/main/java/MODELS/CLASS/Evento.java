@@ -1,11 +1,11 @@
 package MODELS.CLASS;
 
+import java.sql.Time;
 import java.util.Date;
 
 public class Evento {
 
-    /* 
-     * Atributos Evento
+    /* * Atributos Evento
      */
     private int IdEvento;
     private String Nome;
@@ -14,12 +14,12 @@ public class Evento {
     private int Responsavel;
     private int Sala;
     private Date Hora;
+    private Time Duracao;
     private boolean Estado;
-    private boolean Cancelado;
+    private boolean Decorreu; 
     private boolean Ativo;
 
-    /* 
-     * Getters e Setters
+    /* * Getters e Setters
      */
     public int getIdEvento() {
         return IdEvento;
@@ -77,6 +77,14 @@ public class Evento {
         this.Hora = Hora;
     }
 
+    public Time getDuracao() {
+        return Duracao;
+    }
+
+    public void setDuracao(Time Duracao) {
+        this.Duracao = Duracao;
+    }
+
     public boolean isEstado() {
         return Estado;
     }
@@ -85,12 +93,12 @@ public class Evento {
         this.Estado = Estado;
     }
 
-    public boolean isCancelado() {
-        return Cancelado;
+    public boolean isDecorreu() {
+        return Decorreu;
     }
 
-    public void setCancelado(boolean Cancelado) {
-        this.Cancelado = Cancelado;
+    public void setDecorreu(boolean Decorreu) {
+        this.Decorreu = Decorreu;
     }
 
     public boolean isAtivo() {
@@ -100,12 +108,9 @@ public class Evento {
     public void setAtivo(boolean Ativo) {
         this.Ativo = Ativo;
     }
-
-    /* 
-     * Funções do Evento
-     */
-
-    public String getEstado() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    
+    @Override
+    public String toString() {
+        return this.getNome();
     }
 }

@@ -72,6 +72,11 @@ public class Tarefa {
     public void setAtivo(boolean Ativo) {
         this.Ativo = Ativo;
     }
+    
+    @Override
+    public String toString() {
+        return this.getTitulo();
+    }
 
     /* 
      * Funções da tarefa

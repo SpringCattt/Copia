@@ -24,25 +24,6 @@ public class TrabalhadorDAO {
         }
         return null;
     }
-    
-    public List<Trabalhador> getTrabalhadoresPorCategoria(String nomeCategoria) {
-        List<Trabalhador> lista = new ArrayList<>();
-        String sql = "SELECT t.* FROM Trabalhador t " +
-                     "JOIN CategoriaTrabalho c ON t.Categoria = c.IdCategoria " +
-                     "WHERE t.Ativo = 1 AND c.Nome = ?";
-        
-        try (Connection conn = BaseDados.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, nomeCategoria);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                lista.add(mapResultSetToTrabalhador(rs));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return lista;
-    }
 
     public List<Trabalhador> getAllTrabalhadores() {
         List<Trabalhador> lista = new ArrayList<>();
@@ -199,5 +180,24 @@ public class TrabalhadorDAO {
             e.printStackTrace();
         }
         return false;
+    }
+    
+    public List<Trabalhador> getTrabalhadoresPorCategoria(String nomeCategoria) {
+        List<Trabalhador> lista = new ArrayList<>();
+        String sql = "SELECT t.* FROM Trabalhador t " +
+                     "JOIN CategoriaTrabalho c ON t.Categoria = c.IdCategoria " +
+                     "WHERE t.Ativo = 1 AND c.Nome = ?";
+        
+        try (Connection conn = BaseDados.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nomeCategoria);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                lista.add(mapResultSetToTrabalhador(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
     }
 } 

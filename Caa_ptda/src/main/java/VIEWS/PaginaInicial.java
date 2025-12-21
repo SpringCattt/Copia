@@ -87,12 +87,12 @@ public class PaginaInicial extends javax.swing.JFrame {
         panelBotaoRecursos = new javax.swing.JPanel();
         labelBotaoRecursos = new javax.swing.JLabel();
         imagemBotaoRecursos = new javax.swing.JLabel();
-        panelBotaoDefinicoes = new javax.swing.JPanel();
-        labelBotaoDefinicoes = new javax.swing.JLabel();
-        imagemBotaoDefinicoes = new javax.swing.JLabel();
-        panelBotaoDashboard = new javax.swing.JPanel();
-        labelBotaoDashbord = new javax.swing.JLabel();
-        imagemBotaoDashboard = new javax.swing.JLabel();
+        panelBotaoStaff = new javax.swing.JPanel();
+        labelBotaoStaff = new javax.swing.JLabel();
+        imagemBotaoStaff = new javax.swing.JLabel();
+        panelBotaoBilheteira = new javax.swing.JPanel();
+        labelBotaoBilheteira = new javax.swing.JLabel();
+        imagemBotaoBilheteira = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
@@ -185,7 +185,7 @@ public class PaginaInicial extends javax.swing.JFrame {
         });
         panelBotaoFuncionarios.add(imagemBotaoFuncionarios, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 30, 30));
 
-        jPanel1.add(panelBotaoFuncionarios, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 200, 50));
+        jPanel1.add(panelBotaoFuncionarios, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, 200, 50));
 
         panelBotaoSalas.setBackground(new java.awt.Color(97, 99, 103));
         panelBotaoSalas.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -237,7 +237,7 @@ public class PaginaInicial extends javax.swing.JFrame {
         });
         panelBotaoSalas.add(imagemBotaoSalas, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 30, 30));
 
-        jPanel1.add(panelBotaoSalas, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, 200, 50));
+        jPanel1.add(panelBotaoSalas, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, 200, 50));
 
         panelBotaoEventos.setBackground(new java.awt.Color(97, 99, 103));
         panelBotaoEventos.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -289,7 +289,7 @@ public class PaginaInicial extends javax.swing.JFrame {
         });
         panelBotaoEventos.add(imagemBotaoEventos, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 30, 30));
 
-        jPanel1.add(panelBotaoEventos, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, 200, 50));
+        jPanel1.add(panelBotaoEventos, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 300, 200, 50));
 
         panelBotaoFinanceiro.setBackground(new java.awt.Color(97, 99, 103));
         panelBotaoFinanceiro.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -341,7 +341,7 @@ public class PaginaInicial extends javax.swing.JFrame {
         });
         panelBotaoFinanceiro.add(imagemBotaoFinanceiro, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 30, 30));
 
-        jPanel1.add(panelBotaoFinanceiro, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 350, 200, 50));
+        jPanel1.add(panelBotaoFinanceiro, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 360, 200, 50));
 
         panelBotaoRecursos.setBackground(new java.awt.Color(97, 99, 103));
         panelBotaoRecursos.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -393,111 +393,111 @@ public class PaginaInicial extends javax.swing.JFrame {
         });
         panelBotaoRecursos.add(imagemBotaoRecursos, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 30, 30));
 
-        jPanel1.add(panelBotaoRecursos, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 410, -1, 50));
+        jPanel1.add(panelBotaoRecursos, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 420, -1, 50));
 
-        panelBotaoDefinicoes.setBackground(new java.awt.Color(97, 99, 103));
-        panelBotaoDefinicoes.addMouseListener(new java.awt.event.MouseAdapter() {
+        panelBotaoStaff.setBackground(new java.awt.Color(97, 99, 103));
+        panelBotaoStaff.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 labelBotaoDefinicoesMouseClicked(evt);
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                labelBotaoDefinicoesMouseEntered(evt);
+                labelBotaoStaffMouseEntered(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                labelBotaoDefinicoesMouseExited(evt);
+                labelBotaoStaffMouseExited(evt);
             }
             public void mousePressed(java.awt.event.MouseEvent evt) {
-                labelBotaoDefinicoesMousePressed(evt);
+                labelBotaoStaffMousePressed(evt);
             }
         });
-        panelBotaoDefinicoes.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        panelBotaoStaff.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        labelBotaoDefinicoes.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        labelBotaoDefinicoes.setForeground(new java.awt.Color(255, 255, 255));
-        labelBotaoDefinicoes.setText("Definições");
-        labelBotaoDefinicoes.addMouseListener(new java.awt.event.MouseAdapter() {
+        labelBotaoStaff.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        labelBotaoStaff.setForeground(new java.awt.Color(255, 255, 255));
+        labelBotaoStaff.setText("Staff");
+        labelBotaoStaff.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                labelBotaoDefinicoesMouseEntered(evt);
+                labelBotaoStaffMouseEntered(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                labelBotaoDefinicoesMouseExited(evt);
+                labelBotaoStaffMouseExited(evt);
             }
             public void mousePressed(java.awt.event.MouseEvent evt) {
-                labelBotaoDefinicoesMousePressed(evt);
+                labelBotaoStaffMousePressed(evt);
             }
         });
-        panelBotaoDefinicoes.add(labelBotaoDefinicoes, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, 140, 50));
+        panelBotaoStaff.add(labelBotaoStaff, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, 140, 50));
 
-        imagemBotaoDefinicoes.setIcon(new javax.swing.ImageIcon("src/main/java/Recursos/definicoes.png"));
-        imagemBotaoDefinicoes.addMouseListener(new java.awt.event.MouseAdapter() {
+        imagemBotaoStaff.setIcon(new javax.swing.ImageIcon("src/main/java/Recursos/note_branco.png"));
+        imagemBotaoStaff.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 labelBotaoDefinicoesMouseClicked(evt);
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                labelBotaoDefinicoesMouseEntered(evt);
+                labelBotaoStaffMouseEntered(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                labelBotaoDefinicoesMouseExited(evt);
+                labelBotaoStaffMouseExited(evt);
             }
             public void mousePressed(java.awt.event.MouseEvent evt) {
-                labelBotaoDefinicoesMousePressed(evt);
+                labelBotaoStaffMousePressed(evt);
             }
         });
-        panelBotaoDefinicoes.add(imagemBotaoDefinicoes, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 30, 30));
+        panelBotaoStaff.add(imagemBotaoStaff, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 30, 30));
 
-        jPanel1.add(panelBotaoDefinicoes, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 470, 200, 50));
+        jPanel1.add(panelBotaoStaff, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 480, 200, 50));
 
-        panelBotaoDashboard.setBackground(new java.awt.Color(97, 99, 103));
-        panelBotaoDashboard.addMouseListener(new java.awt.event.MouseAdapter() {
+        panelBotaoBilheteira.setBackground(new java.awt.Color(97, 99, 103));
+        panelBotaoBilheteira.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                panelBotaoDashboardMouseClicked(evt);
+                panelBotaoBilheteiraMouseClicked(evt);
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                panelBotaoDashboardMouseEntered(evt);
+                panelBotaoBilheteiraMouseEntered(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                panelBotaoDashboardMouseExited(evt);
+                panelBotaoBilheteiraMouseExited(evt);
             }
             public void mousePressed(java.awt.event.MouseEvent evt) {
-                imagemBotaoDashboardMousePressed(evt);
+                imagemBotaoBilheteiraMousePressed(evt);
             }
         });
-        panelBotaoDashboard.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        panelBotaoBilheteira.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        labelBotaoDashbord.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        labelBotaoDashbord.setForeground(new java.awt.Color(255, 255, 255));
-        labelBotaoDashbord.setText("Dashboard");
-        labelBotaoDashbord.addMouseListener(new java.awt.event.MouseAdapter() {
+        labelBotaoBilheteira.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        labelBotaoBilheteira.setForeground(new java.awt.Color(255, 255, 255));
+        labelBotaoBilheteira.setText("Bilheteira");
+        labelBotaoBilheteira.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                panelBotaoDashboardMouseClicked(evt);
+                panelBotaoBilheteiraMouseClicked(evt);
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                panelBotaoDashboardMouseEntered(evt);
+                panelBotaoBilheteiraMouseEntered(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                panelBotaoDashboardMouseExited(evt);
+                panelBotaoBilheteiraMouseExited(evt);
             }
             public void mousePressed(java.awt.event.MouseEvent evt) {
-                imagemBotaoDashboardMousePressed(evt);
+                imagemBotaoBilheteiraMousePressed(evt);
             }
         });
-        panelBotaoDashboard.add(labelBotaoDashbord, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, 140, 50));
+        panelBotaoBilheteira.add(labelBotaoBilheteira, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, 140, 50));
 
-        imagemBotaoDashboard.setIcon(new javax.swing.ImageIcon("src/main/java/Recursos/dashboard.png"));
-        imagemBotaoDashboard.addMouseListener(new java.awt.event.MouseAdapter() {
+        imagemBotaoBilheteira.setIcon(new javax.swing.ImageIcon("src/main/java/Recursos/dashboard.png"));
+        imagemBotaoBilheteira.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                panelBotaoDashboardMouseEntered(evt);
+                panelBotaoBilheteiraMouseEntered(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                panelBotaoDashboardMouseExited(evt);
+                panelBotaoBilheteiraMouseExited(evt);
             }
             public void mousePressed(java.awt.event.MouseEvent evt) {
-                imagemBotaoDashboardMousePressed(evt);
+                imagemBotaoBilheteiraMousePressed(evt);
             }
         });
-        panelBotaoDashboard.add(imagemBotaoDashboard, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 30, 30));
+        panelBotaoBilheteira.add(imagemBotaoBilheteira, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 30, 30));
 
-        jPanel1.add(panelBotaoDashboard, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 200, 50));
+        jPanel1.add(panelBotaoBilheteira, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 200, 50));
 
         jLabel2.setIcon(new javax.swing.ImageIcon("src/main/java/Recursos/exit_branco.png"));
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 560, 30, 30));
@@ -613,20 +613,20 @@ public class PaginaInicial extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void panelBotaoDashboardMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelBotaoDashboardMouseEntered
-        if (panelBotaoDashboard != painelSelecionado) {
-            panelBotaoDashboard.setBackground(COR_HOVER);
+    private void panelBotaoBilheteiraMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelBotaoBilheteiraMouseEntered
+        if (panelBotaoBilheteira != painelSelecionado) {
+            panelBotaoBilheteira.setBackground(COR_HOVER);
         }
-    }//GEN-LAST:event_panelBotaoDashboardMouseEntered
+    }//GEN-LAST:event_panelBotaoBilheteiraMouseEntered
 
-    private void panelBotaoDashboardMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelBotaoDashboardMouseExited
-        if (panelBotaoDashboard != painelSelecionado) {
-            panelBotaoDashboard.setBackground(COR_NORMAL);
+    private void panelBotaoBilheteiraMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelBotaoBilheteiraMouseExited
+        if (panelBotaoBilheteira != painelSelecionado) {
+            panelBotaoBilheteira.setBackground(COR_NORMAL);
         }
-    }//GEN-LAST:event_panelBotaoDashboardMouseExited
+    }//GEN-LAST:event_panelBotaoBilheteiraMouseExited
 
-    private void panelBotaoDashboardMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelBotaoDashboardMouseClicked
-    }//GEN-LAST:event_panelBotaoDashboardMouseClicked
+    private void panelBotaoBilheteiraMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelBotaoBilheteiraMouseClicked
+    }//GEN-LAST:event_panelBotaoBilheteiraMouseClicked
 
     private void imagemBotaoFuncionariosMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imagemBotaoFuncionariosMouseEntered
         if (panelBotaoFuncionarios != painelSelecionado) {
@@ -703,29 +703,30 @@ public class PaginaInicial extends javax.swing.JFrame {
     private void imagemBotaoRecursosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imagemBotaoRecursosMouseClicked
     }//GEN-LAST:event_imagemBotaoRecursosMouseClicked
 
-    private void labelBotaoDefinicoesMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBotaoDefinicoesMouseEntered
-        if (panelBotaoDefinicoes != painelSelecionado) {
-            panelBotaoDefinicoes.setBackground(COR_HOVER);
+    private void labelBotaoStaffMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBotaoStaffMouseEntered
+        if (panelBotaoStaff != painelSelecionado) {
+            panelBotaoStaff.setBackground(COR_HOVER);
         }
-    }//GEN-LAST:event_labelBotaoDefinicoesMouseEntered
+    }//GEN-LAST:event_labelBotaoStaffMouseEntered
 
-    private void labelBotaoDefinicoesMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBotaoDefinicoesMouseExited
-        if (panelBotaoDefinicoes != painelSelecionado) {
-            panelBotaoDefinicoes.setBackground(COR_NORMAL);
+    private void labelBotaoStaffMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBotaoStaffMouseExited
+        if (panelBotaoStaff != painelSelecionado) {
+            panelBotaoStaff.setBackground(COR_NORMAL);
         }
-    }//GEN-LAST:event_labelBotaoDefinicoesMouseExited
+    }//GEN-LAST:event_labelBotaoStaffMouseExited
 
     private void labelBotaoDefinicoesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBotaoDefinicoesMouseClicked
     }//GEN-LAST:event_labelBotaoDefinicoesMouseClicked
 
-    private void imagemBotaoDashboardMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imagemBotaoDashboardMousePressed
+    private void imagemBotaoBilheteiraMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imagemBotaoBilheteiraMousePressed
         linkN = "src/main/java/Recursos/dashboard.png";
         linkP = "src/main/java/Recursos/dashboard_p.png";
-        labelPagina.setText("Dashboard");
-        selecionarPainel(panelBotaoDashboard, imagemBotaoDashboard, labelBotaoDashbord, linkN, linkP);
+        labelPagina.setText("Bilheteira");
+        selecionarPainel(panelBotaoBilheteira, imagemBotaoBilheteira, labelBotaoBilheteira, linkN, linkP);
 
         limparPainelCentral();
-    }//GEN-LAST:event_imagemBotaoDashboardMousePressed
+        trocarParaPainel(new PanelBilheteria());
+    }//GEN-LAST:event_imagemBotaoBilheteiraMousePressed
 
     private void labelBotaoFuncionariosMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBotaoFuncionariosMousePressed
         int flag = verificarAcesso(5);
@@ -950,14 +951,17 @@ public class PaginaInicial extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_imagemBotaoRecursosMousePressed
 
-    private void labelBotaoDefinicoesMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBotaoDefinicoesMousePressed
-        linkN = "src/main/java/Recursos/definicoes.png";
-        linkP = "src/main/java/Recursos/definicoes_p.png";
-        labelPagina.setText("Definções");
-        selecionarPainel(panelBotaoDefinicoes, imagemBotaoDefinicoes, labelBotaoDefinicoes, linkN, linkP);
-
-        limparPainelCentral();
-    }//GEN-LAST:event_labelBotaoDefinicoesMousePressed
+    private void labelBotaoStaffMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBotaoStaffMousePressed
+        int flag = verificarAcesso(4);
+        if (flag == 1) {
+            linkN = "src/main/java/Recursos/note_branco.png";
+            linkP = "src/main/java/Recursos/note.png";
+            labelPagina.setText("Minhas Tarefas");
+            selecionarPainel(panelBotaoStaff, imagemBotaoStaff, labelBotaoStaff, linkN, linkP);
+            limparPainelCentral();
+            trocarParaPainel(new PanelStaff(this, idTrabalhador));
+        }
+    }//GEN-LAST:event_labelBotaoStaffMousePressed
 
     Point initialClick;
 
@@ -1060,7 +1064,7 @@ public class PaginaInicial extends javax.swing.JFrame {
         PanelFormularioSalas form = new PanelFormularioSalas(this);
         trocarParaPainel(form);
     }
-    
+
     public void irParaFormularioSalas(int idSala) {
         //Cria o painel do formulário
         PanelFormularioSalas form = new PanelFormularioSalas(this, idSala);
@@ -1096,6 +1100,12 @@ public class PaginaInicial extends javax.swing.JFrame {
         trocarParaPainel(form);
     }
 
+    public void irParaFormularioTarefa() {
+        //Cria o painel do formulario do recurso
+        PanelFormularioTarefa form = new PanelFormularioTarefa(this);
+        trocarParaPainel(form);
+    }
+
     public void mostrarListaFuncionarios() {
         //Instancia o painel da lista
         PanelListaFuncionarios lista = new PanelListaFuncionarios(this);
@@ -1110,6 +1120,12 @@ public class PaginaInicial extends javax.swing.JFrame {
 
         //troca o painel
         trocarParaPainel(lista);
+    }
+
+    public void irParaEditarEvento(MODELS.CLASS.Evento e) {
+        PanelFormularioEventos form = new PanelFormularioEventos(this);
+        form.preencherDados(e);
+        trocarParaPainel(form);
     }
 
     public void mostrarListaRecursos() {
@@ -1142,7 +1158,7 @@ public class PaginaInicial extends javax.swing.JFrame {
         } catch (Exception ex) {
             System.err.println("Falha ao iniciar o FlatLaf");
         }
-        
+
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new PaginaInicial().setVisible(true);
@@ -1151,35 +1167,35 @@ public class PaginaInicial extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel imagemBotaoDashboard;
-    private javax.swing.JLabel imagemBotaoDefinicoes;
+    private javax.swing.JLabel imagemBotaoBilheteira;
     private javax.swing.JLabel imagemBotaoEventos;
     private javax.swing.JLabel imagemBotaoFinanceiro;
     private javax.swing.JLabel imagemBotaoFuncionarios;
     private javax.swing.JLabel imagemBotaoRecursos;
     private javax.swing.JLabel imagemBotaoSalas;
+    private javax.swing.JLabel imagemBotaoStaff;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JLabel labelBotaoDashbord;
-    private javax.swing.JLabel labelBotaoDefinicoes;
+    private javax.swing.JLabel labelBotaoBilheteira;
     private javax.swing.JLabel labelBotaoEventos;
     private javax.swing.JLabel labelBotaoFinanceiro;
     private javax.swing.JLabel labelBotaoFuncionarios;
     private javax.swing.JLabel labelBotaoRecursos;
     private javax.swing.JLabel labelBotaoSalas;
+    private javax.swing.JLabel labelBotaoStaff;
     private javax.swing.JLabel labelFechar;
     private javax.swing.JLabel labelMinimizar;
     private javax.swing.JLabel labelPagina;
-    private javax.swing.JPanel panelBotaoDashboard;
-    private javax.swing.JPanel panelBotaoDefinicoes;
+    private javax.swing.JPanel panelBotaoBilheteira;
     private javax.swing.JPanel panelBotaoEventos;
     private javax.swing.JPanel panelBotaoFinanceiro;
     private javax.swing.JPanel panelBotaoFuncionarios;
     private javax.swing.JPanel panelBotaoRecursos;
     private javax.swing.JPanel panelBotaoSalas;
+    private javax.swing.JPanel panelBotaoStaff;
     private javax.swing.JPanel panelFechar;
     private javax.swing.JPanel panelMinimizar;
     // End of variables declaration//GEN-END:variables

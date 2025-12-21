@@ -6,6 +6,7 @@ package VIEWS;
 
 import MODELS.CLASS.Consumivel;
 import MODELS.CLASS.NaoConsumivel;
+import javax.swing.SpinnerNumberModel;
 
 /**
  *
@@ -44,6 +45,9 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
         lblValidade.setVisible(false);
         txtValidade.setVisible(false);
         spPrecoAluguer.setVisible(false);
+        spPreco.setModel(new SpinnerNumberModel(0.0, 0.0, null, 0.50));
+        spQuantidade.setModel(new SpinnerNumberModel(0, 0, null, 1));
+        spPrecoAluguer.setModel(new SpinnerNumberModel(0.0, 0.0, null, 0.50));
     }
     
     private void mostrarMensagem(String msg, String titulo, String img) {
@@ -73,7 +77,7 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
                 // Formatar a data para o utilizador ver em PT
                 if (c.getDataValidade() != null) {
                     java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
-                    txtValidade.setText(sdf.format(c.getDataValidade()));
+                    //txtValidade.setText(sdf.format(c.getDataValidade()));
                 }
             } 
             else if (recurso instanceof NaoConsumivel) {
@@ -93,7 +97,7 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
         txtNome.setText("");
         spPreco.setValue(0.0);
         spQuantidade.setValue(0);
-        txtValidade.setText("");
+        //txtValidade.setText("");
         spPrecoAluguer.setValue(0.0);
     }
     
@@ -104,7 +108,6 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
         txtNome = new javax.swing.JTextField();
         btnGuardar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
-        txtValidade = new javax.swing.JTextField();
         comboTipo = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -112,6 +115,7 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         lblPrecoAluguer = new javax.swing.JLabel();
         lblValidade = new javax.swing.JLabel();
+        txtValidade = new com.toedter.calendar.JDateChooser();
         spPrecoAluguer = new javax.swing.JSpinner();
         spPreco = new javax.swing.JSpinner();
         spQuantidade = new javax.swing.JSpinner();
@@ -125,7 +129,7 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
                 txtNomeActionPerformed(evt);
             }
         });
-        add(txtNome, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 120, 655, 35));
+        add(txtNome, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 120, 660, 35));
 
         btnGuardar.setText("Guardar");
         btnGuardar.setPreferredSize(new java.awt.Dimension(81, 23));
@@ -143,7 +147,6 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
             }
         });
         add(btnCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 480, 150, 40));
-        add(txtValidade, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 290, 180, 35));
 
         comboTipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Consumível", "Não Consumível" }));
         comboTipo.addActionListener(new java.awt.event.ActionListener() {
@@ -166,11 +169,12 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
         add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 270, -1, -1));
 
         lblPrecoAluguer.setText("Preço Aluguer");
-        add(lblPrecoAluguer, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 270, -1, -1));
+        add(lblPrecoAluguer, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 270, -1, -1));
 
         lblValidade.setText("Validade");
-        add(lblValidade, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 270, -1, -1));
-        add(spPrecoAluguer, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 290, 154, 35));
+        add(lblValidade, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 270, -1, -1));
+        add(txtValidade, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 290, 180, 35));
+        add(spPrecoAluguer, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 290, 180, 35));
         add(spPreco, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 200, 660, 40));
         add(spQuantidade, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 290, 180, 35));
     }// </editor-fold>//GEN-END:initComponents
@@ -197,14 +201,24 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
             return;
         }
         
+        if (precoCompra < 0) {
+            mostrarMensagem("O preço de compra não pode ser negativo.", "Erro", "src/main/java/Recursos/erro.png");
+            return;
+        }
+
+        if (quantidade < 0) {
+            mostrarMensagem("A quantidade não pode ser negativa.", "Erro", "src/main/java/Recursos/erro.png");
+            return;
+        }
+        
         boolean sucesso = false;
 
         // 4. LOGICA ESPECÍFICA POR TIPO
         if (tipoRecurso == 0) { // --- MODO CONSUMÍVEL ---
-            String dataStr = txtValidade.getText().trim();
+            //String dataStr = txtValidade.getText().trim();
             java.util.Date validade = null;
 
-            try {
+           /* try {
                 if (!dataStr.isEmpty()) {
                     validade = new java.text.SimpleDateFormat("dd/MM/yyyy").parse(dataStr);
                 } else {
@@ -214,7 +228,7 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
             } catch (java.text.ParseException e) {
                 mostrarMensagem("Formato de data inválido (use dd/MM/yyyy).", "Erro", "src/main/java/Recursos/erro.png");
                 return;
-            }
+            }*/
 
             Consumivel consumivel = new Consumivel();
             consumivel.setNome(nome);
@@ -288,7 +302,7 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
 
             lblValidade.setVisible(false);
             txtValidade.setVisible(false);
-            txtValidade.setText(""); 
+            //txtValidade.setText(""); 
 
             lblPrecoAluguer.setVisible(true);
             spPrecoAluguer.setVisible(true);
@@ -310,6 +324,6 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
     private javax.swing.JSpinner spPrecoAluguer;
     private javax.swing.JSpinner spQuantidade;
     private javax.swing.JTextField txtNome;
-    private javax.swing.JTextField txtValidade;
+    private com.toedter.calendar.JDateChooser txtValidade;
     // End of variables declaration//GEN-END:variables
 }

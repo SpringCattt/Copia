@@ -42,7 +42,7 @@
                           </Group>
                           <Component id="txtNomeEspaco" alignment="1" max="32767" attributes="0"/>
                           <Group type="102" attributes="0">
-                              <EmptySpace pref="341" max="32767" attributes="0"/>
+                              <EmptySpace pref="381" max="32767" attributes="0"/>
                               <Component id="btnCancelar" min="-2" pref="150" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Component id="btnGuardar" min="-2" pref="150" max="-2" attributes="0"/>
@@ -59,7 +59,7 @@
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace min="-2" pref="73" max="-2" attributes="0"/>
               <Component id="lblId" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="84" max="32767" attributes="0"/>
+              <EmptySpace pref="104" max="32767" attributes="0"/>
               <Component id="lblTitulo" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="lblTitulo1" min="-2" max="-2" attributes="0"/>

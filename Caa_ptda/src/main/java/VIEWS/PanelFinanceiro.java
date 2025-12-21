@@ -1,9 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package VIEWS;
 
+import CONTROLLERS.HomeController;
+import MODELS.CLASS.Espaco;
+import MODELS.CLASS.Evento;
+import MODELS.CLASS.EventoRecurso;
+import MODELS.CLASS.NaoConsumivel;
+import MODELS.CLASS.Recurso;
+import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.List;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
@@ -13,16 +18,87 @@ import javax.swing.table.TableRowSorter;
  * @author gonca
  */
 public class PanelFinanceiro extends javax.swing.JPanel {
+
     private PaginaInicial janelaPrincipal;
+    private HomeController controller;
     private String top, mensagem, imagem;
     java.awt.Window win = javax.swing.SwingUtilities.getWindowAncestor(this);
+
     /**
      * Creates new form PanelFinanceiro
      */
     public PanelFinanceiro(PaginaInicial janelaPrincipal) {
         this.janelaPrincipal = janelaPrincipal;
+        this.controller = new HomeController();
         initComponents();
+        DefaultTableModel modelo = (DefaultTableModel) tabelaReceitas.getModel();
+        modelo.setRowCount(0);
+
+        List<EventoRecurso> lista = controller.listarEventoRecursoNaoConsumiveis();
+        float soma = 0;
+
+        for (EventoRecurso er : lista) {
+
+            int idEvento = er.getIdEvento();
+            int idRecurso = er.getIdRecurso();
+            String nomeEvento = null, nomeRecurso = null;
+            Date data = null;
+            float preco = 0;
+
+            Evento evento = controller.buscarEventoPorId(idEvento);
+
+            if (evento != null) {
+                nomeEvento = evento.getNome();
+                data = evento.getData();
+            }
+
+            NaoConsumivel nc = controller.buscarNaoConsumivelPorId(idRecurso);
+
+            if (nc != null) {
+                nomeRecurso = nc.getNome() + "(Aluguel)";
+                preco = (float) nc.getPrecoAluguer();
+            }
+
+            soma = soma + preco;
+
+            modelo.addRow(new Object[]{
+                idEvento,
+                nomeEvento,
+                nomeRecurso,
+                data,
+                preco
+            });
+        }
+
+        DecimalFormat df = new DecimalFormat("0.00");
+        lblTotalReceitas.setText(df.format(soma) + "€");
+
+        float soma2 = 0;
+
+        DefaultTableModel modeloDespesas = (DefaultTableModel) tabelaDespesas.getModel();
+        modeloDespesas.setRowCount(0);
+
+        List<Recurso> listaDespesas = controller.listarTodosOsRecursosSemConsiderarAtivo();
+
+        for (Recurso r : listaDespesas) {
+            String tipo = controller.identificarTipoRecurso(r.getIdRecurso());
+            float subtotal = (float) ((float) r.getQuantidade() * r.getPreco());
+
+
+            soma2 += subtotal;
+            
+            Object[] linha = {
+                r.getIdRecurso(),
+                r.getNome(),
+                tipo,
+                r.getQuantidade(),
+                String.format("%.2f €", subtotal)
+            };
+            modeloDespesas.addRow(linha);
+        }
         
+        lvlTotalDespesas.setText(df.format(soma2) + "€");
+        jLabel4.setText(df.format(soma-soma2) + "€");
         txtPesquisar.setText("Pesquisar");
         txtPesquisar.setForeground(java.awt.Color.GRAY);
 
@@ -44,17 +120,25 @@ public class PanelFinanceiro extends javax.swing.JPanel {
                 }
             }
         });
-        
+
         txtPesquisar.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             @Override
-            public void insertUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                verificarEFiltrar();
+            }
+
             @Override
-            public void removeUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                verificarEFiltrar();
+            }
+
             @Override
-            public void changedUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                verificarEFiltrar();
+            }
         });
     }
-    
+
     private void verificarEFiltrar() {
         String termo = txtPesquisar.getText();
 
@@ -84,7 +168,7 @@ public class PanelFinanceiro extends javax.swing.JPanel {
             sorterD.setRowFilter(RowFilter.regexFilter("(?i)" + termo));
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -120,6 +204,7 @@ public class PanelFinanceiro extends javax.swing.JPanel {
         jLabel1.setText("Total Receitas");
 
         lblTotalReceitas.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        lblTotalReceitas.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblTotalReceitas.setText("0.00€");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -127,13 +212,14 @@ public class PanelFinanceiro extends javax.swing.JPanel {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(87, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addContainerGap(87, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(100, 100, 100)
-                .addComponent(lblTotalReceitas)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 82, Short.MAX_VALUE)
+                        .addComponent(jLabel1)
+                        .addGap(0, 83, Short.MAX_VALUE))
+                    .addComponent(lblTotalReceitas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -153,6 +239,7 @@ public class PanelFinanceiro extends javax.swing.JPanel {
         jLabel2.setText("Total Despesas");
 
         lvlTotalDespesas.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        lvlTotalDespesas.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lvlTotalDespesas.setText("0.00€");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -160,14 +247,13 @@ public class PanelFinanceiro extends javax.swing.JPanel {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(82, 82, 82)
-                        .addComponent(jLabel2))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(99, 99, 99)
-                        .addComponent(lvlTotalDespesas)))
-                .addContainerGap(83, Short.MAX_VALUE))
+                .addGap(82, 82, 82)
+                .addComponent(jLabel2)
+                .addContainerGap(87, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lvlTotalDespesas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -187,6 +273,7 @@ public class PanelFinanceiro extends javax.swing.JPanel {
         jLabel3.setText("Saldo Atual");
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("0.00€");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -195,10 +282,12 @@ public class PanelFinanceiro extends javax.swing.JPanel {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(94, 94, 94)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel3))
-                .addContainerGap(93, Short.MAX_VALUE))
+                .addComponent(jLabel3)
+                .addContainerGap(97, Short.MAX_VALUE))
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
