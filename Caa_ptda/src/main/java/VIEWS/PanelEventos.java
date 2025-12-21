@@ -149,7 +149,7 @@ public class PanelEventos extends javax.swing.JPanel {
             String horaStr = (e.getHora() != null) ? sdfHora.format(e.getHora()) : "";
             String duracaoStr = (e.getDuracao() != null) ? sdfHora.format(e.getDuracao()) : "00:00";
 
-            boolean isCancelado = !e.isAtivo(); 
+            boolean isCancelado = e.isCancelado(); 
 
             if (isCancelado) {
                 estado = "Cancelado";
@@ -197,7 +197,8 @@ public class PanelEventos extends javax.swing.JPanel {
         btnEditar = new javax.swing.JButton();
         btnAssociarRecurso = new javax.swing.JButton();
         btnAssociarTarefa = new javax.swing.JButton();
-        btnEditar1 = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(232, 235, 238));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -219,7 +220,7 @@ public class PanelEventos extends javax.swing.JPanel {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
+                java.lang.Integer.class, java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
                 false, true, true, true, true, true, true, true, true
@@ -246,7 +247,7 @@ public class PanelEventos extends javax.swing.JPanel {
                 btnCriarActionPerformed(evt);
             }
         });
-        add(btnCriar, new org.netbeans.lib.awtextra.AbsoluteConstraints(585, 488, 150, 40));
+        add(btnCriar, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 480, 150, 40));
 
         btnEditar.setBackground(new java.awt.Color(51, 121, 232));
         btnEditar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -257,7 +258,7 @@ public class PanelEventos extends javax.swing.JPanel {
                 btnEditarActionPerformed(evt);
             }
         });
-        add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(417, 488, 150, 40));
+        add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 480, 150, 40));
 
         btnAssociarRecurso.setBackground(new java.awt.Color(51, 121, 232));
         btnAssociarRecurso.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -281,16 +282,27 @@ public class PanelEventos extends javax.swing.JPanel {
         });
         add(btnAssociarTarefa, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 50, 150, 40));
 
-        btnEditar1.setBackground(new java.awt.Color(51, 121, 232));
-        btnEditar1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnEditar1.setForeground(new java.awt.Color(255, 255, 255));
-        btnEditar1.setText("Eliminar");
-        btnEditar1.addActionListener(new java.awt.event.ActionListener() {
+        btnEliminar.setBackground(new java.awt.Color(51, 121, 232));
+        btnEliminar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnEliminar.setForeground(new java.awt.Color(255, 255, 255));
+        btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditar1ActionPerformed(evt);
+                btnEliminarActionPerformed(evt);
             }
         });
-        add(btnEditar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(249, 488, 150, 40));
+        add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 480, 150, 40));
+
+        btnCancelar.setBackground(new java.awt.Color(51, 121, 232));
+        btnCancelar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnCancelar.setForeground(new java.awt.Color(255, 255, 255));
+        btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
+        add(btnCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 480, 150, 40));
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPesquisarActionPerformed
@@ -326,7 +338,7 @@ public class PanelEventos extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnEditarActionPerformed
 
-    private void btnEditar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditar1ActionPerformed
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         int linhaSelecionada = tabelaEventos.getSelectedRow();
         if (linhaSelecionada == -1) {
             mostrarAviso("Selecione um evento para eliminar.", "Atenção", "src/main/java/Recursos/aviso.png");
@@ -351,7 +363,7 @@ public class PanelEventos extends javax.swing.JPanel {
                 mostrarAviso("Erro ao eliminar o evento.", "Erro", "src/main/java/Recursos/erro.png");
             }
         }
-    }//GEN-LAST:event_btnEditar1ActionPerformed
+    }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void btnAssociarTarefaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAssociarTarefaActionPerformed
         if (janelaPrincipal != null) { 
@@ -363,13 +375,54 @@ public class PanelEventos extends javax.swing.JPanel {
         
     }//GEN-LAST:event_btnAssociarRecursoActionPerformed
 
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        int linhaSelecionada = tabelaEventos.getSelectedRow();
+
+        if (linhaSelecionada == -1) {
+            mostrarAviso("Selecione um evento para cancelar.", "Atenção", "src/main/java/Recursos/aviso.png");
+            return;
+        }
+
+        // 1. Obter o texto do estado da linha selecionada (Coluna 8)
+        String estadoAtual = tabelaEventos.getValueAt(linhaSelecionada, 8).toString();
+
+        // 2. Verificar se o estado é "Por Decorrer"
+        // Nota: Se o texto for exatamente "Por Decorrer", impedimos o cancelamento
+        if (estadoAtual.equalsIgnoreCase("Decorrido")) {
+            mostrarAviso("Não é possível cancelar um evento que tenha sido 'Decorrido'.", 
+                         "Operação Inválida", "src/main/java/Recursos/aviso.png");
+            return;
+        }
+
+        // 3. Se passar a validação, prossegue com o pop-up
+        java.awt.Frame parent = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
+        PaginaOpcao popUp = new PaginaOpcao(parent, true);
+
+        popUp.setMensagem("Tem a certeza que deseja cancelar este evento?", "Confirmar Cancelamento");
+        popUp.setVisible(true);
+
+        if (popUp.clicouSim()) {
+            int idEvento = (int) tabelaEventos.getValueAt(linhaSelecionada, 0);
+
+            boolean sucesso = controller.cancelarEvento(idEvento);
+
+            if (sucesso) {
+                mostrarAviso("Evento cancelado com sucesso!", "Sucesso", "src/main/java/Recursos/info.png");
+                carregarTabela(null); 
+            } else {
+                mostrarAviso("Erro ao cancelar o evento.", "Erro", "src/main/java/Recursos/erro.png");
+            }
+        }
+    }//GEN-LAST:event_btnCancelarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAssociarRecurso;
     private javax.swing.JButton btnAssociarTarefa;
+    private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnCriar;
     private javax.swing.JButton btnEditar;
-    private javax.swing.JButton btnEditar1;
+    private javax.swing.JButton btnEliminar;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tabelaEventos;
     private javax.swing.JTextField txtPesquisar;

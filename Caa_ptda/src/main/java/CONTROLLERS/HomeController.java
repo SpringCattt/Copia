@@ -321,7 +321,6 @@ public class HomeController {
                 fimEvento.set(java.util.Calendar.MINUTE, horaInicio.get(java.util.Calendar.MINUTE));
                 fimEvento.set(java.util.Calendar.SECOND, 0);
                 
-                // Sumar duración si existe
                 if (e.getDuracao() != null) {
                     java.util.Calendar duracao = java.util.Calendar.getInstance();
                     duracao.setTime(e.getDuracao());
@@ -330,7 +329,6 @@ public class HomeController {
                     fimEvento.add(java.util.Calendar.MINUTE, duracao.get(java.util.Calendar.MINUTE));
                 }
                 
-                // Si la hora de fin es ANTES de AHORA, marcamos como decorrido
                 if (fimEvento.before(agora)) {
                     eventoDAO.marcarComoDecorrido(e.getIdEvento());
                 }
@@ -340,6 +338,10 @@ public class HomeController {
 
     public boolean eliminarEvento(int id) {
         return eventoDAO.deleteEvento(id);
+    }
+
+    public boolean cancelarEvento(int id) {
+        return eventoDAO.cancelarEvento(id);
     }
 
     // --- ESPAÇOS E SALAS ---

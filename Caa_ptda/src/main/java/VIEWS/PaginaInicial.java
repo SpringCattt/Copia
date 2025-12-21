@@ -725,7 +725,7 @@ public class PaginaInicial extends javax.swing.JFrame {
         selecionarPainel(panelBotaoBilheteira, imagemBotaoBilheteira, labelBotaoBilheteira, linkN, linkP);
 
         limparPainelCentral();
-        trocarParaPainel(new PanelBilheteria());
+        trocarParaPainel(new PanelBilheteria(this));
     }//GEN-LAST:event_imagemBotaoBilheteiraMousePressed
 
     private void labelBotaoFuncionariosMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBotaoFuncionariosMousePressed
@@ -1103,6 +1103,16 @@ public class PaginaInicial extends javax.swing.JFrame {
     public void irParaFormularioTarefa() {
         //Cria o painel do formulario do recurso
         PanelFormularioTarefa form = new PanelFormularioTarefa(this);
+        trocarParaPainel(form);
+    }
+    
+    public void irParaFormularioBilhete() {
+        PanelBilheteria form = new PanelBilheteria(this);
+        trocarParaPainel(form);
+    }
+    
+    public void irParaFormularioCliente() {
+        PanelFormularioCliente form = new PanelFormularioCliente(this);
         trocarParaPainel(form);
     }
 
