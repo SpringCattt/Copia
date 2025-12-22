@@ -103,37 +103,37 @@ public class PanelFormularioSalas extends javax.swing.JPanel {
                 txtNomeSalaActionPerformed(evt);
             }
         });
-        add(txtNomeSala, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 210, 638, 35));
+        add(txtNomeSala, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, 638, 40));
 
         checkLugares.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 checkLugaresActionPerformed(evt);
             }
         });
-        add(checkLugares, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 330, -1, -1));
+        add(checkLugares, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 370, -1, -1));
 
-        add(comboEspaco, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 280, 300, 35));
+        add(comboEspaco, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 280, 300, 40));
 
         lblQuantos.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lblQuantos.setText("-Quantos?");
-        add(lblQuantos, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 330, -1, -1));
+        add(lblQuantos, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 370, -1, -1));
 
         lblTitulo1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblTitulo1.setText("Adicionar Sala");
-        add(lblTitulo1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 120, -1, -1));
+        add(lblTitulo1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 100, -1, -1));
 
         lblTitulo2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lblTitulo2.setText("Nome Sala:");
-        add(lblTitulo2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 190, -1, -1));
+        add(lblTitulo2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 150, -1, 20));
 
         lblTitulo3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lblTitulo3.setText("Tipo de Espaço");
-        add(lblTitulo3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 260, -1, -1));
+        add(lblTitulo3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 250, -1, -1));
 
         lblTitulo4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lblTitulo4.setText("A sala tem lugares?");
-        add(lblTitulo4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 330, -1, -1));
-        add(SpnQuantos, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 330, 90, -1));
+        add(lblTitulo4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 370, -1, -1));
+        add(SpnQuantos, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 360, 90, 40));
 
         lblId.setText("-1");
         add(lblId, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 10, 50, 30));

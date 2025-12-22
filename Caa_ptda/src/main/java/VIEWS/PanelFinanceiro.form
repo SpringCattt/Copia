@@ -229,11 +229,11 @@
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                   <Table columnCount="5" rowCount="4">
-                    <Column editable="true" title="Id Evento" type="java.lang.Integer"/>
-                    <Column editable="true" title="Nome Evento" type="java.lang.String"/>
-                    <Column editable="true" title="Tipo(Bilhete/Aluguer)" type="java.lang.String"/>
-                    <Column editable="true" title="Data" type="java.lang.String"/>
-                    <Column editable="true" title="Valor" type="java.lang.Float"/>
+                    <Column editable="false" title="Id Evento" type="java.lang.Integer"/>
+                    <Column editable="false" title="Nome Evento" type="java.lang.String"/>
+                    <Column editable="false" title="Tipo(Bilhete/Aluguer)" type="java.lang.String"/>
+                    <Column editable="false" title="Data" type="java.lang.String"/>
+                    <Column editable="false" title="Valor" type="java.lang.Float"/>
                   </Table>
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -289,16 +289,22 @@
             <Component class="javax.swing.JTable" name="tabelaDespesas">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="5" rowCount="4">
-                    <Column editable="true" title="Id Recurso" type="java.lang.Integer"/>
-                    <Column editable="true" title="Nome Recurso" type="java.lang.Object"/>
-                    <Column editable="true" title="Categoria" type="java.lang.Object"/>
-                    <Column editable="true" title="Quantidade Comprada" type="java.lang.Object"/>
-                    <Column editable="true" title="Custo total" type="java.lang.Object"/>
+                  <Table columnCount="6" rowCount="4">
+                    <Column editable="false" title="Id" type="java.lang.Integer"/>
+                    <Column editable="false" title="Nome" type="java.lang.Object"/>
+                    <Column editable="false" title="Categoria" type="java.lang.Object"/>
+                    <Column editable="false" title="Quantidade Comprada" type="java.lang.Object"/>
+                    <Column editable="true" title="Preco Unitario" type="java.lang.Object"/>
+                    <Column editable="false" title="Custo total" type="java.lang.Object"/>
                   </Table>
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                   <TableColumnModel selectionModel="0">
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                      <Title/>
+                      <Editor/>
+                      <Renderer/>
+                    </Column>
                     <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                       <Title/>
                       <Editor/>
@@ -390,7 +396,7 @@
         </Constraint>
       </Constraints>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton2">
+    <Component class="javax.swing.JButton" name="btnExportarRelatorio">
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="e8" green="79" red="33" type="rgb"/>
@@ -404,7 +410,7 @@
         <Property name="text" type="java.lang.String" value="Exportar Relatorio"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnExportarRelatorioActionPerformed"/>
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">

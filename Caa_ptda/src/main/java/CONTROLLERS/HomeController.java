@@ -1,32 +1,40 @@
 package CONTROLLERS;
 
+import MODELS.CLASS.Bilhete;
 import MODELS.CLASS.CategoriaTrabalho;
+import MODELS.CLASS.Cliente;
 import MODELS.CLASS.Consumivel;
 import MODELS.CLASS.Trabalhador;
 import MODELS.CLASS.Credenciais;
 import MODELS.CLASS.Espaco;
 import MODELS.CLASS.Evento;
 import MODELS.CLASS.EventoRecurso;
+import MODELS.CLASS.Lugar;
 import MODELS.CLASS.NaoConsumivel;
 import MODELS.CLASS.Sala;
 import MODELS.CLASS.Recurso;
 import MODELS.CLASS.Tarefa;
 import MODELS.CLASS.Cliente;
+import MODELS.DAO.BilheteDAO;
 import MODELS.DAO.CategoriaTrabalhoDAO;
+import MODELS.DAO.ClienteDAO;
 import MODELS.DAO.ConsumiveisDAO;
 import MODELS.DAO.TrabalhadorDAO;
 import MODELS.DAO.CredenciaisDAO;
 import MODELS.DAO.EspacoDAO;
 import MODELS.DAO.EventoDAO;
 import MODELS.DAO.EventoRecursoDAO;
+import MODELS.DAO.LugarDAO;
 import MODELS.DAO.NaoConsumiveisDAO;
 import MODELS.DAO.RecursoDAO;
 import MODELS.DAO.SalaDAO;
 import MODELS.DAO.TarefaDAO;
 import MODELS.DAO.ClienteDAO;
+import MODELS.DAO.LugarDAO;
 import java.util.List;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 
 public class HomeController {
 
@@ -41,6 +49,9 @@ public class HomeController {
     private ConsumiveisDAO consumiveisDao;
     private NaoConsumiveisDAO naoConsumiveisDao;
     private TarefaDAO tarefaDAO;
+    private LugarDAO lugarDAO;
+    private ClienteDAO clienteDAO;
+    private BilheteDAO bilheteDAO;
 
     public HomeController() {
         this.trabalhadorDAO = new TrabalhadorDAO();
@@ -54,6 +65,9 @@ public class HomeController {
         this.consumiveisDao = new ConsumiveisDAO();
         this.naoConsumiveisDao = new NaoConsumiveisDAO();
         this.tarefaDAO = new TarefaDAO();
+        this.lugarDAO = new LugarDAO();
+        this.clienteDAO = new ClienteDAO();
+        this.bilheteDAO = new BilheteDAO();
     }
 
     // --- FUNCIONÁRIOS ---
@@ -176,7 +190,15 @@ public class HomeController {
     }
 
     public Integer efetuarLogin(String email, String password) {
-        return credenciaisDAO.validarLogin(email, password);
+        Credenciais c = credenciaisDAO.getCredenciaisByEmail(email);
+
+        if (c != null) {
+            // Como estão no mesmo pacote, basta chamar o nome da classe
+            if (PasswordUtil.verificarPassword(password, c.getPassword())) { 
+                return c.getIdTrabalhador();
+            }
+        }
+        return null; 
     }
 
     public boolean verificarAtividadeTrabalhador(int id) {
@@ -200,8 +222,7 @@ public class HomeController {
         return eventoDAO.buscarEventos(termo);
     }
 
-    public boolean criarEvento(String nome, String dataStr, String descricao,
-        int responsavelId, int salaId, String horaStr, String duracaoStr) { // Novo parâmetro
+    public boolean criarEvento(String nome, String dataStr, String descricao, int responsavelId, int salaId, String horaStr, String duracaoStr, double preco, double precoBilhete, boolean alugado) {
         Evento e = new Evento();
         e.setNome(nome);
         e.setDescricao(descricao);
@@ -209,6 +230,9 @@ public class HomeController {
         e.setSala(salaId);
         e.setEstado(true);
         e.setAtivo(true);
+        e.setPreco(preco);
+        e.setPrecoBilhete(precoBilhete);
+        e.setAlugado(alugado);
 
         try {
             SimpleDateFormat formatoUsuario = new SimpleDateFormat("dd/MM/yyyy");
@@ -227,7 +251,7 @@ public class HomeController {
                 e.setHora(new java.sql.Time(horaUtil.getTime()));
             }
 
-            // NOVO: Converter Duração
+            // Converter Duração
             if (duracaoStr != null && !duracaoStr.isEmpty()) {
                 java.util.Date duracaoUtil = formatoHora.parse(duracaoStr);
                 e.setDuracao(new java.sql.Time(duracaoUtil.getTime()));
@@ -239,9 +263,8 @@ public class HomeController {
         }
         return eventoDAO.insertEvento(e) > 0;
     }
-    
-    public boolean editarEvento(int id, String nome, String dataStr, String descricao,
-        int responsavelId, int salaId, String horaStr, String duracaoStr) { // Novo parâmetro
+
+    public boolean editarEvento(int id, String nome, String dataStr, String descricao, int responsavelId, int salaId, String horaStr, String duracaoStr, double preco, double precoBilhete, boolean alugado) {
         Evento e = new Evento();
         e.setIdEvento(id);
         e.setNome(nome);
@@ -250,6 +273,9 @@ public class HomeController {
         e.setSala(salaId);
         e.setEstado(true);
         e.setAtivo(true);
+        e.setPreco(preco);
+        e.setPrecoBilhete(precoBilhete);
+        e.setAlugado(alugado);
 
         try {
             SimpleDateFormat formatoUsuario = new SimpleDateFormat("dd/MM/yyyy");
@@ -280,57 +306,59 @@ public class HomeController {
         }
         return eventoDAO.updateEvento(e);
     }
-    
+
     public boolean verificarDisponibilidadeSala(int idSala, String dataStr, String horaStr, String duracaoStr, int idEventoIgnorar) {
         try {
             SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
             SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
-            
+
             java.util.Date d = formatoData.parse(dataStr);
             java.sql.Date dataSql = new java.sql.Date(d.getTime());
-            
+
             java.util.Date h = formatoHora.parse(horaStr);
-            java.sql.Time horaSql = new java.sql.Time(h.getTime());            
+            java.sql.Time horaSql = new java.sql.Time(h.getTime());
 
             java.util.Date dur = formatoHora.parse(duracaoStr);
             java.sql.Time durSql = new java.sql.Time(dur.getTime());
-            
+
             boolean tieneConflicto = eventoDAO.verificarSobreposicao(idSala, dataSql, horaSql, durSql, idEventoIgnorar);
-            
+
             return !tieneConflicto;
-            
+
         } catch (ParseException e) {
             e.printStackTrace();
-            return false; 
+            return false;
         }
     }
-    
+
     public void verificarEAtualizarEventosPassados() {
         List<Evento> eventos = eventoDAO.getEventosAtivosNaoDecorridos();
         java.util.Calendar agora = java.util.Calendar.getInstance();
-        
+
         for (Evento e : eventos) {
-            if (e.isCancelado()) continue; 
-            
+            if (e.isCancelado()) {
+                continue;
+            }
+
             if (e.getData() != null && e.getHora() != null) {
                 java.util.Calendar fimEvento = java.util.Calendar.getInstance();
                 fimEvento.setTime(e.getData());
-                
+
                 java.util.Calendar horaInicio = java.util.Calendar.getInstance();
                 horaInicio.setTime(e.getHora());
-                
+
                 fimEvento.set(java.util.Calendar.HOUR_OF_DAY, horaInicio.get(java.util.Calendar.HOUR_OF_DAY));
                 fimEvento.set(java.util.Calendar.MINUTE, horaInicio.get(java.util.Calendar.MINUTE));
                 fimEvento.set(java.util.Calendar.SECOND, 0);
-                
+
                 if (e.getDuracao() != null) {
                     java.util.Calendar duracao = java.util.Calendar.getInstance();
                     duracao.setTime(e.getDuracao());
-                    
+
                     fimEvento.add(java.util.Calendar.HOUR_OF_DAY, duracao.get(java.util.Calendar.HOUR_OF_DAY));
                     fimEvento.add(java.util.Calendar.MINUTE, duracao.get(java.util.Calendar.MINUTE));
                 }
-                
+
                 if (fimEvento.before(agora)) {
                     eventoDAO.marcarComoDecorrido(e.getIdEvento());
                 }
@@ -367,6 +395,14 @@ public class HomeController {
         return eventoDAO.getEventosAtivosNaoDecorridos();
     }
 
+    public List<Lugar> listarLugaresPorSala(int idSala, int idEvento) {
+        return lugarDAO.getLugaresLivresbySala(idSala, idEvento);
+    }
+
+    public List<Cliente> listarTodosClientes() {
+        return clienteDAO.getAllClientes();
+    }
+
     public long adicionarEspaco(String nome, boolean ativo) {
         Espaco novoEspaco = new Espaco();
         novoEspaco.setNome(nome);
@@ -383,27 +419,6 @@ public class HomeController {
 
     public List<Espaco> pesquisarEspacos(String termo) {
         return espacoDAO.buscarEspacos(termo);
-    }
-
-    public boolean insertSala(String nome, int idEspaco, int qtdLugares, boolean temLugares, boolean ativo, boolean ocupada) {
-        Sala s = new Sala();
-        s.setNome(nome);
-        s.setTipoEspaco(idEspaco);
-        s.setLugares(qtdLugares);
-        s.setTemLugares(temLugares);
-        s.setOcupada(ocupada);
-        s.setAtivo(ativo);
-        return salaDAO.insertSala(s) > 0;
-    }
-
-    public boolean atualizarSala(int id, String nome, int tipo, int lugares, boolean temLugares) {
-        Sala s = new Sala();
-        s.setIdSala(id);
-        s.setNome(nome);
-        s.setTipoEspaco(tipo);
-        s.setLugares(lugares);
-        s.setTemLugares(temLugares);
-        return salaDAO.updateSala(s);
     }
 
     public boolean podeSerEliminada(int id) {
@@ -519,6 +534,10 @@ public class HomeController {
         return eventoRecursoDAO.getEventoRecursosNaoConsumiveis();
     }
 
+    public List<EventoRecurso> listarEventoRecursoConsumiveis() {
+        return eventoRecursoDAO.getEventoRecursosConsumiveis();
+    }
+
     public List<Recurso> listarTodosOsRecursosSemConsiderarAtivo() {
         return recursoDAO.getAllRecursosWithoutAtivo();
     }
@@ -529,15 +548,15 @@ public class HomeController {
         }
         return recursoDAO.getTipoRecursoById(id);
     }
-    
+
     public List<Evento> listarTodosEventosAtivos() {
         return eventoDAO.getAllEventos();
     }
-    
+
     public List<Recurso> listarTodosRecursosAtivas() {
         return recursoDAO.getAllRecursos();
     }
-    
+
     public int obterQuantidadeRecursoNoEvento(int idEvento, int idRecurso) {
         EventoRecursoDAO dao = new EventoRecursoDAO();
         List<MODELS.CLASS.EventoRecurso> lista = dao.getRecursosByEventoId(idEvento);
@@ -549,11 +568,13 @@ public class HomeController {
         }
         return 0;
     }
-    
+
     public boolean associarRecursoAEvento(int idEvento, int idRecurso, int qtPedida) {
         Evento ev = eventoDAO.getEventoById(idEvento);
         Recurso rec = recursoDAO.getRecursoById(idRecurso);
-        if (ev == null || rec == null) return false;
+        if (ev == null || rec == null) {
+            return false;
+        }
 
         String tipo = recursoDAO.getTipoRecursoById(idRecurso);
         int qtAntiga = eventoRecursoDAO.getQuantidadeNoEvento(idEvento, idRecurso);
@@ -593,11 +614,11 @@ public class HomeController {
         } else {
             // Lógica para Não Consumíveis (Horário)
             int emUsoOutros = eventoRecursoDAO.getQuantidadeEmUso(
-                idRecurso, 
-                new java.sql.Date(ev.getData().getTime()), 
-                new java.sql.Time(ev.getHora().getTime()), 
-                ev.getDuracao(), 
-                idEvento
+                    idRecurso,
+                    new java.sql.Date(ev.getData().getTime()),
+                    new java.sql.Time(ev.getHora().getTime()),
+                    ev.getDuracao(),
+                    idEvento
             );
 
             if (qtPedida <= (rec.getQuantidade() - emUsoOutros)) {
@@ -627,12 +648,16 @@ public class HomeController {
     public boolean marcarComoConcluida(int idTarefa) {
         return tarefaDAO.concluirTarefa(idTarefa);
     }
-    
+
     public String criarCliente(String nome, String email, int telefone) {
         MODELS.DAO.ClienteDAO clienteDAO = new MODELS.DAO.ClienteDAO();
-        
-        if (clienteDAO.existeEmail(email)) return "Já existe um cliente com este email.";
-        if (clienteDAO.existeTelefone(telefone)) return "Já existe um cliente com este número de telefone.";
+
+        if (clienteDAO.existeEmail(email)) {
+            return "Já existe um cliente com este email.";
+        }
+        if (clienteDAO.existeTelefone(telefone)) {
+            return "Já existe um cliente com este número de telefone.";
+        }
 
         MODELS.CLASS.Cliente c = new MODELS.CLASS.Cliente();
         c.setNome(nome);
@@ -644,4 +669,118 @@ public class HomeController {
         return (id > 0) ? "Sucesso" : "Erro ao criar cliente.";
     }
 
+    // --- ATUALIZAR MÉTODO DE INSERÇÃO ---
+    public boolean insertSala(String nome, int idEspaco, int qtdLugares, boolean temLugares, boolean ativo, boolean ocupada) {
+        Sala s = new Sala();
+        s.setNome(nome);
+        s.setTipoEspaco(idEspaco);
+        s.setLugares(qtdLugares);
+        s.setTemLugares(temLugares);
+        s.setOcupada(ocupada);
+        s.setAtivo(ativo);
+
+        int idGerado = (int) salaDAO.insertSala(s);
+
+        // Se a sala foi criada e tem lugares, gera os números
+        if (idGerado > 0 && temLugares) {
+            gerarNumerosDeLugares(idGerado, 1, qtdLugares);
+            return true;
+        }
+        return idGerado > 0;
+    }
+
+    public boolean atualizarSala(int id, String nome, int tipo, int lugaresNovos, boolean temLugares) {
+        Sala s = new Sala();
+        s.setIdSala(id);
+        s.setNome(nome);
+        s.setTipoEspaco(tipo);
+        s.setLugares(lugaresNovos);
+        s.setTemLugares(temLugares);
+
+        boolean sucesso = salaDAO.updateSala(s);
+
+        if (sucesso) {
+            List<MODELS.CLASS.Lugar> todosOsLugares = lugarDAO.getTodosLugaresPorSalaInclusiveInativos(id);
+            int totalExistenteNoBanco = todosOsLugares.size();
+
+            if (lugaresNovos > totalExistenteNoBanco) {
+                lugarDAO.setAtividadeLote(id, true, totalExistenteNoBanco);
+                gerarNumerosDeLugares(id, totalExistenteNoBanco + 1, lugaresNovos);
+
+            } else if (lugaresNovos <= totalExistenteNoBanco) {
+
+                lugarDAO.setAtividadePorIntervalo(id, true, 1, lugaresNovos);
+
+                if (totalExistenteNoBanco > lugaresNovos) {
+                    lugarDAO.setAtividadePorIntervalo(id, false, lugaresNovos + 1, totalExistenteNoBanco);
+                }
+            }
+        }
+        return sucesso;
+    }
+
+    // --- MÉTODO AUXILIAR DE GERAÇÃO (Apenas números) ---
+    private void gerarNumerosDeLugares(int idSala, int inicio, int fim) {
+        for (int i = inicio; i <= fim; i++) {
+            MODELS.CLASS.Lugar l = new MODELS.CLASS.Lugar();
+            l.setNumero(String.valueOf(i)); // Transforma o número em String (ex: "1", "2"...)
+            l.setIdSala(idSala);
+            l.setAtivo(true);
+            lugarDAO.insertLugar(l);
+        }
+    }
+
+    private void gerarLugaresParaSala(int idSala, int inicio, int fim) {
+        for (int i = inicio; i <= fim; i++) {
+            MODELS.CLASS.Lugar l = new MODELS.CLASS.Lugar();
+            l.setNumero("L" + i); // Ex: L1, L2, L3...
+            l.setIdSala(idSala);
+            l.setAtivo(true);
+            lugarDAO.insertLugar(l);
+        }
+    }
+
+    public long efetuarVenda(int idLugar, int idCliente, int idEvento, double preco) {
+        Bilhete novoBilhete = new Bilhete();
+        novoBilhete.setLugar(idLugar);
+        novoBilhete.setIdCliente(idCliente);
+        novoBilhete.setIdEvento(idEvento);
+        novoBilhete.setPreco(preco);
+        novoBilhete.setAtivo(true);
+
+        return bilheteDAO.insertBilhete(novoBilhete);
+    }
+
+    public List<Evento> listarEventosProprios() {
+        return eventoDAO.getEventosNaoAlugados();
+    }
+
+    public List<Evento> listarEventosAlugados() {
+        return eventoDAO.getEventosAlugados();
+    }
+
+    public List<Bilhete> listarTodosBilhetes() {
+        try {
+            return bilheteDAO.getAllBilhetes();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<EventoRecurso> listarConsumiveisEventosAlugados() {
+        try {
+            return eventoRecursoDAO.getConsumiveisDeEventosAlugados();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public Recurso buscarPorId(int id) {
+        if (id <= 0) {
+            return null;
+        }
+        return recursoDAO.getRecursoById(id);
+    }
 }

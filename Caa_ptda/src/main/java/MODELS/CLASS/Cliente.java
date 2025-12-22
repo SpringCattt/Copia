@@ -53,6 +53,11 @@ public class Cliente {
     public void setAtivo(boolean Ativo) {
         this.Ativo = Ativo;
     }
+    
+    @Override
+    public String toString() {
+        return this.getNome();
+    }
 
     /* 
      * Funções do cliente

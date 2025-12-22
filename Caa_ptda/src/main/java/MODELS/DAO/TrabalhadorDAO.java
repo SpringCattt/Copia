@@ -182,6 +182,27 @@ public class TrabalhadorDAO {
         return false;
     }
     
+    public Trabalhador getTrabalhadorByEmail(String email) {
+        String sql = "SELECT * FROM Trabalhador WHERE Email = ? AND Ativo = 1";
+
+        try (Connection conn = BaseDados.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToTrabalhador(rs);
+                }
+            }
+
+        } catch (SQLException e) {
+            // Reportar falhas de acesso a dados no relatório de testes [cite: 554, 565]
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
     public List<Trabalhador> getTrabalhadoresPorCategoria(String nomeCategoria) {
         List<Trabalhador> lista = new ArrayList<>();
         String sql = "SELECT t.* FROM Trabalhador t " +

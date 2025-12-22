@@ -42,7 +42,11 @@ public class PaginaInicial extends javax.swing.JFrame {
 
         this.controller = new HomeController();
     }
-
+    
+    public int getIdTrabalhador() {
+        return this.idTrabalhador;
+    }
+    
     public void estiloJanela() {
         JPanel contentPane = new JPanel();
         contentPane.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
@@ -68,6 +72,16 @@ public class PaginaInicial extends javax.swing.JFrame {
         labelIconeSelecionado = labelI;
         labelTextoSelecionado = labelP;
         iconNormalSelecionado = linkN;
+    }
+    
+    private boolean temAcesso(int categoriaRequerida) {
+        Trabalhador t = controller.procurarTrabalhador(idTrabalhador);
+
+        // Se o trabalhador for Admin (cat 5), ele tem acesso a tudo
+        if (t != null && t.getCategoria() == 5) return true;
+
+        // Caso contrário, verifica se a categoria coincide
+        return t != null && t.getCategoria() == categoriaRequerida;
     }
 
     @SuppressWarnings("unchecked")
@@ -99,6 +113,7 @@ public class PaginaInicial extends javax.swing.JFrame {
         imagemBotaoBilheteira = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
+        lblImagemMENU = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         labelPagina = new javax.swing.JLabel();
         panelFechar = new javax.swing.JPanel();
@@ -510,6 +525,10 @@ public class PaginaInicial extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(232, 235, 238));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        lblImagemMENU.setIcon(new javax.swing.ImageIcon("src/main/java/Recursos/LOGO_MENU.png"));
+        jPanel2.add(lblImagemMENU, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 150, 600, 208));
+
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(221, 51, 780, 550));
 
         jPanel3.setBackground(new java.awt.Color(255, 252, 252));
@@ -733,237 +752,66 @@ public class PaginaInicial extends javax.swing.JFrame {
     }//GEN-LAST:event_imagemBotaoBilheteiraMousePressed
 
     private void labelBotaoFuncionariosMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBotaoFuncionariosMousePressed
-        int flag = verificarAcesso(5);
-        if (flag == 1) {
+        if (verificarAcesso(5)) { 
             linkN = "src/main/java/Recursos/funcionarios.png";
             linkP = "src/main/java/Recursos/funcionarios_p.png";
-            labelPagina.setText("Funcionarios");
+            labelPagina.setText("Funcionários");
             selecionarPainel(panelBotaoFuncionarios, imagemBotaoFuncionarios, labelBotaoFuncionarios, linkN, linkP);
-
-            limparPainelCentral();
-
             trocarParaPainel(new PanelListaFuncionarios(this));
-        }
-        if (flag == 2) {
-            PaginaDialogo dialogo = new PaginaDialogo(this, true);
-
-            String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
-            String top = "Erro";
-            String imagem = "src/main/java/Recursos/erro.png";
-            dialogo.setMensagem(mensagem, top, imagem);
-            dialogo.setVisible(true);
-        }
-        if (flag == 3) {
-            PaginaDialogo dialogo = new PaginaDialogo(this, true);
-
-            String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
-            String top = "Erro";
-            String imagem = "src/main/java/Recursos/erro.png";
-            dialogo.setMensagem(mensagem, top, imagem);
-            dialogo.setVisible(true);
         }
     }//GEN-LAST:event_labelBotaoFuncionariosMousePressed
 
     private void panelBotaoSalasMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelBotaoSalasMousePressed
-        int flag = verificarAcesso(4);
-        if (flag == 1) {
+        if (verificarAcesso(2)) { 
             linkN = "src/main/java/Recursos/salas.png";
             linkP = "src/main/java/Recursos/salas_p.png";
             labelPagina.setText("Salas");
             selecionarPainel(panelBotaoSalas, imagemBotaoSalas, labelBotaoSalas, linkN, linkP);
-
-            limparPainelCentral();
-
             trocarParaPainel(new PanelSalas(this));
-        } else {
-            flag = verificarAcesso(5);
-            if (flag == 1) {
-                linkN = "src/main/java/Recursos/salas.png";
-                linkP = "src/main/java/Recursos/salas_p.png";
-                labelPagina.setText("Salas");
-                selecionarPainel(panelBotaoSalas, imagemBotaoSalas, labelBotaoSalas, linkN, linkP);
-
-                limparPainelCentral();
-
-                trocarParaPainel(new PanelSalas(this));
-            } else {
-                flag = verificarAcesso(2);
-                if (flag == 1) {
-                    linkN = "src/main/java/Recursos/salas.png";
-                    linkP = "src/main/java/Recursos/salas_p.png";
-                    labelPagina.setText("Salas");
-                    selecionarPainel(panelBotaoSalas, imagemBotaoSalas, labelBotaoSalas, linkN, linkP);
-
-                    limparPainelCentral();
-
-                    trocarParaPainel(new PanelSalas(this));
-                }
-                if (flag == 2) {
-                    PaginaDialogo dialogo = new PaginaDialogo(this, true);
-
-                    String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
-                    String top = "Erro";
-                    String imagem = "src/main/java/Recursos/erro.png";
-                    dialogo.setMensagem(mensagem, top, imagem);
-                    dialogo.setVisible(true);
-                }
-                if (flag == 3) {
-                    PaginaDialogo dialogo = new PaginaDialogo(this, true);
-
-                    String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
-                    String top = "Erro";
-                    String imagem = "src/main/java/Recursos/erro.png";
-                    dialogo.setMensagem(mensagem, top, imagem);
-                    dialogo.setVisible(true);
-                }
-            }
-
         }
     }//GEN-LAST:event_panelBotaoSalasMousePressed
 
     private void labelBotaoEventosMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBotaoEventosMousePressed
-        int flag = verificarAcesso(2);
-        if (flag == 1) {
-            linkN = "src/main/java/Recursos/eventos.png";
-            linkP = "src/main/java/Recursos/eventos_p.png";
-            labelPagina.setText("Eventos");
-            selecionarPainel(panelBotaoEventos, imagemBotaoEventos, labelBotaoEventos, linkN, linkP);
+        // Definir os caminhos dos ícones
+        linkN = "src/main/java/Recursos/eventos.png";
+        linkP = "src/main/java/Recursos/eventos_p.png";
 
-            limparPainelCentral();
+        // Atualizar o título e o estado visual do botão na barra lateral
+        labelPagina.setText("Eventos");
+        selecionarPainel(panelBotaoEventos, imagemBotaoEventos, labelBotaoEventos, linkN, linkP);
 
-            trocarParaPainel(new PanelEventos(this));
-        } else {
-            flag = verificarAcesso(5);
-            if (flag == 1) {
-                linkN = "src/main/java/Recursos/eventos.png";
-                linkP = "src/main/java/Recursos/eventos_p.png";
-                labelPagina.setText("Eventos");
-                selecionarPainel(panelBotaoEventos, imagemBotaoEventos, labelBotaoEventos, linkN, linkP);
-
-                limparPainelCentral();
-
-                trocarParaPainel(new PanelEventos(this));
-            }
-            if (flag == 2) {
-                PaginaDialogo dialogo = new PaginaDialogo(this, true);
-
-                String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
-                String top = "Erro";
-                String imagem = "src/main/java/Recursos/erro.png";
-                dialogo.setMensagem(mensagem, top, imagem);
-                dialogo.setVisible(true);
-            }
-            if (flag == 3) {
-                PaginaDialogo dialogo = new PaginaDialogo(this, true);
-
-                String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
-                String top = "Erro";
-                String imagem = "src/main/java/Recursos/erro.png";
-                dialogo.setMensagem(mensagem, top, imagem);
-                dialogo.setVisible(true);
-            }
-        }
-
-
+        // Limpar o centro e carregar o painel
+        limparPainelCentral();
+        trocarParaPainel(new PanelEventos(this));
     }//GEN-LAST:event_labelBotaoEventosMousePressed
 
     private void imagemBotaoFinanceiroMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imagemBotaoFinanceiroMousePressed
-        int flag = verificarAcesso(1);
-        if (flag == 1) {
+        if (verificarAcesso(1)) {
             linkN = "src/main/java/Recursos/financeiro.png";
             linkP = "src/main/java/Recursos/financeiro_p.png";
             labelPagina.setText("Financeiro");
             selecionarPainel(panelBotaoFinanceiro, imagemBotaoFinanceiro, labelBotaoFinanceiro, linkN, linkP);
-
-            limparPainelCentral();
-
             trocarParaPainel(new PanelFinanceiro(this));
-        } else {
-            flag = verificarAcesso(5);
-            if (flag == 1) {
-                linkN = "src/main/java/Recursos/financeiro.png";
-                linkP = "src/main/java/Recursos/financeiro_p.png";
-                labelPagina.setText("Financeiro");
-                selecionarPainel(panelBotaoFinanceiro, imagemBotaoFinanceiro, labelBotaoFinanceiro, linkN, linkP);
-
-                limparPainelCentral();
-
-                trocarParaPainel(new PanelFinanceiro(this));
-            }
-            if (flag == 2) {
-                PaginaDialogo dialogo = new PaginaDialogo(this, true);
-
-                String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
-                String top = "Erro";
-                String imagem = "src/main/java/Recursos/erro.png";
-                dialogo.setMensagem(mensagem, top, imagem);
-                dialogo.setVisible(true);
-            }
-            if (flag == 3) {
-                PaginaDialogo dialogo = new PaginaDialogo(this, true);
-
-                String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
-                String top = "Erro";
-                String imagem = "src/main/java/Recursos/erro.png";
-                dialogo.setMensagem(mensagem, top, imagem);
-                dialogo.setVisible(true);
-            }
         }
     }//GEN-LAST:event_imagemBotaoFinanceiroMousePressed
 
     private void imagemBotaoRecursosMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imagemBotaoRecursosMousePressed
-        int flag = verificarAcesso(3);
-        if (flag == 1) {
+        if (verificarAcesso(3)) {
             linkN = "src/main/java/Recursos/recursos.png";
             linkP = "src/main/java/Recursos/recursos_p.png";
-            labelPagina.setText("Recursos");
+            labelPagina.setText("Recurso");
             selecionarPainel(panelBotaoRecursos, imagemBotaoRecursos, labelBotaoRecursos, linkN, linkP);
-
-            limparPainelCentral();
-
             trocarParaPainel(new PanelRecursos(this));
-        } else {
-            flag = verificarAcesso(5);
-            if (flag == 1) {
-                linkN = "src/main/java/Recursos/recursos.png";
-                linkP = "src/main/java/Recursos/recursos_p.png";
-                labelPagina.setText("Recursos");
-                selecionarPainel(panelBotaoRecursos, imagemBotaoRecursos, labelBotaoRecursos, linkN, linkP);
-
-                limparPainelCentral();
-
-                trocarParaPainel(new PanelRecursos(this));
-            }
-            if (flag == 2) {
-                PaginaDialogo dialogo = new PaginaDialogo(this, true);
-
-                String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
-                String top = "Erro";
-                String imagem = "src/main/java/Recursos/erro.png";
-                dialogo.setMensagem(mensagem, top, imagem);
-                dialogo.setVisible(true);
-            }
-            if (flag == 3) {
-                PaginaDialogo dialogo = new PaginaDialogo(this, true);
-
-                String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
-                String top = "Erro";
-                String imagem = "src/main/java/Recursos/erro.png";
-                dialogo.setMensagem(mensagem, top, imagem);
-                dialogo.setVisible(true);
-            }
         }
     }//GEN-LAST:event_imagemBotaoRecursosMousePressed
 
     private void labelBotaoStaffMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelBotaoStaffMousePressed
-        int flag = verificarAcesso(4);
-        if (flag == 1) {
+        if (verificarAcesso(4)) {
             linkN = "src/main/java/Recursos/note_branco.png";
             linkP = "src/main/java/Recursos/note.png";
-            labelPagina.setText("Minhas Tarefas");
+            labelPagina.setText("Staff");
             selecionarPainel(panelBotaoStaff, imagemBotaoStaff, labelBotaoStaff, linkN, linkP);
-            limparPainelCentral();
-            trocarParaPainel(new PanelStaff(this, idTrabalhador));
+            trocarParaPainel(new PanelStaff(this));
         }
     }//GEN-LAST:event_labelBotaoStaffMousePressed
 
@@ -1020,19 +868,33 @@ public class PaginaInicial extends javax.swing.JFrame {
         jPanel2.repaint();
     }
 
-    private int verificarAcesso(int categoria) {
+    private boolean verificarAcesso(int... categoriasPermitidas) {
         Trabalhador t = controller.procurarTrabalhador(idTrabalhador);
+        if (t == null) return false;
 
-        if (t != null) {
+        int catAtual = t.getCategoria();
 
-            if (t.getCategoria() == categoria) {
-                return 1;
-            } else {
-                return 2;
+        // 1. Regra Universal: Administrador (5) entra sempre
+        if (catAtual == 5) return true;
+
+        // 2. Verificar se a categoria do utilizador está na lista autorizada
+        for (int categoria : categoriasPermitidas) {
+            if (catAtual == categoria) {
+                return true;
             }
-
         }
-        return 3;
+
+        // 3. Caso não encontre correspondência, mostra o aviso e retorna false
+        mostrarAvisoAcessoNegado();
+        return false;
+    }
+
+    // Método auxiliar para não repetir o código do Pop-up em todo o lado
+    private void mostrarAvisoAcessoNegado() {
+        PaginaDialogo dialogo = new PaginaDialogo(this, true);
+        String mensagem = "O utilizador não tem permissão para aceder a esta aba.";
+        dialogo.setMensagem(mensagem, "Acesso Negado", "src/main/java/Recursos/erro.png");
+        dialogo.setVisible(true);
     }
 
     // Método genérico que troca o conteúdo do jPanel2 por qualquer painel que lhe dês
@@ -1239,6 +1101,7 @@ public class PaginaInicial extends javax.swing.JFrame {
     private javax.swing.JLabel labelFechar;
     private javax.swing.JLabel labelMinimizar;
     private javax.swing.JLabel labelPagina;
+    private javax.swing.JLabel lblImagemMENU;
     private javax.swing.JPanel panelBotaoBilheteira;
     private javax.swing.JPanel panelBotaoEventos;
     private javax.swing.JPanel panelBotaoFinanceiro;

@@ -36,6 +36,10 @@ public class PanelStaff extends javax.swing.JPanel {
         this.janelaPrincipal = paginaInicial;
         this.controller = new HomeController();
         initComponents();
+        
+        tabelaTarefas.getTableHeader().setResizingAllowed(false);
+        tabelaTarefas.getTableHeader().setReorderingAllowed(false);
+        tabelaTarefas.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
     }
 
     /**
@@ -70,9 +74,16 @@ public class PanelStaff extends javax.swing.JPanel {
             Class[] types = new Class [] {
                 java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         jScrollPane1.setViewportView(tabelaTarefas);

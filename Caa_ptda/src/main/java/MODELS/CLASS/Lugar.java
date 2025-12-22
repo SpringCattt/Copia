@@ -46,6 +46,11 @@ public class Lugar {
         this.Ativo = Ativo;
     }
     
+    @Override
+    public String toString() {
+        return this.getNumero();
+    }
+    
     /* 
      * Funções do Lugar
      */

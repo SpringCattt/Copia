@@ -61,7 +61,6 @@ public class PaginaOpcao extends javax.swing.JDialog {
         setMaximumSize(new java.awt.Dimension(400, 230));
         setMinimumSize(new java.awt.Dimension(400, 230));
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(400, 230));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -104,7 +103,7 @@ public class PaginaOpcao extends javax.swing.JDialog {
         labelTitulo.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         labelTitulo.setForeground(new java.awt.Color(255, 255, 255));
         labelTitulo.setText("ERRO");
-        panelTop.add(labelTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 180, 30));
+        panelTop.add(labelTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 280, 30));
 
         labelImagem.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelImagem.setIcon(new javax.swing.ImageIcon("src/main/java/Recursos/aviso.png"));

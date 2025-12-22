@@ -25,6 +25,14 @@ public class PanelSalas extends javax.swing.JPanel {
         this.controller = new HomeController();
         initComponents();
         
+        tabelaSalas.getTableHeader().setResizingAllowed(false);
+        tabelaSalas.getTableHeader().setReorderingAllowed(false);
+        tabelaSalas.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        
+        tabelaEspacos.getTableHeader().setResizingAllowed(false);
+        tabelaEspacos.getTableHeader().setReorderingAllowed(false);
+        tabelaEspacos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        
         carregarDadosTabelaEspacos(null);
         carregarDadosTabelaSalas(null);
         
@@ -151,7 +159,7 @@ public class PanelSalas extends javax.swing.JPanel {
                 txtPesquisarActionPerformed(evt);
             }
         });
-        add(txtPesquisar, new org.netbeans.lib.awtextra.AbsoluteConstraints(45, 50, 180, 40));
+        add(txtPesquisar, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, 180, 40));
 
         btnAdicionar.setBackground(new java.awt.Color(51, 121, 232));
         btnAdicionar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -162,7 +170,7 @@ public class PanelSalas extends javax.swing.JPanel {
                 btnAdicionarActionPerformed(evt);
             }
         });
-        add(btnAdicionar, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 500, 150, 40));
+        add(btnAdicionar, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 490, 150, 40));
 
         btnDesativarSala.setBackground(new java.awt.Color(51, 121, 232));
         btnDesativarSala.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -173,7 +181,7 @@ public class PanelSalas extends javax.swing.JPanel {
                 btnDesativarSalaActionPerformed(evt);
             }
         });
-        add(btnDesativarSala, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 500, 150, 40));
+        add(btnDesativarSala, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 490, 150, 40));
 
         btnEditar.setBackground(new java.awt.Color(51, 121, 232));
         btnEditar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -184,7 +192,7 @@ public class PanelSalas extends javax.swing.JPanel {
                 btnEditarActionPerformed(evt);
             }
         });
-        add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 500, 150, 40));
+        add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 490, 150, 40));
 
         tabelaSalas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -197,9 +205,16 @@ public class PanelSalas extends javax.swing.JPanel {
             Class[] types = new Class [] {
                 java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         jScrollPane1.setViewportView(tabelaSalas);
@@ -217,16 +232,23 @@ public class PanelSalas extends javax.swing.JPanel {
             Class[] types = new Class [] {
                 java.lang.Integer.class, java.lang.String.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         jScrollPane2.setViewportView(tabelaEspacos);
 
         tabPaneSE.addTab("Espaços", jScrollPane2);
 
-        add(tabPaneSE, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 100, 680, 380));
+        add(tabPaneSE, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, 680, 380));
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPesquisarActionPerformed
@@ -249,7 +271,7 @@ public class PanelSalas extends javax.swing.JPanel {
         if (indexAba == 0) { // SALAS
             int linha = tabelaSalas.getSelectedRow();
             if (linha == -1) {
-                mostrarAviso(parent, "Nenhuma sala selecionada", "Erro", "src/main/java/Recursos/erro.png");
+                mostrarAviso(parent, "Selecione uma sala para eliminar.", "Atenção", "src/main/java/Recursos/aviso.png");
                 return;
             }
             int modelRow = tabelaSalas.convertRowIndexToModel(linha);
@@ -276,7 +298,7 @@ public class PanelSalas extends javax.swing.JPanel {
         } else if (indexAba == 1) { // ESPAÇOS
             int linha = tabelaEspacos.getSelectedRow();
             if (linha == -1) {
-                mostrarAviso(parent, "Nenhum espaço selecionado", "Erro", "src/main/java/Recursos/erro.png");
+                mostrarAviso(parent, "Selecione um espaço para eliminar.", "Atenção", "src/main/java/Recursos/aviso.png");
                 return;
             }
             int modelRow = tabelaEspacos.convertRowIndexToModel(linha);
@@ -310,7 +332,7 @@ public class PanelSalas extends javax.swing.JPanel {
         if (index == 0) { // SALAS
             int linha = tabelaSalas.getSelectedRow();
             if (linha == -1) {
-                mostrarAviso(parent, "Nenhuma sala selecionada", "Erro", "src/main/java/Recursos/erro.png");
+                mostrarAviso(parent, "Selecione uma sala para editar.", "Atenção", "src/main/java/Recursos/aviso.png");
                 return;
             }
             int modelRow = tabelaSalas.convertRowIndexToModel(linha);
@@ -319,7 +341,7 @@ public class PanelSalas extends javax.swing.JPanel {
         } else if (index == 1) { // ESPAÇOS
             int linha = tabelaEspacos.getSelectedRow();
             if (linha == -1) {
-                mostrarAviso(parent, "Nenhum espacio seleccionado", "Erro", "src/main/java/Recursos/erro.png");
+                mostrarAviso(parent, "Selecione um espaço para editar.", "Atenção", "src/main/java/Recursos/aviso.png");
                 return;
             }
             int modelRow = tabelaEspacos.convertRowIndexToModel(linha);

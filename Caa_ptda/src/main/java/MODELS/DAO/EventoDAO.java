@@ -17,9 +17,9 @@ public class EventoDAO {
         e.setResponsavel(rs.getInt("Responsavel"));
         e.setSala(rs.getInt("Sala"));
         e.setHora(rs.getTime("Hora"));
-        e.setDuracao(rs.getTime("Duracao")); 
+        e.setDuracao(rs.getTime("Duracao"));
         e.setEstado(rs.getBoolean("Estado"));
-        
+
         // NOVAS COLUNAS
         e.setPreco(rs.getDouble("Preco"));
         e.setPrecoBilhete(rs.getDouble("PrecoBilhete"));
@@ -27,17 +27,23 @@ public class EventoDAO {
 
         try {
             e.setCancelado(rs.getBoolean("Cancelado"));
-        } catch (SQLException ex) { e.setCancelado(false); }
+        } catch (SQLException ex) {
+            e.setCancelado(false);
+        }
 
         try {
             e.setAtivo(rs.getBoolean("Ativo"));
-        } catch (SQLException ex) { e.setAtivo(true); }
-        
+        } catch (SQLException ex) {
+            e.setAtivo(true);
+        }
+
         return e;
     }
 
     private Timestamp combinarFechaHora(java.util.Date date, java.util.Date time) {
-        if (date == null || time == null) return null;
+        if (date == null || time == null) {
+            return null;
+        }
 
         Calendar calDate = Calendar.getInstance();
         calDate.setTime(date);
@@ -57,8 +63,7 @@ public class EventoDAO {
         // SQL Atualizado com as 3 novas colunas
         String sql = "INSERT INTO Evento (Nome, Data, Descricao, Responsavel, Sala, Estado, Ativo, Hora, Cancelado, Duracao, Preco, PrecoBilhete, Alugado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = BaseDados.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, e.getNome());
             stmt.setDate(2, new java.sql.Date(e.getData().getTime()));
@@ -74,14 +79,14 @@ public class EventoDAO {
                 stmt.setNull(8, java.sql.Types.TIMESTAMP);
             }
 
-            stmt.setBoolean(9, e.isCancelado()); 
+            stmt.setBoolean(9, e.isCancelado());
 
             if (e.getDuracao() != null) {
                 stmt.setTime(10, new java.sql.Time(e.getDuracao().getTime()));
             } else {
                 stmt.setNull(10, java.sql.Types.TIME);
             }
-            
+
             // SET DOS NOVOS CAMPOS
             stmt.setDouble(11, e.getPreco());
             stmt.setDouble(12, e.getPrecoBilhete());
@@ -90,19 +95,22 @@ public class EventoDAO {
             int affectedRows = stmt.executeUpdate();
             if (affectedRows > 0) {
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) return generatedKeys.getInt(1);
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getInt(1);
+                    }
                 }
             }
-        } catch (SQLException ex) { ex.printStackTrace(); }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
         return -1;
     }
-    
+
     public boolean updateEvento(Evento e) {
         // SQL Atualizado
         String sql = "UPDATE Evento SET Nome=?, Data=?, Descricao=?, Responsavel=?, Sala=?, Hora=?, Estado=?, Cancelado=?, Ativo=?, Duracao=?, Preco=?, PrecoBilhete=?, Alugado=? WHERE IdEvento=?";
 
-        try (Connection conn = BaseDados.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, e.getNome());
             stmt.setDate(2, new java.sql.Date(e.getData().getTime()));
@@ -116,7 +124,7 @@ public class EventoDAO {
                 stmt.setNull(6, java.sql.Types.TIMESTAMP);
             }
 
-            stmt.setBoolean(7, e.isEstado()); 
+            stmt.setBoolean(7, e.isEstado());
             stmt.setBoolean(8, e.isCancelado());
             stmt.setBoolean(9, e.isAtivo());
 
@@ -125,7 +133,7 @@ public class EventoDAO {
             } else {
                 stmt.setNull(10, java.sql.Types.TIME);
             }
-            
+
             // NOVOS CAMPOS
             stmt.setDouble(11, e.getPreco());
             stmt.setDouble(12, e.getPrecoBilhete());
@@ -184,6 +192,40 @@ public class EventoDAO {
         return eventos;
     }
 
+    public List<Evento> getEventosNaoAlugados() {
+        List<Evento> eventos = new ArrayList<>();
+        
+        String sql = "SELECT * FROM Evento WHERE Ativo = 1 AND Alugado = 0";
+
+        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                eventos.add(mapResultSetToEvento(rs));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return eventos;
+    }
+    
+    public List<Evento> getEventosAlugados() {
+        List<Evento> eventos = new ArrayList<>();
+        
+        String sql = "SELECT * FROM Evento WHERE Ativo = 1 AND Alugado = 1";
+
+        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                eventos.add(mapResultSetToEvento(rs));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return eventos;
+    }
+
     public List<Evento> getEventosAtivosNaoDecorridos() {
         List<Evento> eventos = new ArrayList<>();
         String sql = "SELECT * FROM Evento WHERE Ativo = 1 AND Estado = 1 AND Cancelado = 0";
@@ -234,13 +276,13 @@ public class EventoDAO {
         }
         return lista;
     }
-    
+
     public boolean verificarSobreposicao(int idSala, java.sql.Date data, java.sql.Time inicio, java.sql.Time duracao, int idIgnorar) {
-        String sql = "SELECT COUNT(*) FROM Evento " +
-                     "WHERE Sala = ? AND Data = ? AND Ativo = 1 AND IdEvento != ? " +
-                     "AND (? < ADDTIME(TIME(Hora), IFNULL(Duracao, '00:00:00'))) " +
-                     "AND (ADDTIME(?, ?) > TIME(Hora))";
-        
+        String sql = "SELECT COUNT(*) FROM Evento "
+                + "WHERE Sala = ? AND Data = ? AND Ativo = 1 AND IdEvento != ? "
+                + "AND (? < ADDTIME(TIME(Hora), IFNULL(Duracao, '00:00:00'))) "
+                + "AND (ADDTIME(?, ?) > TIME(Hora))";
+
         try {
             Connection conn = BaseDados.getConnection();
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -250,7 +292,7 @@ public class EventoDAO {
                 stmt.setTime(4, inicio);
                 stmt.setTime(5, inicio);
                 stmt.setTime(6, duracao);
-                
+
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                     return rs.getInt(1) > 0;
@@ -259,12 +301,12 @@ public class EventoDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false; 
+        return false;
     }
-    
+
     public void marcarComoDecorrido(int idEvento) {
         // Esta consulta actualiza el estado en la BD
-        String sql = "UPDATE Evento SET Cancelado = 1, Estado = 0 WHERE IdEvento = ?";
+        String sql = "UPDATE Evento SET Cancelado = 0, Estado = 0 WHERE IdEvento = ?";
         try {
             Connection conn = BaseDados.getConnection();
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {

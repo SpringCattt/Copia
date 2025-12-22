@@ -15,7 +15,6 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
     private PaginaInicial janelaPrincipal;
     private int idEventoEditando = -1;
 
-    // Listas auxiliares para gestionar los objetos reales
     private List<Sala> listaSalas;
     private List<Trabalhador> listaResponsaveis;
 
@@ -23,7 +22,6 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
         this.janelaPrincipal = paginaInicial;
         this.controller = new HomeController();
         
-        // Inicializamos las listas
         this.listaSalas = new ArrayList<>();
         this.listaResponsaveis = new ArrayList<>();
         
@@ -35,9 +33,26 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
     }
     
     private void configurarRelogio() {
-        javax.swing.JSpinner.DateEditor editor = new javax.swing.JSpinner.DateEditor(spinHoraInicio, "HH:mm");
-        spinHoraInicio.setEditor(editor);
+        javax.swing.SpinnerDateModel modelInicio = new javax.swing.SpinnerDateModel();
+        modelInicio.setCalendarField(Calendar.MINUTE);
+        spinHoraInicio.setModel(modelInicio);
+        
+        javax.swing.JSpinner.DateEditor editorInicio = new javax.swing.JSpinner.DateEditor(spinHoraInicio, "HH:mm");
+        spinHoraInicio.setEditor(editorInicio);
         spinHoraInicio.setValue(new java.util.Date());
+
+        javax.swing.SpinnerDateModel modelDuracao = new javax.swing.SpinnerDateModel();
+        modelDuracao.setCalendarField(Calendar.MINUTE);
+        spinDuracao.setModel(modelDuracao);
+        
+        javax.swing.JSpinner.DateEditor editorDuracao = new javax.swing.JSpinner.DateEditor(spinDuracao, "HH:mm");
+        spinDuracao.setEditor(editorDuracao);
+        
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 1);
+        cal.set(Calendar.MINUTE, 0);
+        java.util.Date defaultTime = cal.getTime();
+        spinDuracao.setValue(defaultTime);
     }
 
     private void carregarCombos() {
@@ -82,7 +97,10 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
             spinDuracao.setValue(e.getDuracao());
         }
         
-        // Seleccionar Sala correcta
+        spinnerPrecoEvento.setValue(e.getPreco());
+        spinnerPrecoBilhete.setValue(e.getPrecoBilhete());
+        checkAlugado.setSelected(e.isAlugado());
+        
         if (listaSalas != null) {
             for (int i = 0; i < listaSalas.size(); i++) {
                 if (listaSalas.get(i).getIdSala() == e.getSala()) {
@@ -92,7 +110,6 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
             }
         }
         
-        // Seleccionar Responsable correcto
         if (listaResponsaveis != null) {
             for (int i = 0; i < listaResponsaveis.size(); i++) {
                 if (listaResponsaveis.get(i).getIdTrabalhador() == e.getResponsavel()) {
@@ -239,12 +256,15 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
         String descricao = txtDescricao.getText().trim();
         java.util.Date dataCal = dateEvento.getDate();
         java.util.Date horaVal = (java.util.Date) spinHoraInicio.getValue();
-        java.util.Date duracaoVal = (java.util.Date) spinDuracao.getValue(); // Obtenemos duración
+        java.util.Date duracaoVal = (java.util.Date) spinDuracao.getValue();
 
         int indexSala = comboSala.getSelectedIndex();
         int indexResp = comboResponsavel.getSelectedIndex();
+        
+        double preco = (double) spinnerPrecoEvento.getValue();
+        double precoBilhete = (double) spinnerPrecoBilhete.getValue();
+        boolean alugado = checkAlugado.isSelected();
 
-        // 1. Validaciones básicas de selección
         if (indexSala == -1 || indexResp == -1) {
             mostrarAviso("Selecione uma sala e um responsável.", "Erro", "src/main/java/Recursos/erro.png");
             return;
@@ -253,13 +273,11 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
         Sala sala = listaSalas.get(indexSala);
         Trabalhador resp = listaResponsaveis.get(indexResp);
 
-        // 2. Validación de campos vacíos
         if (nome.isEmpty() || dataCal == null) {
             mostrarAviso("Preencha todos os campos obrigatórios.", "Erro", "src/main/java/Recursos/erro.png");
             return;
         }
 
-        // 3. Validación: Fecha Futura
         Calendar calAtual = Calendar.getInstance();
         Calendar calSel = Calendar.getInstance();
         calSel.setTime(dataCal);
@@ -274,8 +292,17 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
             mostrarAviso("A data e hora devem ser posteriores ao momento atual.", "Data Inválida", "src/main/java/Recursos/aviso.png");
             return;
         }
+        
+        Calendar calDur = Calendar.getInstance();
+        calDur.setTime(duracaoVal);
+        int durHoras = calDur.get(Calendar.HOUR_OF_DAY);
+        int durMinutos = calDur.get(Calendar.MINUTE);
 
-        // 4. Formateo de datos
+        if (durHoras == 0 && durMinutos < 30) {
+            mostrarAviso("A duração do evento deve ser de pelo menos 30 minutos.", "Duração Inválida", "src/main/java/Recursos/aviso.png");
+            return;
+        }
+
         SimpleDateFormat sdfData = new SimpleDateFormat("dd/MM/yyyy");
         SimpleDateFormat sdfHora = new SimpleDateFormat("HH:mm");
         
@@ -283,28 +310,29 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
         String horaFormatada = sdfHora.format(horaVal);
         String duracaoFormatada = sdfHora.format(duracaoVal);
 
-        // --- 5. VALIDACIÓN DE DISPONIBILIDAD (NUEVO) ---
-        // Comprobamos si la sala está libre en ese horario específico (Hora Inicio + Duración)
         boolean disponivel = controller.verificarDisponibilidadeSala(
                 sala.getIdSala(), 
                 dataFormatada, 
                 horaFormatada, 
                 duracaoFormatada, 
-                idEventoEditando // Pasamos el ID para que al editar no choque consigo mismo
+                idEventoEditando 
         );
 
         if (!disponivel) {
             mostrarAviso("A sala selecionada já está ocupada neste horário!\nVerifique a duração e a hora de início.", "Sala Ocupada", "src/main/java/Recursos/aviso.png");
-            return; // DETENEMOS EL GUARDADO
+            return;
         }
-        // ------------------------------------------------
 
         boolean sucesso;
         
         if (idEventoEditando == -1) {
-            sucesso = controller.criarEvento(nome, dataFormatada, descricao, resp.getIdTrabalhador(), sala.getIdSala(), horaFormatada, duracaoFormatada);
+            sucesso = controller.criarEvento(nome, dataFormatada, descricao, resp.getIdTrabalhador(), 
+                                             sala.getIdSala(), horaFormatada, duracaoFormatada, 
+                                             preco, precoBilhete, alugado);
         } else {
-            sucesso = controller.editarEvento(idEventoEditando, nome, dataFormatada, descricao, resp.getIdTrabalhador(), sala.getIdSala(), horaFormatada, duracaoFormatada);
+            sucesso = controller.editarEvento(idEventoEditando, nome, dataFormatada, descricao, resp.getIdTrabalhador(), 
+                                              sala.getIdSala(), horaFormatada, duracaoFormatada,
+                                              preco, precoBilhete, alugado);
         }
 
         if (sucesso) {

@@ -1,6 +1,7 @@
 package VIEWS;
 
 import CONTROLLERS.HomeController;
+import MODELS.CLASS.Bilhete;
 import MODELS.CLASS.Espaco;
 import MODELS.CLASS.Evento;
 import MODELS.CLASS.EventoRecurso;
@@ -31,6 +32,15 @@ public class PanelFinanceiro extends javax.swing.JPanel {
         this.janelaPrincipal = janelaPrincipal;
         this.controller = new HomeController();
         initComponents();
+
+        tabelaReceitas.getTableHeader().setResizingAllowed(false);
+        tabelaReceitas.getTableHeader().setReorderingAllowed(false);
+        tabelaReceitas.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+        tabelaDespesas.getTableHeader().setResizingAllowed(false);
+        tabelaDespesas.getTableHeader().setReorderingAllowed(false);
+        tabelaDespesas.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
         DefaultTableModel modelo = (DefaultTableModel) tabelaReceitas.getModel();
         modelo.setRowCount(0);
 
@@ -70,6 +80,65 @@ public class PanelFinanceiro extends javax.swing.JPanel {
             });
         }
 
+        List<Evento> listaEventosAlugados = controller.listarEventosAlugados();
+
+        for (Evento ev : listaEventosAlugados) {
+            float subtotalEv = (float) ev.getPreco();
+
+            soma += subtotalEv;
+
+            Object[] linhaEvento = {
+                ev.getIdEvento(),
+                ev.getNome(),
+                "Evento Alugado",
+                ev.getData(),
+                ev.getPreco(),};
+            modelo.addRow(linhaEvento);
+        }
+
+        List<Bilhete> listaBilhetes = controller.listarTodosBilhetes();
+
+        for (Bilhete b : listaBilhetes) {
+            Evento ev = controller.buscarEventoPorId(b.getIdEvento());
+
+            if (ev != null) {
+                float subtotalEv = (float) b.getPreco();
+                soma += subtotalEv;
+
+                Object[] linhaEvento = {
+                    b.getIdBilhete(),
+                    ev.getNome(),
+                    "Bilhete",
+                    ev.getData(),
+                    b.getPreco(),
+                    String.format("%.2f €", subtotalEv)
+                };
+                modelo.addRow(linhaEvento);
+            }
+        }
+
+
+        List<EventoRecurso> lista4 = controller.listarConsumiveisEventosAlugados();
+
+        for (EventoRecurso er : lista4) {
+            Recurso r = controller.buscarPorId(er.getIdRecurso());
+
+            if (r != null) {
+                float totalConsumivel = (float) (er.getQuantidade() * r.getPreco());
+                soma += totalConsumivel;
+
+                Object[] linha = {
+                    er.getIdEvento(),
+                    r.getNome(),
+                    "Consumo em Aluguer", 
+                    er.getQuantidade(), 
+                    r.getPreco(), 
+                    String.format("%.2f €", totalConsumivel)
+                };
+                modelo.addRow(linha);
+            }
+        }
+
         DecimalFormat df = new DecimalFormat("0.00");
         lblTotalReceitas.setText(df.format(soma) + "€");
 
@@ -79,26 +148,42 @@ public class PanelFinanceiro extends javax.swing.JPanel {
         modeloDespesas.setRowCount(0);
 
         List<Recurso> listaDespesas = controller.listarTodosOsRecursosSemConsiderarAtivo();
-
         for (Recurso r : listaDespesas) {
             String tipo = controller.identificarTipoRecurso(r.getIdRecurso());
-            float subtotal = (float) ((float) r.getQuantidade() * r.getPreco());
-
-
+            float subtotal = (float) (r.getQuantidade() * r.getPreco());
             soma2 += subtotal;
-            
+
             Object[] linha = {
                 r.getIdRecurso(),
                 r.getNome(),
                 tipo,
                 r.getQuantidade(),
+                r.getPreco(),
                 String.format("%.2f €", subtotal)
             };
             modeloDespesas.addRow(linha);
         }
-        
+
+        List<Evento> listaEventosProprios = controller.listarEventosProprios();
+
+        for (Evento ev : listaEventosProprios) {
+            float subtotalEv = (float) ev.getPreco();
+
+            soma2 += subtotalEv;
+
+            Object[] linhaEvento = {
+                ev.getIdEvento(),
+                ev.getNome(), // Nome
+                "Evento Próprio",
+                1,
+                ev.getPreco(),
+                String.format("%.2f €", subtotalEv)
+            };
+            modeloDespesas.addRow(linhaEvento);
+        }
+
         lvlTotalDespesas.setText(df.format(soma2) + "€");
-        jLabel4.setText(df.format(soma-soma2) + "€");
+        jLabel4.setText(df.format(soma - soma2) + "€");
         //txtPesquisar.setText("Pesquisar");
         //txtPesquisar.setForeground(java.awt.Color.GRAY);
 
@@ -121,7 +206,7 @@ public class PanelFinanceiro extends javax.swing.JPanel {
             }
         });*/
 
-        /*txtPesquisar.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+ /*txtPesquisar.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             @Override
             public void insertUpdate(javax.swing.event.DocumentEvent e) {
                 verificarEFiltrar();
@@ -149,7 +234,6 @@ public class PanelFinanceiro extends javax.swing.JPanel {
             aplicarFiltro(termo);
         }
     }*/
-
     private void aplicarFiltro(String termo) {
         // 1. Configurar Sorters para as duas tabelas
         DefaultTableModel modR = (DefaultTableModel) tabelaReceitas.getModel();
@@ -169,6 +253,38 @@ public class PanelFinanceiro extends javax.swing.JPanel {
         }
     }
 
+    private void exportarParaExcel(javax.swing.JTable table, java.io.File file) {
+        try (org.apache.poi.ss.usermodel.Workbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook()) {
+            org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("Dados");
+            org.apache.poi.ss.usermodel.Row rowCol = sheet.createRow(0);
+
+            // Exportar Cabeçalhos
+            for (int i = 0; i < table.getColumnCount(); i++) {
+                org.apache.poi.ss.usermodel.Cell cell = rowCol.createCell(i);
+                cell.setCellValue(table.getColumnName(i));
+            }
+
+            // Exportar Linhas
+            for (int j = 0; j < table.getRowCount(); j++) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(j + 1);
+                for (int k = 0; k < table.getColumnCount(); k++) {
+                    org.apache.poi.ss.usermodel.Cell cell = row.createCell(k);
+                    if (table.getValueAt(j, k) != null) {
+                        cell.setCellValue(table.getValueAt(j, k).toString());
+                    }
+                }
+            }
+
+            // Salvar o arquivo
+            try (java.io.FileOutputStream out = new java.io.FileOutputStream(file)) {
+                workbook.write(out);
+                javax.swing.JOptionPane.showMessageDialog(this, "Exportado com sucesso!");
+            }
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao exportar: " + e.getMessage());
+        }
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -192,7 +308,7 @@ public class PanelFinanceiro extends javax.swing.JPanel {
         jLabel7 = new javax.swing.JLabel();
         txtDataFim = new javax.swing.JFormattedTextField();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnExportarRelatorio = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(232, 235, 238));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -314,9 +430,16 @@ public class PanelFinanceiro extends javax.swing.JPanel {
             Class[] types = new Class [] {
                 java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Float.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         jScrollPane1.setViewportView(tabelaReceitas);
@@ -325,21 +448,28 @@ public class PanelFinanceiro extends javax.swing.JPanel {
 
         tabelaDespesas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Id Recurso", "Nome Recurso", "Categoria", "Quantidade Comprada", "Custo total"
+                "Id", "Nome", "Categoria", "Quantidade Comprada", "Preco Unitario", "Custo total"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, true, false
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         jScrollPane2.setViewportView(tabelaDespesas);
@@ -367,30 +497,59 @@ public class PanelFinanceiro extends javax.swing.JPanel {
         });
         add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 190, 100, 35));
 
-        jButton2.setBackground(new java.awt.Color(51, 121, 232));
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("Exportar Relatorio");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnExportarRelatorio.setBackground(new java.awt.Color(51, 121, 232));
+        btnExportarRelatorio.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnExportarRelatorio.setForeground(new java.awt.Color(255, 255, 255));
+        btnExportarRelatorio.setText("Exportar Relatorio");
+        btnExportarRelatorio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnExportarRelatorioActionPerformed(evt);
             }
         });
-        add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 500, 190, 40));
+        add(btnExportarRelatorio, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 500, 190, 40));
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void btnExportarRelatorioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarRelatorioActionPerformed
+        // 1. Identifica qual tabela exportar com base na aba selecionada
+        javax.swing.JTable tabelaAtiva;
+        String nomeRelatorio;
+
+        if (jTabbedPane1.getSelectedIndex() == 0) {
+            tabelaAtiva = tabelaReceitas;
+            nomeRelatorio = "Relatorio_Receitas";
+        } else {
+            tabelaAtiva = tabelaDespesas;
+            nomeRelatorio = "Relatorio_Despesas";
+        }
+
+        // 2. Configura o Seletor de Arquivos
+        javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
+        chooser.setDialogTitle("Salvar Relatório");
+        chooser.setSelectedFile(new java.io.File(nomeRelatorio + ".xlsx"));
+
+        int userSelection = chooser.showSaveDialog(this);
+
+        if (userSelection == javax.swing.JFileChooser.APPROVE_OPTION) {
+            java.io.File arquivoParaSalvar = chooser.getSelectedFile();
+
+            // Garante a extensão .xlsx
+            String filePath = arquivoParaSalvar.getAbsolutePath();
+            if (!filePath.toLowerCase().endsWith(".xlsx")) {
+                arquivoParaSalvar = new java.io.File(filePath + ".xlsx");
+            }
+
+            exportarParaExcel(tabelaAtiva, arquivoParaSalvar);
+        }
+    }//GEN-LAST:event_btnExportarRelatorioActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnExportarRelatorio;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

@@ -189,10 +189,7 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
         double precoCompra = ((Number) spPreco.getValue()).doubleValue();
         int quantidade = (int) spQuantidade.getValue();
 
-        // Detetar tipo pelo combo (0 = Consumível, 1 = Não Consumível)
         int tipoRecurso = comboTipo.getSelectedIndex();
-
-        // Se for edição, mantém o estado ativo atual; se for novo, define como true
         boolean ativo = (idRecursoEditando > 0) ? this.ativoAtual : true;
 
         // 2. VALIDAÇÃO DE CAMPOS COMUNS
@@ -200,35 +197,24 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
             mostrarMensagem("O nome do recurso é obrigatório.", "Erro", "src/main/java/Recursos/erro.png");
             return;
         }
-        
-        if (precoCompra < 0) {
-            mostrarMensagem("O preço de compra não pode ser negativo.", "Erro", "src/main/java/Recursos/erro.png");
+
+        if (precoCompra < 0 || quantidade < 0) {
+            mostrarMensagem("Preço e quantidade não podem ser negativos.", "Erro", "src/main/java/Recursos/erro.png");
             return;
         }
 
-        if (quantidade < 0) {
-            mostrarMensagem("A quantidade não pode ser negativa.", "Erro", "src/main/java/Recursos/erro.png");
-            return;
-        }
-        
         boolean sucesso = false;
 
         // 4. LOGICA ESPECÍFICA POR TIPO
         if (tipoRecurso == 0) { // --- MODO CONSUMÍVEL ---
-            //String dataStr = txtValidade.getText().trim();
-            java.util.Date validade = null;
 
-           /* try {
-                if (!dataStr.isEmpty()) {
-                    validade = new java.text.SimpleDateFormat("dd/MM/yyyy").parse(dataStr);
-                } else {
-                    mostrarMensagem("A data de validade é obrigatória.", "Erro", "src/main/java/Recursos/erro.png");
-                    return;
-                }
-            } catch (java.text.ParseException e) {
-                mostrarMensagem("Formato de data inválido (use dd/MM/yyyy).", "Erro", "src/main/java/Recursos/erro.png");
+            // RECOLHA DO JDATECHOOSER
+            java.util.Date validade = txtValidade.getDate(); // Substitui 'jdValidade' pelo nome do teu componente
+
+            if (validade == null) {
+                mostrarMensagem("A data de validade é obrigatória para consumíveis.", "Erro", "src/main/java/Recursos/erro.png");
                 return;
-            }*/
+            }
 
             Consumivel consumivel = new Consumivel();
             consumivel.setNome(nome);
@@ -239,7 +225,6 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
 
             if (idRecursoEditando > 0) {
                 consumivel.setIdRecurso(idRecursoEditando);
-                // Chama o método que trata a edição e a possível troca de tabela
                 sucesso = controller.editarRecurso(consumivel, 0);
             } else {
                 sucesso = controller.criarConsumivel(consumivel);
@@ -262,7 +247,6 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
 
             if (idRecursoEditando > 0) {
                 naoConsumivel.setIdRecurso(idRecursoEditando);
-                // Chama o método que trata a edição e a possível troca de tabela
                 sucesso = controller.editarRecurso(naoConsumivel, 1);
             } else {
                 sucesso = controller.criarNaoConsumivel(naoConsumivel);

@@ -15,12 +15,16 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
     private HomeController controller;
     private String top, mensagem, imagem;
     private boolean clicouSim;
-    java.awt.Window win = javax.swing.SwingUtilities.getWindowAncestor(this);
 
     public PanelListaFuncionarios(PaginaInicial paginaInicial) {
         this.janelaPrincipal = paginaInicial;
         this.controller = new HomeController();
         initComponents();
+        
+        tabelaFuncionarios.getTableHeader().setResizingAllowed(false);
+        tabelaFuncionarios.getTableHeader().setReorderingAllowed(false);
+        tabelaFuncionarios.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        
         carregarTabela(null);
         
         txtPesquisar.setText("Pesquisar");
@@ -29,7 +33,6 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
         txtPesquisar.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
             public void focusGained(java.awt.event.FocusEvent evt) {
-                // Apenas apaga se o texto for o padrão e a cor for cinza (indica placeholder)
                 if (txtPesquisar.getText().equals("Pesquisar") && txtPesquisar.getForeground().equals(java.awt.Color.GRAY)) {
                     txtPesquisar.setText("");
                     txtPesquisar.setForeground(java.awt.Color.BLACK);
@@ -58,7 +61,6 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
     private void verificarEFiltrar() {
         String termo = txtPesquisar.getText();
 
-        // Se o texto for o placeholder cinzento, não filtramos nada
         if (txtPesquisar.getForeground().equals(java.awt.Color.GRAY) && termo.equals("Pesquisar")) {
             aplicarFiltro("");
         } else {
@@ -67,7 +69,6 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
     }
 
     private void aplicarFiltro(String termo) {
-        // 1. Configurar Sorters para as duas tabelas
         DefaultTableModel modF = (DefaultTableModel) tabelaFuncionarios.getModel();
         TableRowSorter<DefaultTableModel> sorterF = new TableRowSorter<>(modF);
         tabelaFuncionarios.setRowSorter(sorterF);
@@ -81,7 +82,7 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
     
     private void carregarTabela(List<Trabalhador> listaParaMostrar) {
         DefaultTableModel modelo = (DefaultTableModel) tabelaFuncionarios.getModel();
-        modelo.setRowCount(0); // Limpiar tabla
+        modelo.setRowCount(0);
         
         List<Trabalhador> lista;
         if (listaParaMostrar != null) {
@@ -144,7 +145,7 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
                 java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true, true, true
+                false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -249,14 +250,14 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         int linhaSelecionada = tabelaFuncionarios.getSelectedRow();
         if (linhaSelecionada == -1) {
-            PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+            PaginaDialogo dialogo = new PaginaDialogo(janelaPrincipal, true);
 
-            mensagem = "Por favor, selecione um funcionário para editar.";
-            top = "Aviso";
+            mensagem = "Selecione um funcionário para editar.";
+            top = "Atenção";
             imagem = "src/main/java/Recursos/aviso.png";
 
             dialogo.setMensagem(mensagem, top, imagem);
-            dialogo.setLocationRelativeTo(win);
+            dialogo.setLocationRelativeTo(janelaPrincipal);
             dialogo.setVisible(true);
             return;
         }
@@ -274,14 +275,14 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         int linhaSelecionada = tabelaFuncionarios.getSelectedRow();
         if (linhaSelecionada == -1) {
-            PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+            PaginaDialogo dialogo = new PaginaDialogo(janelaPrincipal, true);
 
-            mensagem = "Por favor, selecione um funcionário para eliminar.";
-            top = "Aviso";
+            mensagem = "Selecione um funcionário para eliminar.";
+            top = "Atenção";
             imagem = "src/main/java/Recursos/aviso.png";
 
             dialogo.setMensagem(mensagem, top, imagem);
-            dialogo.setLocationRelativeTo(win);
+            dialogo.setLocationRelativeTo(janelaPrincipal);
             dialogo.setVisible(true);
             return;
         }
@@ -289,42 +290,37 @@ public class PanelListaFuncionarios extends javax.swing.JPanel {
         int id = (int) tabelaFuncionarios.getValueAt(linhaSelecionada, 0);
         String nome = (String) tabelaFuncionarios.getValueAt(linhaSelecionada, 1);
 
-        PaginaOpcao dialog = new PaginaOpcao((java.awt.Frame) win, true);
+        PaginaOpcao dialog = new PaginaOpcao(janelaPrincipal, true);
         
-        top = "Atenção!";
-        mensagem = "Tem a certeza que deseja eliminar funcionário?";
+        top = "Eliminar Funcionário";
+        mensagem = "Deseja eliminar o funcionário '" + nome + "'?";
+        
         dialog.setMensagem(mensagem, top);
-        dialog.setLocationRelativeTo(win);
+        dialog.setLocationRelativeTo(janelaPrincipal);
         dialog.setVisible(true); 
 
         if (dialog.clicouSim()) {
-            clicouSim = true;
-        } else {
-            clicouSim = false;
-        }
-        
-        if (clicouSim == true) {
             if (controller.eliminarFuncionario(id)) {
-                PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+                PaginaDialogo dialogo = new PaginaDialogo(janelaPrincipal, true);
 
-                mensagem = "Funcionário eliminado com sucesso.";
-                top = "Informação";
+                mensagem = "Funcionário '" + nome + "' eliminado com sucesso.";
+                top = "Sucesso";
                 imagem = "src/main/java/Recursos/info.png";
 
                 dialogo.setMensagem(mensagem, top, imagem);
-                dialogo.setLocationRelativeTo(win);
+                dialogo.setLocationRelativeTo(janelaPrincipal);
                 dialogo.setVisible(true);
                 
                 carregarTabela(null); 
             } else {
-                PaginaDialogo dialogo = new PaginaDialogo((java.awt.Frame) win, true);
+                PaginaDialogo dialogo = new PaginaDialogo(janelaPrincipal, true);
 
                 mensagem = "Erro ao eliminar funcionário.";
                 top = "Erro";
                 imagem = "src/main/java/Recursos/erro.png";
 
                 dialogo.setMensagem(mensagem, top, imagem);
-                dialogo.setLocationRelativeTo(win);
+                dialogo.setLocationRelativeTo(janelaPrincipal);
                 dialogo.setVisible(true);
             }
         }

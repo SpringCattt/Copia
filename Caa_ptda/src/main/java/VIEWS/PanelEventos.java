@@ -19,20 +19,33 @@ public class PanelEventos extends javax.swing.JPanel {
 
     private PaginaInicial janelaPrincipal;
     private HomeController controller;
-    
+
     public PanelEventos(PaginaInicial janelaPrincipal) {
         this.janelaPrincipal = janelaPrincipal;
         this.controller = new HomeController();
         initComponents();
+
+        tabelaEventos.getTableHeader().setResizingAllowed(false);
+
+        tabelaEventos.getTableHeader().setReorderingAllowed(false);
+
+        tabelaEventos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        
+        int idLogado = janelaPrincipal.getIdTrabalhador();
+        MODELS.CLASS.Trabalhador t = controller.procurarTrabalhador(idLogado);
+
+        if (t != null) {
+            configurarPermissoesBotoes(t.getCategoria());
+        }
         
         controller.verificarEAtualizarEventosPassados();
-        
+
         txtPesquisar.setText("Pesquisar");
         txtPesquisar.setForeground(Color.GRAY);
-        
+
         configurarPesquisa();
         carregarTabela(null);
-        
+
         tabelaEventos.getColumnModel().getColumn(8).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
             @Override
             public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, Object value,
@@ -65,6 +78,43 @@ public class PanelEventos extends javax.swing.JPanel {
         });
     }
     
+    private void configurarPermissoesBotoes(int categoria) {
+        // Primeiro, escondemos todos os botões de ação para segurança
+        btnCriar.setVisible(false);
+        btnEditar.setVisible(false);
+        btnEliminar.setVisible(false);
+        btnCancelar.setVisible(false);
+        btnAssociarRecurso.setVisible(false);
+        btnAssociarTarefa.setVisible(false);
+
+        switch (categoria) {
+            case 2: // GESTOR DE EVENTO
+                btnCriar.setVisible(true);
+                btnEditar.setVisible(true);
+                btnEliminar.setVisible(true);
+                btnCancelar.setVisible(true);
+                break;
+
+            case 3: // GESTOR DE RECURSOS
+                btnAssociarRecurso.setVisible(true);
+                btnAssociarTarefa.setVisible(true);
+                break;
+
+            case 5: // ADMINISTRADOR (Assume-se que vê tudo)
+                btnCriar.setVisible(true);
+                btnEditar.setVisible(true);
+                btnEliminar.setVisible(true);
+                btnCancelar.setVisible(true);
+                btnAssociarRecurso.setVisible(true);
+                btnAssociarTarefa.setVisible(true);
+                break;
+
+            case 1: // FINANCEIRO
+            case 4: // STAFF
+                // Não fazemos nada, os botões permanecem todos false (invisíveis)
+                break;
+        }
+    }
     
     // --- PESQUISA ---
     private void configurarPesquisa() {
@@ -85,21 +135,29 @@ public class PanelEventos extends javax.swing.JPanel {
                 }
             }
         });
-        
+
         // Listener para atualizar a tabela enquanto escreve
         txtPesquisar.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             @Override
-            public void insertUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                verificarEFiltrar();
+            }
+
             @Override
-            public void removeUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                verificarEFiltrar();
+            }
+
             @Override
-            public void changedUpdate(javax.swing.event.DocumentEvent e) { verificarEFiltrar(); }
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                verificarEFiltrar();
+            }
         });
     }
-    
+
     private void verificarEFiltrar() {
         String termo = txtPesquisar.getText();
-        
+
         // Se o texto for o placeholder cinzento, não filtramos nada
         if (txtPesquisar.getForeground().equals(Color.GRAY) && termo.equals("Pesquisar")) {
             aplicarFiltro("");
@@ -120,10 +178,10 @@ public class PanelEventos extends javax.swing.JPanel {
             sorter.setRowFilter(RowFilter.regexFilter("(?i)" + termo));
         }
     }
-    
+
     private void carregarTabela(List<Evento> listaParaMostrar) {
         DefaultTableModel modelo = (DefaultTableModel) tabelaEventos.getModel();
-        modelo.setRowCount(0); 
+        modelo.setRowCount(0);
 
         List<Evento> listaEventos = (listaParaMostrar != null) ? listaParaMostrar : controller.obterTodosEventos();
         List<Trabalhador> todosTrabs = controller.obterTodosFuncionarios();
@@ -135,13 +193,19 @@ public class PanelEventos extends javax.swing.JPanel {
         for (Evento e : listaEventos) {
             String estado = "";
             String nomeResp = "N/A";
-            for(Trabalhador t : todosTrabs) {
-                if(t.getIdTrabalhador() == e.getResponsavel()) { nomeResp = t.getNome(); break; }
+            for (Trabalhador t : todosTrabs) {
+                if (t.getIdTrabalhador() == e.getResponsavel()) {
+                    nomeResp = t.getNome();
+                    break;
+                }
             }
 
             String nomeSala = "N/A";
-            for(Sala s : todasSalas) {
-                if(s.getIdSala() == e.getSala()) { nomeSala = s.getNome(); break; }
+            for (Sala s : todasSalas) {
+                if (s.getIdSala() == e.getSala()) {
+                    nomeSala = s.getNome();
+                    break;
+                }
             }
 
             // Formatação de Datas e Tempos
@@ -149,7 +213,7 @@ public class PanelEventos extends javax.swing.JPanel {
             String horaStr = (e.getHora() != null) ? sdfHora.format(e.getHora()) : "";
             String duracaoStr = (e.getDuracao() != null) ? sdfHora.format(e.getDuracao()) : "00:00";
 
-            boolean isCancelado = e.isCancelado(); 
+            boolean isCancelado = e.isCancelado();
 
             if (isCancelado) {
                 estado = "Cancelado";
@@ -172,7 +236,7 @@ public class PanelEventos extends javax.swing.JPanel {
             });
         }
     }
-    
+
     // --- POP-UP AUXILIAR ---
     private void mostrarAviso(String msg, String titulo, String img) {
         java.awt.Frame parent = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
@@ -223,7 +287,7 @@ public class PanelEventos extends javax.swing.JPanel {
                 java.lang.Integer.class, java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, true, true, true, true, true
+                false, false, false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -269,7 +333,7 @@ public class PanelEventos extends javax.swing.JPanel {
                 btnAssociarRecursoActionPerformed(evt);
             }
         });
-        add(btnAssociarRecurso, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 50, 150, 40));
+        add(btnAssociarRecurso, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 480, 150, 40));
 
         btnAssociarTarefa.setBackground(new java.awt.Color(51, 121, 232));
         btnAssociarTarefa.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -280,7 +344,7 @@ public class PanelEventos extends javax.swing.JPanel {
                 btnAssociarTarefaActionPerformed(evt);
             }
         });
-        add(btnAssociarTarefa, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 50, 150, 40));
+        add(btnAssociarTarefa, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 480, 150, 40));
 
         btnEliminar.setBackground(new java.awt.Color(51, 121, 232));
         btnEliminar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -310,7 +374,7 @@ public class PanelEventos extends javax.swing.JPanel {
     }//GEN-LAST:event_txtPesquisarActionPerformed
 
     private void btnCriarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCriarActionPerformed
-        if(janelaPrincipal != null){
+        if (janelaPrincipal != null) {
             janelaPrincipal.irParaFormularioEventos();
         }
     }//GEN-LAST:event_btnCriarActionPerformed
@@ -319,7 +383,7 @@ public class PanelEventos extends javax.swing.JPanel {
         int linhaSelecionada = tabelaEventos.getSelectedRow();
 
         if (linhaSelecionada == -1) {
-            mostrarAviso("Por favor, selecione um evento na tabela para editar.", "Atenção", "src/main/java/Recursos/aviso.png");
+            mostrarAviso("Selecione um evento para editar.", "Atenção", "src/main/java/Recursos/aviso.png");
             return;
         }
 
@@ -334,7 +398,7 @@ public class PanelEventos extends javax.swing.JPanel {
                 janelaPrincipal.irParaEditarEvento(eventoParaEditar);
             }
         } else {
-             mostrarAviso("Erro ao carregar dados do evento.", "Erro", "src/main/java/Recursos/erro.png");
+            mostrarAviso("Erro ao carregar dados do evento.", "Erro", "src/main/java/Recursos/erro.png");
         }
     }//GEN-LAST:event_btnEditarActionPerformed
 
@@ -347,15 +411,15 @@ public class PanelEventos extends javax.swing.JPanel {
 
         java.awt.Frame parent = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
         PaginaOpcao popUp = new PaginaOpcao(parent, true);
-        
+
         popUp.setMensagem("Tem a certeza que deseja eliminar este evento?", "Confirmar Eliminação");
         popUp.setVisible(true);
 
         if (popUp.clicouSim()) {
             int idEvento = (int) tabelaEventos.getValueAt(linhaSelecionada, 0);
-            
+
             boolean sucesso = controller.eliminarEvento(idEvento);
-            
+
             if (sucesso) {
                 mostrarAviso("Evento eliminado com sucesso!", "Sucesso", "src/main/java/Recursos/info.png");
                 carregarTabela(null); // Atualiza a tabela
@@ -366,13 +430,13 @@ public class PanelEventos extends javax.swing.JPanel {
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void btnAssociarTarefaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAssociarTarefaActionPerformed
-        if (janelaPrincipal != null) { 
+        if (janelaPrincipal != null) {
             janelaPrincipal.irParaFormularioTarefa();
         }
     }//GEN-LAST:event_btnAssociarTarefaActionPerformed
-        
+
     private void btnAssociarRecursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAssociarRecursoActionPerformed
-        if (janelaPrincipal != null) { 
+        if (janelaPrincipal != null) {
             janelaPrincipal.irParaAssociarRecurso();
         }
     }//GEN-LAST:event_btnAssociarRecursoActionPerformed
@@ -391,8 +455,8 @@ public class PanelEventos extends javax.swing.JPanel {
         // 2. Verificar se o estado é "Por Decorrer"
         // Nota: Se o texto for exatamente "Por Decorrer", impedimos o cancelamento
         if (estadoAtual.equalsIgnoreCase("Decorrido")) {
-            mostrarAviso("Não é possível cancelar um evento que tenha sido 'Decorrido'.", 
-                         "Operação Inválida", "src/main/java/Recursos/aviso.png");
+            mostrarAviso("Não é possível cancelar um evento que tenha sido 'Decorrido'.",
+                    "Operação Inválida", "src/main/java/Recursos/aviso.png");
             return;
         }
 
@@ -410,7 +474,7 @@ public class PanelEventos extends javax.swing.JPanel {
 
             if (sucesso) {
                 mostrarAviso("Evento cancelado com sucesso!", "Sucesso", "src/main/java/Recursos/info.png");
-                carregarTabela(null); 
+                carregarTabela(null);
             } else {
                 mostrarAviso("Erro ao cancelar o evento.", "Erro", "src/main/java/Recursos/erro.png");
             }

@@ -145,4 +145,28 @@ public class CredenciaisDAO {
         }
         return null;
     }
+   
+    public Credenciais getCredenciaisByEmail(String email) {
+        String sql = "SELECT * FROM Credenciais WHERE Email = ?";
+
+        try (Connection conn = BaseDados.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Credenciais c = new Credenciais();
+                    c.setIdTrabalhador(rs.getInt("IdTrabalhador"));
+                    c.setEmail(rs.getString("Email"));
+                    c.setPassword(rs.getString("Password"));
+                    return c;
+                }
+            }
+        } catch (SQLException e) {
+            // Reportar falhas de SQL no relatório de testes (Ponto 3)
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

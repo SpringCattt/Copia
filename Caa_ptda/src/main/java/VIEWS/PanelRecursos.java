@@ -31,6 +31,15 @@ public class PanelRecursos extends javax.swing.JPanel {
         this.janelaPrincipal = janelaPrincipal;
         this.controller = new CONTROLLERS.HomeController();
         initComponents();
+        
+        tabelaConsumiveis.getTableHeader().setResizingAllowed(false);
+        tabelaConsumiveis.getTableHeader().setReorderingAllowed(false);
+        tabelaConsumiveis.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        
+        tabelaNaoConsumiveis.getTableHeader().setResizingAllowed(false);
+        tabelaNaoConsumiveis.getTableHeader().setReorderingAllowed(false);
+        tabelaNaoConsumiveis.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        
         atualizarTabelas();
         configurarEsteticaTabelas();
         
@@ -176,6 +185,7 @@ public class PanelRecursos extends javax.swing.JPanel {
         tabelaNaoConsumiveis = new javax.swing.JTable();
 
         setBackground(new java.awt.Color(232, 235, 238));
+        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         txtPesquisar.setText("Pesquisar");
         txtPesquisar.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -193,6 +203,7 @@ public class PanelRecursos extends javax.swing.JPanel {
                 txtPesquisarKeyReleased(evt);
             }
         });
+        add(txtPesquisar, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, 180, 40));
 
         btnCriar.setBackground(new java.awt.Color(51, 121, 232));
         btnCriar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -203,6 +214,7 @@ public class PanelRecursos extends javax.swing.JPanel {
                 btnCriarActionPerformed(evt);
             }
         });
+        add(btnCriar, new org.netbeans.lib.awtextra.AbsoluteConstraints(585, 488, 150, 40));
 
         btnEditar.setBackground(new java.awt.Color(51, 121, 232));
         btnEditar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -213,6 +225,7 @@ public class PanelRecursos extends javax.swing.JPanel {
                 btnEditarActionPerformed(evt);
             }
         });
+        add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(417, 488, 150, 40));
 
         btnEliminar.setBackground(new java.awt.Color(51, 121, 232));
         btnEliminar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -223,6 +236,7 @@ public class PanelRecursos extends javax.swing.JPanel {
                 btnEliminarActionPerformed(evt);
             }
         });
+        add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(249, 488, 150, 40));
 
         tabelaConsumiveis.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -239,7 +253,7 @@ public class PanelRecursos extends javax.swing.JPanel {
                 java.lang.Integer.class, java.lang.String.class, java.lang.Float.class, java.lang.Integer.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, true
+                false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -269,7 +283,7 @@ public class PanelRecursos extends javax.swing.JPanel {
                 java.lang.Integer.class, java.lang.String.class, java.lang.Float.class, java.lang.Integer.class, java.lang.Float.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, true
+                false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -284,39 +298,7 @@ public class PanelRecursos extends javax.swing.JPanel {
 
         tabPaneCNC.addTab("Não Consumíveis", jScrollPane3);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(45, 45, 45)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(tabPaneCNC, javax.swing.GroupLayout.PREFERRED_SIZE, 690, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnCriar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(txtPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(510, 510, 510)))
-                .addGap(45, 45, 45))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(50, 50, 50)
-                .addComponent(txtPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(tabPaneCNC, javax.swing.GroupLayout.PREFERRED_SIZE, 362, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnCriar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(22, 22, 22))
-        );
+        add(tabPaneCNC, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, 690, 362));
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPesquisarActionPerformed
