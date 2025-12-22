@@ -1,5 +1,4 @@
 package MODELS.DAO;
-import MODELS.CLASS.Lugar;
 import MODELS.CLASS.NaoConsumivel;
 import java.sql.*;
 import java.util.ArrayList;

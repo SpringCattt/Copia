@@ -47,6 +47,7 @@ public class PanelFormularioEspacos extends javax.swing.JPanel {
 
         setBackground(new java.awt.Color(232, 235, 238));
         setPreferredSize(new java.awt.Dimension(740, 530));
+        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         btnGuardar.setText("Guardar");
         btnGuardar.setPreferredSize(new java.awt.Dimension(81, 23));
@@ -55,6 +56,7 @@ public class PanelFormularioEspacos extends javax.swing.JPanel {
                 btnGuardarActionPerformed(evt);
             }
         });
+        add(btnGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 450, 150, 40));
 
         btnCancelar.setText("Cancelar");
         btnCancelar.addActionListener(new java.awt.event.ActionListener() {
@@ -62,9 +64,11 @@ public class PanelFormularioEspacos extends javax.swing.JPanel {
                 btnCancelarActionPerformed(evt);
             }
         });
+        add(btnCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 450, 150, 40));
 
         lblTitulo.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblTitulo.setText("Adicionar Espaço");
+        add(lblTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(46, 173, -1, -1));
 
         txtNomeEspaco.setText("Nome Espaço");
         txtNomeEspaco.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -77,54 +81,14 @@ public class PanelFormularioEspacos extends javax.swing.JPanel {
                 txtNomeEspacoActionPerformed(evt);
             }
         });
+        add(txtNomeEspaco, new org.netbeans.lib.awtextra.AbsoluteConstraints(46, 233, 659, 35));
 
         lblTitulo1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         lblTitulo1.setText("Nome do espaço:");
+        add(lblTitulo1, new org.netbeans.lib.awtextra.AbsoluteConstraints(46, 211, -1, -1));
 
         lblId.setText("-1");
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(46, 46, 46)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblTitulo1)
-                            .addComponent(lblTitulo))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(lblId))
-                            .addComponent(txtNomeEspaco)
-                            .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 381, Short.MAX_VALUE)
-                                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(35, 35, 35))))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(73, 73, 73)
-                .addComponent(lblId)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 104, Short.MAX_VALUE)
-                .addComponent(lblTitulo)
-                .addGap(18, 18, 18)
-                .addComponent(lblTitulo1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtNomeEspaco, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(180, 180, 180)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(42, 42, 42))
-        );
+        add(lblId, new org.netbeans.lib.awtextra.AbsoluteConstraints(694, 73, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed

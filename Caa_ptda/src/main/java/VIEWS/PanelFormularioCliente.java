@@ -1,21 +1,14 @@
 package VIEWS;
 
 import CONTROLLERS.HomeController;
-import MODELS.CLASS.CategoriaTrabalho;
-import MODELS.CLASS.Trabalhador;
-import MODELS.CLASS.Credenciais;
-import java.util.List;
-import javax.swing.DefaultComboBoxModel;
+import java.awt.Color;
 import javax.swing.JOptionPane;
 
 public class PanelFormularioCliente extends javax.swing.JPanel {
 
     private HomeController controller;
     private PaginaInicial janelaPrincipal;
-    private String top, mensagem, imagem;
     java.awt.Window win = javax.swing.SwingUtilities.getWindowAncestor(this);
-    
-    private int idFuncionarioEditando = -1;
 
     public PanelFormularioCliente(PaginaInicial paginaInicial) {
         this.janelaPrincipal = paginaInicial;
@@ -59,7 +52,7 @@ public class PanelFormularioCliente extends javax.swing.JPanel {
         });
 
         lblTitulo.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lblTitulo.setText("Adicionar Funcionário");
+        lblTitulo.setText("Adicionar Cliente");
 
         txtNomeCliente.setText("Nome Cliente");
         txtNomeCliente.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -154,7 +147,46 @@ public class PanelFormularioCliente extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        
+        String nome = txtNomeCliente.getText().trim();
+        String email = txtEmail.getText().trim();
+        String telStr = txtNTelefone.getText().trim();
+
+        // 2. Validaciones
+        if (nome.isEmpty() || email.isEmpty() || telStr.isEmpty() || 
+            nome.equals("Nome Cliente") || email.equals("Email") || telStr.equals("Telefone")) {
+            mostrarMensagem("Preencha todos os campos!", "Erro", "src/main/java/Recursos/erro.png");
+            return;
+        }
+
+        int telefone = 0;
+        try {
+            telefone = Integer.parseInt(telStr);
+        } catch (NumberFormatException e) {
+            mostrarMensagem("O telefone deve ser numérico!", "Erro", "src/main/java/Recursos/erro.png");
+            return;
+        }
+
+        // 3. Llamar al Controller (Asegúrate de tener este método en HomeController)
+        // Nota: Si en HomeController lo llamaste 'crearCliente', úsalo aquí. 
+        // Si no, añade el método 'criarCliente' en HomeController (ver paso 3).
+        String resultado = controller.criarCliente(nome, email, telefone);
+
+        if (resultado.equals("Sucesso")) {
+            mostrarMensagem("Cliente criado com sucesso!", "Sucesso", "src/main/java/Recursos/info.png");
+            if(janelaPrincipal != null) {
+                janelaPrincipal.irParaFormularioBilhete(); // Vuelve a la bilheteria
+            }
+        } else {
+            mostrarMensagem(resultado, "Erro", "src/main/java/Recursos/erro.png");
+        }
+    }                                          
+
+    // AÑADIR ESTE MÉTODO QUE FALTABA
+    private void mostrarMensagem(String msg, String titulo, String imgPath) {
+        PaginaDialogo d = new PaginaDialogo((java.awt.Frame) win, true);
+        d.setMensagem(msg, titulo, imgPath);
+        d.setLocationRelativeTo(this);
+        d.setVisible(true);
     }//GEN-LAST:event_btnGuardarActionPerformed
 
         

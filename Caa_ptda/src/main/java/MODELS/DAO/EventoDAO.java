@@ -16,23 +16,23 @@ public class EventoDAO {
         e.setDescricao(rs.getString("Descricao"));
         e.setResponsavel(rs.getInt("Responsavel"));
         e.setSala(rs.getInt("Sala"));
-
         e.setHora(rs.getTime("Hora"));
         e.setDuracao(rs.getTime("Duracao")); 
-
         e.setEstado(rs.getBoolean("Estado"));
         
+        // NOVAS COLUNAS
+        e.setPreco(rs.getDouble("Preco"));
+        e.setPrecoBilhete(rs.getDouble("PrecoBilhete"));
+        e.setAlugado(rs.getBoolean("Alugado"));
+
         try {
             e.setCancelado(rs.getBoolean("Cancelado"));
-        } catch (SQLException ex) {
-            e.setCancelado(false);
-        }
+        } catch (SQLException ex) { e.setCancelado(false); }
 
         try {
             e.setAtivo(rs.getBoolean("Ativo"));
-        } catch (SQLException ex) {
-            e.setAtivo(true);
-        }
+        } catch (SQLException ex) { e.setAtivo(true); }
+        
         return e;
     }
 
@@ -54,7 +54,8 @@ public class EventoDAO {
     }
 
     public int insertEvento(Evento e) {
-        String sql = "INSERT INTO Evento (Nome, Data, Descricao, Responsavel, Sala, Estado, Ativo, Hora, Cancelado, Duracao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // SQL Atualizado com as 3 novas colunas
+        String sql = "INSERT INTO Evento (Nome, Data, Descricao, Responsavel, Sala, Estado, Ativo, Hora, Cancelado, Duracao, Preco, PrecoBilhete, Alugado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = BaseDados.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -80,6 +81,11 @@ public class EventoDAO {
             } else {
                 stmt.setNull(10, java.sql.Types.TIME);
             }
+            
+            // SET DOS NOVOS CAMPOS
+            stmt.setDouble(11, e.getPreco());
+            stmt.setDouble(12, e.getPrecoBilhete());
+            stmt.setBoolean(13, e.isAlugado());
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows > 0) {
@@ -87,14 +93,13 @@ public class EventoDAO {
                     if (generatedKeys.next()) return generatedKeys.getInt(1);
                 }
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+        } catch (SQLException ex) { ex.printStackTrace(); }
         return -1;
     }
-
+    
     public boolean updateEvento(Evento e) {
-        String sql = "UPDATE Evento SET Nome=?, Data=?, Descricao=?, Responsavel=?, Sala=?, Hora=?, Estado=?, Cancelado=?, Ativo=?, Duracao=? WHERE IdEvento=?";
+        // SQL Atualizado
+        String sql = "UPDATE Evento SET Nome=?, Data=?, Descricao=?, Responsavel=?, Sala=?, Hora=?, Estado=?, Cancelado=?, Ativo=?, Duracao=?, Preco=?, PrecoBilhete=?, Alugado=? WHERE IdEvento=?";
 
         try (Connection conn = BaseDados.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -120,8 +125,13 @@ public class EventoDAO {
             } else {
                 stmt.setNull(10, java.sql.Types.TIME);
             }
+            
+            // NOVOS CAMPOS
+            stmt.setDouble(11, e.getPreco());
+            stmt.setDouble(12, e.getPrecoBilhete());
+            stmt.setBoolean(13, e.isAlugado());
 
-            stmt.setInt(11, e.getIdEvento());
+            stmt.setInt(14, e.getIdEvento());
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException ex) {

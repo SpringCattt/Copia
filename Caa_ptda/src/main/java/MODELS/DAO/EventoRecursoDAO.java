@@ -1,5 +1,6 @@
 package MODELS.DAO;
 
+import MODELS.CLASS.Evento;
 import MODELS.CLASS.EventoRecurso;
 import java.sql.*;
 import java.util.ArrayList;
@@ -7,80 +8,83 @@ import java.util.List;
 
 public class EventoRecursoDAO {
 
-    // ---- SELECT (Lista de IDs de Recursos por Evento) ----
-    public List<Integer> getRecursosIdByEventoId(int idEvento) {
-        List<Integer> recursosIds = new ArrayList<>();
-        // Selecionamos apenas o IdRecurso
-        String sql = "SELECT IdRecurso FROM EventoRecurso WHERE IdEvento = ?";
+    // MÉTODO AUXILIAR para evitar repetição de código (DRY)
+    private EventoRecurso mapResultSetToEventoRecurso(ResultSet rs) throws SQLException {
+        EventoRecurso er = new EventoRecurso();
+        er.setIdEvento(rs.getInt("IdEvento"));
+        er.setIdRecurso(rs.getInt("IdRecurso"));
+        // Agora mapeamos a quantidade que foi adicionada à BD
+        er.setQuantidade(rs.getInt("Quantidade")); 
+        return er;
+    }
 
-        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+    public List<EventoRecurso> getRecursosByEventoId(int idEvento) {
+        List<EventoRecurso> lista = new ArrayList<>();
+        String sql = "SELECT * FROM EventoRecurso WHERE IdEvento = ?";
+        try (Connection conn = BaseDados.getConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, idEvento);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                recursosIds.add(rs.getInt("IdRecurso"));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapResultSetToEventoRecurso(rs));
+                }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return recursosIds;
+        return lista;
     }
 
-    // ---- CHECK/EXISTS ----
     public boolean existsEventoRecurso(int idEvento, int idRecurso) {
         String sql = "SELECT 1 FROM EventoRecurso WHERE IdEvento = ? AND IdRecurso = ?";
-        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+        try (Connection conn = BaseDados.getConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, idEvento);
             stmt.setInt(2, idRecurso);
-            ResultSet rs = stmt.executeQuery();
-
-            // Se rs.next() for true, a linha existe
-            return rs.next();
-
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    // ---- INSERT ----
-    public boolean insertEventoRecurso(int idEvento, int idRecurso) {
-        String SQL = "INSERT INTO EventoRecurso (IdEvento, IdRecurso) VALUES (?, ?)";
-
-        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(SQL)) {
-
+    public boolean insertEventoRecurso(int idEvento, int idRecurso, int quantidade) {
+        String sql = "INSERT INTO EventoRecurso (IdEvento, IdRecurso, Quantidade) VALUES (?, ?, ?)";
+        try (Connection conn = BaseDados.getConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, idEvento);
             stmt.setInt(2, idRecurso);
-
-            // A inserção é bem-sucedida se afetar 1 linha
+            stmt.setInt(3, quantidade);
             return stmt.executeUpdate() == 1;
-
-        } catch (SQLIntegrityConstraintViolationException e) {
-            System.err.println("ERRO: A ligação Evento-Recurso já existe ou chave(s) estrangeira(s) inválida(s).");
-            e.printStackTrace();
-            return false;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    // ---- DELETE ----
+    public boolean updateQuantidadeRecurso(int idEvento, int idRecurso, int novaQuantidade) {
+        String sql = "UPDATE EventoRecurso SET Quantidade = ? WHERE IdEvento = ? AND IdRecurso = ?";
+        try (Connection conn = BaseDados.getConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, novaQuantidade);
+            stmt.setInt(2, idEvento);
+            stmt.setInt(3, idRecurso);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean deleteEventoRecurso(int idEvento, int idRecurso) {
         String SQL = "DELETE FROM EventoRecurso WHERE IdEvento = ? AND IdRecurso = ?";
-
-        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(SQL)) {
-
+        try (Connection conn = BaseDados.getConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
             stmt.setInt(1, idEvento);
             stmt.setInt(2, idRecurso);
-
-            // Retorna true se 1 ou mais linhas foram afetadas (removidas)
             return stmt.executeUpdate() > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -89,27 +93,61 @@ public class EventoRecursoDAO {
 
     public List<EventoRecurso> getEventoRecursosNaoConsumiveis() {
         List<EventoRecurso> lista = new ArrayList<>();
-
-        // O JOIN garante que só trazemos recursos que existem na tabela NaoConsumiveis
-        String sql = "SELECT er.IdEvento, er.IdRecurso "
-                + "FROM EventoRecurso er "
+        // Adicionado er.Quantidade no SELECT e uso do Mapper
+        String sql = "SELECT er.* FROM EventoRecurso er "
                 + "INNER JOIN NaoConsumiveis nc ON er.IdRecurso = nc.IdRecurso";
-
-        try (Connection conn = BaseDados.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
-
+        try (Connection conn = BaseDados.getConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(sql); 
+             ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                EventoRecurso er = new EventoRecurso();
-                er.setIdEvento(rs.getInt("IdEvento"));
-                er.setIdRecurso(rs.getInt("IdRecurso"));
-
-                lista.add(er);
+                lista.add(mapResultSetToEventoRecurso(rs));
             }
-
         } catch (SQLException e) {
-            System.err.println("Erro ao listar Eventos-Recursos Não Consumíveis: " + e.getMessage());
             e.printStackTrace();
         }
-
         return lista;
+    }
+
+    public int getQuantidadeEmUso(int idRecurso, java.sql.Date data, java.sql.Time horaInicio, java.sql.Time duracao, int idEventoNovo) {
+        // IFNULL(SUM..., 0) para evitar problemas com valores nulos
+        String sql = "SELECT IFNULL(SUM(er.Quantidade), 0) FROM EventoRecurso er " +
+                     "JOIN Evento e ON er.IdEvento = e.IdEvento " +
+                     "WHERE er.IdRecurso = ? AND e.Data = ? AND e.Ativo = 1 AND e.Cancelado = 0 AND e.IdEvento != ? " +
+                     "AND SUBTIME(TIME(e.Hora), '01:00:00') < ADDTIME(ADDTIME(?, IFNULL(?, '00:00:00')), '01:00:00') " +
+                     "AND ADDTIME(ADDTIME(TIME(e.Hora), IFNULL(e.Duracao, '00:00:00')), '01:00:00') > SUBTIME(?, '01:00:00')";
+
+        try (Connection conn = BaseDados.getConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idRecurso);
+            stmt.setDate(2, data);
+            stmt.setInt(3, idEventoNovo);
+            stmt.setTime(4, horaInicio);
+            stmt.setTime(5, duracao);
+            stmt.setTime(6, horaInicio);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
+    public int getQuantidadeNoEvento(int idEvento, int idRecurso) {
+        String sql = "SELECT Quantidade FROM EventoRecurso WHERE IdEvento = ? AND IdRecurso = ?";
+        try (Connection conn = BaseDados.getConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idEvento);
+            stmt.setInt(2, idRecurso);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt("Quantidade");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0; // Se não existe, a quantidade antiga era zero
     }
 }

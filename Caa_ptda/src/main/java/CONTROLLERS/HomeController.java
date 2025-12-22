@@ -11,6 +11,7 @@ import MODELS.CLASS.NaoConsumivel;
 import MODELS.CLASS.Sala;
 import MODELS.CLASS.Recurso;
 import MODELS.CLASS.Tarefa;
+import MODELS.CLASS.Cliente;
 import MODELS.DAO.CategoriaTrabalhoDAO;
 import MODELS.DAO.ConsumiveisDAO;
 import MODELS.DAO.TrabalhadorDAO;
@@ -22,6 +23,7 @@ import MODELS.DAO.NaoConsumiveisDAO;
 import MODELS.DAO.RecursoDAO;
 import MODELS.DAO.SalaDAO;
 import MODELS.DAO.TarefaDAO;
+import MODELS.DAO.ClienteDAO;
 import java.util.List;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
@@ -35,7 +37,7 @@ public class HomeController {
     private EventoRecursoDAO eventoRecursoDAO;
     private EspacoDAO espacoDAO;
     private SalaDAO salaDAO;
-    private RecursoDAO recursoDao;
+    private RecursoDAO recursoDAO;
     private ConsumiveisDAO consumiveisDao;
     private NaoConsumiveisDAO naoConsumiveisDao;
     private TarefaDAO tarefaDAO;
@@ -48,7 +50,7 @@ public class HomeController {
         this.eventoRecursoDAO = new EventoRecursoDAO();
         this.espacoDAO = new EspacoDAO();
         this.salaDAO = new SalaDAO();
-        this.recursoDao = new RecursoDAO();
+        this.recursoDAO = new RecursoDAO();
         this.consumiveisDao = new ConsumiveisDAO();
         this.naoConsumiveisDao = new NaoConsumiveisDAO();
         this.tarefaDAO = new TarefaDAO();
@@ -444,7 +446,7 @@ public class HomeController {
 
     public boolean eliminarRecurso(long id) {
         // Aqui podes adicionar lógica: ex: verificar se está em uso
-        return recursoDao.deleteRecurso(id);
+        return recursoDAO.deleteRecurso(id);
     }
 
     public Consumivel buscarConsumivelPorId(int id) {
@@ -482,7 +484,7 @@ public class HomeController {
     }
 
     public boolean criarConsumivel(Consumivel c) {
-        long id = recursoDao.insertRecurso(c);
+        long id = recursoDAO.insertRecurso(c);
         if (id > 0) {
             c.setIdRecurso((int) id);
             return consumiveisDao.insertConsumivel(c);
@@ -491,7 +493,7 @@ public class HomeController {
     }
 
     public boolean criarNaoConsumivel(NaoConsumivel nc) {
-        long id = recursoDao.insertRecurso(nc);
+        long id = recursoDAO.insertRecurso(nc);
         if (id > 0) {
             nc.setIdRecurso((int) id);
             return naoConsumiveisDao.insertNaoConsumivel(nc);
@@ -500,14 +502,14 @@ public class HomeController {
     }
 
     public boolean editarConsumivel(Consumivel c) {
-        if (recursoDao.updateRecurso(c)) {
+        if (recursoDAO.updateRecurso(c)) {
             return consumiveisDao.updateConsumivel(c);
         }
         return false;
     }
 
     public boolean editarNaoConsumivel(NaoConsumivel nc) {
-        if (recursoDao.updateRecurso(nc)) {
+        if (recursoDAO.updateRecurso(nc)) {
             return naoConsumiveisDao.updateNaoConsumivel(nc);
         }
         return false;
@@ -518,14 +520,95 @@ public class HomeController {
     }
 
     public List<Recurso> listarTodosOsRecursosSemConsiderarAtivo() {
-        return recursoDao.getAllRecursosWithoutAtivo();
+        return recursoDAO.getAllRecursosWithoutAtivo();
     }
 
     public String identificarTipoRecurso(int id) {
         if (id <= 0) {
             return "ID Inválido";
         }
-        return recursoDao.getTipoRecursoById(id);
+        return recursoDAO.getTipoRecursoById(id);
+    }
+    
+    public List<Evento> listarTodosEventosAtivos() {
+        return eventoDAO.getAllEventos();
+    }
+    
+    public List<Recurso> listarTodosRecursosAtivas() {
+        return recursoDAO.getAllRecursos();
+    }
+    
+    public int obterQuantidadeRecursoNoEvento(int idEvento, int idRecurso) {
+        EventoRecursoDAO dao = new EventoRecursoDAO();
+        List<MODELS.CLASS.EventoRecurso> lista = dao.getRecursosByEventoId(idEvento);
+
+        for (MODELS.CLASS.EventoRecurso er : lista) {
+            if (er.getIdRecurso() == idRecurso) {
+                return er.getQuantidade();
+            }
+        }
+        return 0;
+    }
+    
+    public boolean associarRecursoAEvento(int idEvento, int idRecurso, int qtPedida) {
+        Evento ev = eventoDAO.getEventoById(idEvento);
+        Recurso rec = recursoDAO.getRecursoById(idRecurso);
+        if (ev == null || rec == null) return false;
+
+        String tipo = recursoDAO.getTipoRecursoById(idRecurso);
+        int qtAntiga = eventoRecursoDAO.getQuantidadeNoEvento(idEvento, idRecurso);
+
+        // --- NOVA LÓGICA: SE QUANTIDADE FOR ZERO, ELIMINA ---
+        if (qtPedida == 0) {
+            if (qtAntiga > 0) {
+                boolean removido = eventoRecursoDAO.deleteEventoRecurso(idEvento, idRecurso);
+                if (removido && tipo.equalsIgnoreCase("Consumível")) {
+                    // Devolve tudo ao stock principal
+                    rec.setQuantidade(rec.getQuantidade() + qtAntiga);
+                    recursoDAO.updateRecurso(rec);
+                }
+                return removido;
+            }
+            return true; // Já era zero e continua zero, não faz nada mas retorna sucesso
+        }
+
+        // --- LÓGICA DE ATUALIZAÇÃO / INSERÇÃO (Existente) ---
+        if (tipo.equalsIgnoreCase("Consumível")) {
+            int diferencaAjuste = qtPedida - qtAntiga;
+
+            if (diferencaAjuste <= rec.getQuantidade()) {
+                boolean sucesso;
+                if (qtAntiga > 0) {
+                    sucesso = eventoRecursoDAO.updateQuantidadeRecurso(idEvento, idRecurso, qtPedida);
+                } else {
+                    sucesso = eventoRecursoDAO.insertEventoRecurso(idEvento, idRecurso, qtPedida);
+                }
+
+                if (sucesso) {
+                    rec.setQuantidade(rec.getQuantidade() - diferencaAjuste);
+                    recursoDAO.updateRecurso(rec);
+                    return true;
+                }
+            }
+        } else {
+            // Lógica para Não Consumíveis (Horário)
+            int emUsoOutros = eventoRecursoDAO.getQuantidadeEmUso(
+                idRecurso, 
+                new java.sql.Date(ev.getData().getTime()), 
+                new java.sql.Time(ev.getHora().getTime()), 
+                ev.getDuracao(), 
+                idEvento
+            );
+
+            if (qtPedida <= (rec.getQuantidade() - emUsoOutros)) {
+                if (qtAntiga > 0) {
+                    return eventoRecursoDAO.updateQuantidadeRecurso(idEvento, idRecurso, qtPedida);
+                } else {
+                    return eventoRecursoDAO.insertEventoRecurso(idEvento, idRecurso, qtPedida);
+                }
+            }
+        }
+        return false;
     }
 
     public long criarTarefa(String titulo, String descricao, int idTrabalhador, int idEvento) {
@@ -543,6 +626,22 @@ public class HomeController {
 
     public boolean marcarComoConcluida(int idTarefa) {
         return tarefaDAO.concluirTarefa(idTarefa);
+    }
+    
+    public String criarCliente(String nome, String email, int telefone) {
+        MODELS.DAO.ClienteDAO clienteDAO = new MODELS.DAO.ClienteDAO();
+        
+        if (clienteDAO.existeEmail(email)) return "Já existe um cliente com este email.";
+        if (clienteDAO.existeTelefone(telefone)) return "Já existe um cliente com este número de telefone.";
+
+        MODELS.CLASS.Cliente c = new MODELS.CLASS.Cliente();
+        c.setNome(nome);
+        c.setEmail(email);
+        c.setNumeroTelefone(telefone);
+        c.setAtivo(true);
+
+        long id = clienteDAO.insertCliente(c);
+        return (id > 0) ? "Sucesso" : "Erro ao criar cliente.";
     }
 
 }

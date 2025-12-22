@@ -122,7 +122,13 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         spinDuracao = new javax.swing.JSpinner();
-        lblDuracao = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        spinnerPrecoEvento = new javax.swing.JSpinner();
+        jLabel9 = new javax.swing.JLabel();
+        spinnerPrecoBilhete = new javax.swing.JSpinner();
+        jLabel10 = new javax.swing.JLabel();
+        checkAlugado = new javax.swing.JCheckBox();
 
         setBackground(new java.awt.Color(232, 235, 238));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -142,7 +148,7 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
                 txtNomeActionPerformed(evt);
             }
         });
-        add(txtNome, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 110, 638, 35));
+        add(txtNome, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, 638, 35));
 
         txtDescricao.setText("Descrição");
         txtDescricao.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -150,7 +156,7 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
                 txtDescricaoMouseClicked(evt);
             }
         });
-        add(txtDescricao, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 250, 638, 35));
+        add(txtDescricao, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 200, 638, 35));
 
         btnCancelar.setText("Cancelar");
         btnCancelar.addActionListener(new java.awt.event.ActionListener() {
@@ -169,40 +175,53 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
         });
         add(btnGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(595, 468, 150, 40));
 
-        add(comboSala, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 390, 325, 35));
+        add(comboSala, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 340, 325, 35));
 
         comboResponsavel.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        add(comboResponsavel, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 320, 325, 35));
-        add(dateEvento, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, -1, 35));
+        add(comboResponsavel, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 270, 325, 35));
+        add(dateEvento, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 130, -1, 35));
 
         spinHoraInicio.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, null, java.util.Calendar.HOUR_OF_DAY));
         spinHoraInicio.setEditor(new javax.swing.JSpinner.DateEditor(spinHoraInicio, "HH:mm"));
-        add(spinHoraInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 180, -1, 35));
+        add(spinHoraInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 130, -1, 35));
 
         jLabel2.setText("Hora");
-        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 160, -1, -1));
+        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 110, -1, -1));
 
         jLabel3.setText("Nome Evento");
-        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 90, -1, -1));
+        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, -1, -1));
 
         jLabel4.setText("Sala");
-        add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 370, -1, -1));
+        add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 320, -1, -1));
 
         jLabel5.setText("Data");
-        add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 160, -1, -1));
+        add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 110, -1, -1));
 
         jLabel6.setText("Descrição");
-        add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 230, -1, -1));
+        add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 180, -1, -1));
 
         jLabel7.setText("Responsável");
-        add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 300, -1, -1));
+        add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 250, -1, -1));
+        add(spinDuracao, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 130, -1, 35));
 
-        spinDuracao.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1766278800000L), null, null, java.util.Calendar.HOUR));
-        spinDuracao.setEditor(new javax.swing.JSpinner.DateEditor(spinDuracao, "HH:mm"));
-        add(spinDuracao, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 180, -1, 35));
+        jLabel1.setText("Duração");
+        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 110, -1, -1));
 
-        lblDuracao.setText("Duração");
-        add(lblDuracao, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 160, -1, -1));
+        jLabel8.setText("Preço do Evento");
+        add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 390, -1, -1));
+
+        spinnerPrecoEvento.setModel(new javax.swing.SpinnerNumberModel(0.0d, 0.0d, null, 0.5d));
+        add(spinnerPrecoEvento, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 410, 90, 35));
+
+        jLabel9.setText("Preço Bilhete");
+        add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 390, -1, -1));
+
+        spinnerPrecoBilhete.setModel(new javax.swing.SpinnerNumberModel(0.0d, 0.0d, null, 0.5d));
+        add(spinnerPrecoBilhete, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 410, 100, 35));
+
+        jLabel10.setText("Alugado");
+        add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 460, -1, -1));
+        add(checkAlugado, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 460, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNomeActionPerformed
@@ -315,18 +334,24 @@ public class PanelFormularioEventos extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnGuardar;
+    private javax.swing.JCheckBox checkAlugado;
     private javax.swing.JComboBox<String> comboResponsavel;
     private javax.swing.JComboBox<String> comboSala;
     private com.toedter.calendar.JDateChooser dateEvento;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel lblDuracao;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JSpinner spinDuracao;
     private javax.swing.JSpinner spinHoraInicio;
+    private javax.swing.JSpinner spinnerPrecoBilhete;
+    private javax.swing.JSpinner spinnerPrecoEvento;
     private javax.swing.JTextField txtDescricao;
     private javax.swing.JTextField txtID;
     private javax.swing.JTextField txtNome;

@@ -26,6 +26,8 @@ public class PaginaInicial extends javax.swing.JFrame {
     public PaginaInicial(int idTrabalhador) {
         estiloJanela();
         initComponents();
+        
+        configurarLogout();
 
         this.idTrabalhador = idTrabalhador;
 
@@ -35,6 +37,8 @@ public class PaginaInicial extends javax.swing.JFrame {
     public PaginaInicial() {
         estiloJanela();
         initComponents();
+        
+        configurarLogout();
 
         this.controller = new HomeController();
     }
@@ -1160,6 +1164,42 @@ public class PaginaInicial extends javax.swing.JFrame {
 
         //troca o painel
         trocarParaPainel(lista);
+    }
+    
+    
+
+    public void irParaAssociarRecurso() {
+        PanelAssociarRecurso associar = new PanelAssociarRecurso(this);
+        trocarParaPainel(associar);
+    }
+    // --- LÓGICA DE LOGOUT ---
+    private void configurarLogout() {
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                confirmarLogout();
+            }
+            
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jLabel2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            }
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+            }
+        });
+    }
+
+    private void confirmarLogout() {
+        PaginaOpcao popUp = new PaginaOpcao(this, true);
+        popUp.setMensagem("Tem a certeza que deseja terminar sessão?", "Terminar Sessão");
+        popUp.setVisible(true);
+
+        if (popUp.clicouSim()) {
+            this.dispose();
+            new Login().setVisible(true);
+        }
     }
 
     public static void main(String args[]) {

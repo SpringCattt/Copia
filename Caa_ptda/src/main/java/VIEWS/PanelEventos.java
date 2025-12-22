@@ -370,9 +370,11 @@ public class PanelEventos extends javax.swing.JPanel {
             janelaPrincipal.irParaFormularioTarefa();
         }
     }//GEN-LAST:event_btnAssociarTarefaActionPerformed
-
-    private void btnAssociarRecursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAssociarRecursoActionPerformed
         
+    private void btnAssociarRecursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAssociarRecursoActionPerformed
+        if (janelaPrincipal != null) { 
+            janelaPrincipal.irParaAssociarRecurso();
+        }
     }//GEN-LAST:event_btnAssociarRecursoActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed

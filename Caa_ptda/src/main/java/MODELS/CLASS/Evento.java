@@ -16,8 +16,13 @@ public class Evento {
     private Date Hora;
     private Time Duracao;
     private boolean Estado;
-    private boolean Cancelado; 
+    private boolean Cancelado;
     private boolean Ativo;
+    
+    // --- NOVOS ATRIBUTOS ---
+    private double Preco;
+    private double PrecoBilhete;
+    private boolean Alugado;
 
     /* * Getters e Setters
      */
@@ -107,6 +112,32 @@ public class Evento {
 
     public void setAtivo(boolean Ativo) {
         this.Ativo = Ativo;
+    }
+
+    // --- NOVOS GETTERS E SETTERS ---
+    
+    public double getPreco() {
+        return Preco;
+    }
+
+    public void setPreco(double Preco) {
+        this.Preco = Preco;
+    }
+
+    public double getPrecoBilhete() {
+        return PrecoBilhete;
+    }
+
+    public void setPrecoBilhete(double PrecoBilhete) {
+        this.PrecoBilhete = PrecoBilhete;
+    }
+
+    public boolean isAlugado() {
+        return Alugado;
+    }
+
+    public void setAlugado(boolean Alugado) {
+        this.Alugado = Alugado;
     }
     
     @Override

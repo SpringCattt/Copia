@@ -98,7 +98,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Segoe UI" size="14" style="1"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="Adicionar Funcion&#xe1;rio"/>
+        <Property name="text" type="java.lang.String" value="Adicionar Cliente"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtNomeCliente">

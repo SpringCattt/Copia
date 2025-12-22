@@ -134,4 +134,31 @@ public class ClienteDAO {
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) { e.printStackTrace(); return false; }
     }
+    
+    // ---- VERIFICAÇOES ----
+    public boolean existeEmail(String email) {
+        String sql = "SELECT 1 FROM Cliente WHERE Email = ? AND Ativo = 1";
+        try (Connection conn = BaseDados.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); // Retorna true si existe
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean existeTelefone(int telefone) {
+        String sql = "SELECT 1 FROM Cliente WHERE NumeroTelefone = ? AND Ativo = 1";
+        try (Connection conn = BaseDados.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, telefone);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

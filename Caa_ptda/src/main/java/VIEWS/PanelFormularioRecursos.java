@@ -129,7 +129,7 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
                 txtNomeActionPerformed(evt);
             }
         });
-        add(txtNome, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 120, 660, 35));
+        add(txtNome, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 130, 660, 35));
 
         btnGuardar.setText("Guardar");
         btnGuardar.setPreferredSize(new java.awt.Dimension(81, 23));
@@ -154,29 +154,29 @@ public class PanelFormularioRecursos extends javax.swing.JPanel {
                 comboTipoActionPerformed(evt);
             }
         });
-        add(comboTipo, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 290, 190, 35));
+        add(comboTipo, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 340, 190, 35));
 
         jLabel2.setText("Nome");
-        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 100, -1, -1));
+        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 100, -1, -1));
 
         jLabel3.setText("Preço de Compra");
-        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, -1, -1));
+        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 200, -1, -1));
 
         jLabel5.setText("Quantidade");
-        add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 270, -1, -1));
+        add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 310, -1, -1));
 
         jLabel6.setText("Tipo de Recurso");
-        add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 270, -1, -1));
+        add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 310, -1, -1));
 
         lblPrecoAluguer.setText("Preço Aluguer");
-        add(lblPrecoAluguer, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 270, -1, -1));
+        add(lblPrecoAluguer, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 310, -1, -1));
 
         lblValidade.setText("Validade");
-        add(lblValidade, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 270, -1, -1));
-        add(txtValidade, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 290, 180, 35));
-        add(spPrecoAluguer, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 290, 180, 35));
-        add(spPreco, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 200, 660, 40));
-        add(spQuantidade, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 290, 180, 35));
+        add(lblValidade, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 310, -1, -1));
+        add(txtValidade, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 340, 180, 35));
+        add(spPrecoAluguer, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 340, 180, 35));
+        add(spPreco, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 230, 660, 40));
+        add(spQuantidade, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 340, 180, 35));
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNomeActionPerformed

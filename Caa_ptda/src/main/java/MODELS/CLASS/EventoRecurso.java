@@ -11,6 +11,7 @@ public class EventoRecurso {
      */
     private int idRecurso;
     private int idEvento;
+    private int quantidade;
 
     /* 
      * Getters e Setters
@@ -29,6 +30,14 @@ public class EventoRecurso {
 
     public void setIdEvento(int idEvento) {
         this.idEvento = idEvento;
+    }
+
+    public int getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(int quantidade) {
+        this.quantidade = quantidade;
     }
 
 }

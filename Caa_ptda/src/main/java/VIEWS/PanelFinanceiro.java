@@ -99,10 +99,10 @@ public class PanelFinanceiro extends javax.swing.JPanel {
         
         lvlTotalDespesas.setText(df.format(soma2) + "€");
         jLabel4.setText(df.format(soma-soma2) + "€");
-        txtPesquisar.setText("Pesquisar");
-        txtPesquisar.setForeground(java.awt.Color.GRAY);
+        //txtPesquisar.setText("Pesquisar");
+        //txtPesquisar.setForeground(java.awt.Color.GRAY);
 
-        txtPesquisar.addFocusListener(new java.awt.event.FocusAdapter() {
+        /*txtPesquisar.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
             public void focusGained(java.awt.event.FocusEvent evt) {
                 // Apenas apaga se o texto for o padrão e a cor for cinza (indica placeholder)
@@ -119,9 +119,9 @@ public class PanelFinanceiro extends javax.swing.JPanel {
                     txtPesquisar.setText("Pesquisar");
                 }
             }
-        });
+        });*/
 
-        txtPesquisar.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+        /*txtPesquisar.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             @Override
             public void insertUpdate(javax.swing.event.DocumentEvent e) {
                 verificarEFiltrar();
@@ -136,10 +136,10 @@ public class PanelFinanceiro extends javax.swing.JPanel {
             public void changedUpdate(javax.swing.event.DocumentEvent e) {
                 verificarEFiltrar();
             }
-        });
+        });*/
     }
 
-    private void verificarEFiltrar() {
+    /*private void verificarEFiltrar() {
         String termo = txtPesquisar.getText();
 
         // Se o texto for o placeholder cinzento, não filtramos nada
@@ -148,7 +148,7 @@ public class PanelFinanceiro extends javax.swing.JPanel {
         } else {
             aplicarFiltro(termo);
         }
-    }
+    }*/
 
     private void aplicarFiltro(String termo) {
         // 1. Configurar Sorters para as duas tabelas
@@ -187,13 +187,12 @@ public class PanelFinanceiro extends javax.swing.JPanel {
         tabelaReceitas = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         tabelaDespesas = new javax.swing.JTable();
-        jLabel5 = new javax.swing.JLabel();
-        txtPesquisar = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         txtDataInicio = new javax.swing.JFormattedTextField();
         jLabel7 = new javax.swing.JLabel();
         txtDataFim = new javax.swing.JFormattedTextField();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(232, 235, 238));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -349,41 +348,53 @@ public class PanelFinanceiro extends javax.swing.JPanel {
 
         add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 230, 780, 260));
 
-        jLabel5.setText("Pesquisar");
-        add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, -1, -1));
-        add(txtPesquisar, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 190, 190, 35));
-
         jLabel6.setText("Data Inicio:");
-        add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 170, -1, -1));
+        add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, -1, -1));
 
         txtDataInicio.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT))));
-        add(txtDataInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 190, 90, 35));
+        add(txtDataInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 190, 90, 35));
 
         jLabel7.setText("Data Fim:");
-        add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 170, -1, -1));
-        add(txtDataFim, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 190, 90, 35));
+        add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 170, -1, -1));
+        add(txtDataFim, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 190, 90, 35));
 
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jButton1.setText("Filtrar");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
-        add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 190, 100, 35));
+        add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 190, 100, 35));
+
+        jButton2.setBackground(new java.awt.Color(51, 121, 232));
+        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jButton2.setForeground(new java.awt.Color(255, 255, 255));
+        jButton2.setText("Exportar Relatorio");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 500, 190, 40));
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
@@ -398,6 +409,5 @@ public class PanelFinanceiro extends javax.swing.JPanel {
     private javax.swing.JTable tabelaReceitas;
     private javax.swing.JFormattedTextField txtDataFim;
     private javax.swing.JFormattedTextField txtDataInicio;
-    private javax.swing.JTextField txtPesquisar;
     // End of variables declaration//GEN-END:variables
 }
